@@ -1,0 +1,60 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "DA-documentation"
+  repo-url: https://github.com/paocorrales/DA-documentation
+  issue-url: https://github.com/paocorrales/DA-documentation/issues/new/choose
+  repo-actions: [edit, issue]
+  page-navigation: true
+  # bread-crumbs: true
+  page-footer:
+    center:
+      - text: "About"
+        href: about.qmd
+      - text: "License"
+        href: license.qmd
+      - text: "Contribute"
+        href: contribute.qmd
+      - text: "Contributors"
+        href: contributors.qmd
+      - icon: github
+        href: https://github.com/paocorrales/DA-documentation
+        aria-label: GitHub
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "About this page"
+        href: about.qmd
+      - text: "GSI"
+        menu: 
+        - text: "How GSI works"
+          href: content/gsi/01-gsi.qmd
+        - text: "Assimilation of conventional obs"
+          href: content/gsi/02-convencionals.qmd
+        - text: "Assimilation of radiances"
+          href: content/gsi/03-radiances.qmd
+        - text: "Undestanding diag files"
+          href: content/gsi/04-diagfiles.qmd
+        - text: "Tutorial"
+          href: content/gsi/05-tutorial.qmd
+      - text: "Observations"
+        menu: 
+        - text: "Working with bufr files"
+          href: content/observations/01-bufr.qmd
+    tools:
+      - icon: github
+        href: https://github.com/paocorrales/DA-documentation
+        text: GitHub
+format:
+  html:
+    theme: flatly
+    code-copy: true
+    code-overflow: wrap
+    css: styles.css
+    toc: true
+
+editor: visual
+
