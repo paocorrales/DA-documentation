@@ -1,0 +1,7 @@
+---
+title: "Undestanding diag files"
+---
+
+Scrips para decodificar
+
+rutina que los genera

@@ -1,0 +1,9 @@
+---
+title: "Intro a GSI"
+---
+
+crtm
+
+satinfo
+
+correccion de bias
