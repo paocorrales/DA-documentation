@@ -1,0 +1,128 @@
+[
+  {
+    "objectID": "license.html",
+    "href": "license.html",
+    "title": "Licence",
+    "section": "",
+    "text": "The text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License. Specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the Licence note associated to each section and cite it appropriately."
+  },
+  {
+    "objectID": "content/gsi/01-gsi.html",
+    "href": "content/gsi/01-gsi.html",
+    "title": "Intro a GSI",
+    "section": "",
+    "text": "Intro\nCaracteristicas generales de GSI y LETKF\n4D"
+  },
+  {
+    "objectID": "content/gsi/03-radiances.html",
+    "href": "content/gsi/03-radiances.html",
+    "title": "Intro a GSI",
+    "section": "",
+    "text": "crtm\nsatinfo\ncorreccion de bias"
+  },
+  {
+    "objectID": "content/observations/01-bufr.html",
+    "href": "content/observations/01-bufr.html",
+    "title": "Working with bufr files",
+    "section": "",
+    "text": "Intro\nTablas"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "DA-documentation",
+    "section": "",
+    "text": "This is a work in progress\n\n\n\nComeback later to see more or, if you want to contribute, open an issue in the associated repo.\nThis website compiles a series of tutorials, scripts and in general a comprehensive documentation around the GSI system V3.7 - EnKF V1.3. It focus on the use of GSI as a observation operator along with the LETKF version. It covers everything you need from how to deal with observations (in bufr format), how to configure the system to how read and interpret GSI outputs."
+  },
+  {
+    "objectID": "index.html#a-note-about-using-this-material",
+    "href": "index.html#a-note-about-using-this-material",
+    "title": "DA-documentation",
+    "section": "A note about using this material",
+    "text": "A note about using this material\nWhile the text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License, specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the Licence note associated to each section and cite it appropriately."
+  },
+  {
+    "objectID": "index.html#citing-this-guide",
+    "href": "index.html#citing-this-guide",
+    "title": "DA-documentation",
+    "section": "Citing this guide",
+    "text": "Citing this guide\nYou can cite this guide using its Zenodo metadata and DOI ."
+  },
+  {
+    "objectID": "index.html#do-you-want-to-contribute",
+    "href": "index.html#do-you-want-to-contribute",
+    "title": "DA-documentation",
+    "section": "Do you want to contribute?",
+    "text": "Do you want to contribute?\nAny contribution is welcome, please read this guide to learn how to do it."
+  },
+  {
+    "objectID": "contribute.html",
+    "href": "contribute.html",
+    "title": "How to contribute",
+    "section": "",
+    "text": "This outlines how to propose a change to DA-documentation."
+  },
+  {
+    "objectID": "contribute.html#fixing-typos",
+    "href": "contribute.html#fixing-typos",
+    "title": "How to contribute",
+    "section": "Fixing typos",
+    "text": "Fixing typos\nYou can fix typos, spelling mistakes, or grammatical errors in the documentation directly using the GitHub web interface, as long as the changes are made in the source file. This will automatically open a pull request"
+  },
+  {
+    "objectID": "contribute.html#bigger-changes",
+    "href": "contribute.html#bigger-changes",
+    "title": "How to contribute",
+    "section": "Bigger changes",
+    "text": "Bigger changes\nIf you want to make a bigger change, it’s a good idea to first file an issue to start a conversation."
+  },
+  {
+    "objectID": "contribute.html#pull-request-process",
+    "href": "contribute.html#pull-request-process",
+    "title": "How to contribute",
+    "section": "Pull request process",
+    "text": "Pull request process\nTo open a pull request you’ll need to fork the repository. This website is builded with quarto, make sure you have it installed if you want to build the website locally to test the chances you are proposing."
+  },
+  {
+    "objectID": "contribute.html#acknowledgements",
+    "href": "contribute.html#acknowledgements",
+    "title": "How to contribute",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nIf you contribute to this guide, I’d like to publicly acknowledge you work. Please indicate in you PR if you want to be add to the Contributors page."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "This guide is a compilation of many tools scripts, pieces of code and routines that I used during my PhD. As the name says, everything goes around assimilating observations using the GSI system. I spent a lot of time working with the conventional and Radiance observations so you will find a comprehensive tutorial and documentation on how to assimilate these types of observations. This includes the processing of the observations, how to configure the system and all the quality control steps GSI performs during the assimilation process.\nSometimes you will find everything inside the website and sometimes you will need to go to a specific repository to get the code or the data associated with the the specific topic. And while I tried to be mindful during my PhD at commenting and documenting everything along the way I’m sure that there are gaps and missing pieces. If you find anything that can be improved please open an issue in the repository of this website and contribute to making this guide better.\nMany of these tools come from different sources. Sometimes someone else wrote the code and I adapted it to my specific needs, sometimes I wrote the code from scratch. So it’s important to read the license note in each section so you know who created that code and in which way you can use it."
+  },
+  {
+    "objectID": "contributors.html",
+    "href": "contributors.html",
+    "title": "Contributors",
+    "section": "",
+    "text": "Contributors to this guide will appear here."
+  },
+  {
+    "objectID": "content/gsi/05-tutorial.html",
+    "href": "content/gsi/05-tutorial.html",
+    "title": "Tutoriales",
+    "section": "",
+    "text": "Ejemplo asimilando todo\ngsi\nletkf"
+  },
+  {
+    "objectID": "content/gsi/02-convencionals.html",
+    "href": "content/gsi/02-convencionals.html",
+    "title": "Intro a GSI",
+    "section": "",
+    "text": "sobre el prepbufr\nconvinfo y errores de las observaciones"
+  },
+  {
+    "objectID": "content/gsi/04-diagfiles.html",
+    "href": "content/gsi/04-diagfiles.html",
+    "title": "Undestanding diag files",
+    "section": "",
+    "text": "Scrips para decodificar\nrutina que los genera"
+  }
+]
