@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -140,7 +174,29 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#moving-parts" id="toc-moving-parts" class="nav-link active" data-scroll-target="#moving-parts">Moving parts</a>
+  <ul class="collapse">
+  <li><a href="#observations" id="toc-observations" class="nav-link" data-scroll-target="#observations">Observations</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  </ul></li>
+  <li><a href="#structure" id="toc-structure" class="nav-link" data-scroll-target="#structure">Structure</a></li>
+  <li><a href="#fgat" id="toc-fgat" class="nav-link" data-scroll-target="#fgat">Running GSI</a>
+  <ul class="collapse">
+  <li><a href="#issues-gsi" id="toc-issues-gsi" class="nav-link" data-scroll-target="#issues-gsi">Possible issues</a></li>
+  <li><a href="#did-it-work" id="toc-did-it-work" class="nav-link" data-scroll-target="#did-it-work">Did it work?</a></li>
+  </ul></li>
+  <li><a href="#running-enkf" id="toc-running-enkf" class="nav-link" data-scroll-target="#running-enkf">Running ENKF</a>
+  <ul class="collapse">
+  <li><a href="#possible-issues" id="toc-possible-issues" class="nav-link" data-scroll-target="#possible-issues">Possible issues</a></li>
+  <li><a href="#did-it-work-1" id="toc-did-it-work-1" class="nav-link" data-scroll-target="#did-it-work-1">Did it work?</a></li>
+  </ul></li>
+  <li><a href="#running-gsi-using-the-fgat-method" id="toc-running-gsi-using-the-fgat-method" class="nav-link" data-scroll-target="#running-gsi-using-the-fgat-method">Running GSI using the FGAT method</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/gsi/05-tutorial.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -162,13 +218,282 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>Ejemplo asimilando todo</p>
-<p>gsi</p>
-<p>letkf</p>
+<p>This tutorial is intended to showcase some of the capabilities of the GSI system. For a more complete set of examples, please visit the official website for GSI: <a href="https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi">variational methods</a> and [Kalman Filter](<a href="https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf" class="uri">https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf</a>) methods.</p>
+<p>The tutorial uses the serial Ensemble Square Root Filter (EnSRF) algorithm but could also be used to run the Local Ensemble Kalman Filter (LETKF) algorithm if the GSI system code is compiled using a intel compiler<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. It also uses a version of the code that have the capability of assimilating GOES-16 observations.</p>
+<section id="moving-parts" class="level2">
+<h2 class="anchored" data-anchor-id="moving-parts">Moving parts</h2>
+<p>The first component to run the tutorial is the GSI system code that can be found in this repository: <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">github.com/paocorrales/comGSIv3.7_EnKFv1.3</a>. Alternatively, the original code without modifications is available <a href="https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi">here</a>. The repository includes an example script <code>compile_gsi_yakaira</code> to compile the code. In any case it is important to include the option <code>-DBUILD_WRF=ON</code> to use the ENKF algorithm with WRF.</p>
+<p>Then, clone or download the repository with the scripts, namelists and specific config files from: <a href="https://github.com/paocorrales/tutorial_gsi" class="uri">https://github.com/paocorrales/tutorial_gsi</a>. This repository also includes a bash scripts to download the necessary data to run the tutorial. This data is also available as a <a href="https://zenodo.org/records/10439645">Zenodo record</a>.</p>
+<section id="observations" class="level3">
+<h3 class="anchored" data-anchor-id="observations">Observations</h3>
+<p>The observations included in this tutorial are:</p>
+<p><strong>Conventional observations:</strong> surface and upper air observations (meteorological stations, radiosondes, airplanes, etc.). It also includes wind derived from satellite. The bufr file used here is created from the prepbufr file at 12 UTC of 2018/11/22 and includes also observations from automatic station networks in Argentina and other countries.</p>
+<ul>
+<li>File: <code>cimap.20181122.t12z.01h.prepbufr.nqc</code></li>
+</ul>
+<p><strong>Radiance observations:</strong> radiances from polar and geostationary satellites. Observations from polar satellites comes from the Global Data Assimilation System (GDAS) Model: <a href="https://www.nco.ncep.noaa.gov/pmb/products/gfs" class="uri">https://www.nco.ncep.noaa.gov/pmb/products/gfs</a>. The GOES-16 observations (ABI sensor) are derived from the public netcdf files published by NOAA.</p>
+<p>Files:</p>
+<ul>
+<li><code>abig16.20181122.t12z.bufr_d</code></li>
+<li><code>1bamua.20181122.t12z.bufr_d</code></li>
+<li><code>ssmisu.20181122.t12z.bufr_d</code></li>
+<li><code>1bhrs4.20181122.t12z.bufr_d</code></li>
+<li><code>airsev.20181122.t12z.bufr_d</code></li>
+<li><code>mtiasi.20181122.t12z.bufr_d</code></li>
+<li><code>1bmhs.20181122.t12z.bufr_d</code></li>
+<li><code>atms.20181122.t12z.bufr_d</code></li>
+<li><code>satwnd.20181122.t12z.bufr_d</code></li>
+</ul>
+</section>
+<section id="background" class="level3">
+<h3 class="anchored" data-anchor-id="background">Background</h3>
+<p>The background files includes the 10-member ensemble generated using the WRF-ARW numerical model for a regional domain centered in the center and northern Argentina. For more information about the model configuration see <a href="https://doi.org/10.1016/j.atmosres.2022.106456" class="uri">https://doi.org/10.1016/j.atmosres.2022.106456</a></p>
+<ul>
+<li><p>The 00 subfolder includes a 10-member ensemble and the ensemble mean to run the GSI system using the ENKF version.</p></li>
+<li><p>The 01 to 10 subfolders include the background at the analysis time and files every 10 minutes inside the assimilation window to run the GSI system using the <a href="#fgat">FGAT method</a></p></li>
+</ul>
+</section>
+</section>
+<section id="structure" class="level2">
+<h2 class="anchored" data-anchor-id="structure">Structure</h2>
+<p>By cloning the tutorial repo and downloading the associated data with the provied script you will end up with the following folder structure.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tutorial_gsi/</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> download_data.sh</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> fix</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── global_satinfo.txt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── satbias_ang</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── satbias_in</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> └── satbias_pc_in</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> GUESS</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> └── 20181122120000</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 00</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.ensmean</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem001</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem002</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem003</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem004</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem005</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem006</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem007</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem008</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrfarw.mem009</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrfarw.mem010</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 01</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 02</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 03</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 04</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 05</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 06</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 07</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 08</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     ├── 09</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou1</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou2</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou3</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou4</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou5</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; ├── wrf_inou6</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     │&nbsp;&nbsp; └── wrf_inou7</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>     └── 10</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         ├── wrf_inou1</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         ├── wrf_inou2</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         ├── wrf_inou3</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         ├── wrf_inou4</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         ├── wrf_inou5</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         ├── wrf_inou6</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span>         └── wrf_inou7</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> namelists</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── comenkf_namelist.sh</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> └── comgsi_namelist.sh</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> OBS</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── 1bamua.20181122.t12z.bufr_d</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── 1bhrs4.20181122.t12z.bufr_d</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── 1bmhs.20181122.t12z.bufr_d</span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── abig16.20181122.t12z.bufr_d</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── airsev.20181122.t12z.bufr_d</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── atms.20181122.t12z.bufr_d</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── cimap.20181122.t12z.01h.prepbufr.nqc</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── mtiasi.20181122.t12z.bufr_d</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── satwnd.20181122.t12z.bufr_d</span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> └── ssmisu.20181122.t12z.bufr_d</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> README.md</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> run_enkf.sh</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="ex">└──</span> run_gsi.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A <code>GSI</code> folder will be created when running the <code>run_gsi.sh</code> script and a <code>ENKF</code> folder will be created when running the <code>run_enkf.sh</code> that performs the analysis.</p>
+</section>
+<section id="fgat" class="level2">
+<h2 class="anchored" data-anchor-id="fgat">Running GSI</h2>
+<p>As we focus on running GSI with the Kalman Filter method, the first stem is to run GSI as Observation operator. So, the system will compare the observations with the background state and and save that information in diagnostic files.</p>
+<p>The example used in this tutorial is relatively small, so while you may need a HPC system for real cases, this one can be run in a small server or even a computer with at least 10 processors.</p>
+<p>Here are the ~20 first lines of the script <code>run_gsi.sh</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -N </span><span class="al">TEST</span><span class="co">-1-GSI </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -m abe </span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -l walltime=03:00:00 </span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -l nodes=1:ppn=24 </span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -j oe </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="va">BASEDIR</span><span class="op">=</span>/home/paola.corrales/datosmunin3/tutorial_gsi           <span class="co"># Path to the tutorial folder</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="va">GSIDIR</span><span class="op">=</span>/home/paola.corrales/datosmunin3/comGSIv3.7_EnKFv1.3     <span class="co"># Path to where the GSI/EnKF code is compiled </span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="va">FECHA_INI</span><span class="op">=</span><span class="st">'11:00:00 2018-11-22'</span>                                 <span class="co"># Init time (analysis time - $ANALISIS)</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="va">ANALISIS</span><span class="op">=</span>3600                                                   <span class="co"># Assimilation cycle in seconds</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="va">OBSWIN</span><span class="op">=</span>1                                                        <span class="co"># Assimilation window in hours</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="va">N_MEMBERS</span><span class="op">=</span>10                                                    <span class="co"># Ensemble size</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="va">E_WE</span><span class="op">=</span>200                                                        <span class="co"># West-East grid points</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="va">E_SN</span><span class="op">=</span>240                                                        <span class="co"># South-North grid points</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="va">E_BT</span><span class="op">=</span>37                                                         <span class="co"># Vertical levels</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">OMP_NUM_THREADS</span><span class="op">=</span>1</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="va">GSIPROC</span><span class="op">=</span>10</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ex">set-x</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In principle, you only need to change <code>BASEDIR</code> and <code>GSIDIR</code> variables that are the path to the tutorial folder and the path to where GSI is compiled (the code expects to find a <code>build</code> folder with the executable files.</p>
+<p>So, with that, you can run the script or send it to a queue.</p>
+<section id="issues-gsi" class="level3">
+<h3 class="anchored" data-anchor-id="issues-gsi">Possible issues</h3>
+<p>The script assume many things, in particular, where the configuration files, observations and background files are located. If you chance the structure of the folders and files, make sure to do the same in the script.</p>
+<p>The other very possible issue is machine dependent. GSI creates files with the information of the observations and background called <code>pe\*something</code>. Those files are later concatenated in <code>diag_&lt;type_of_obs&gt;*</code> files. This process depends on listing all the types of observations with some regex magic:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">listall</span><span class="op">=</span><span class="kw">`</span><span class="fu">ls</span> pe<span class="pp">*</span> <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f2</span> <span class="at">-d</span><span class="st">"."</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">'{print substr($0, 0, length($0)-2)}'</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="kw">`</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>   <span class="cf">for</span> type <span class="kw">in</span> <span class="va">$listall</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      <span class="va">count</span><span class="op">=</span><span class="kw">`</span><span class="fu">ls</span> pe<span class="pp">*</span><span class="va">${type}</span>_<span class="va">${loop}</span><span class="pp">*</span> <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span><span class="kw">`</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="kw">[[</span> <span class="va">$count</span> <span class="ot">-gt</span> 0 <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>         <span class="fu">cat</span> pe<span class="pp">*</span><span class="va">${type}</span>_<span class="va">${loop}</span><span class="pp">*</span> <span class="op">&gt;</span> diag_<span class="va">${type}</span>_<span class="va">${string}</span>.<span class="va">${ANAL_TIME}</span> <span class="co"># For binary diag files</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="cf">fi</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>   <span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I had to slightly change that first line every time I changed machines. So, if you don’t see a bunch of <code>diag*</code> files in the <code>GSI</code> folder after running the script this is probably the reason.</p>
+</section>
+<section id="did-it-work" class="level3">
+<h3 class="anchored" data-anchor-id="did-it-work">Did it work?</h3>
+<p>If you get a <code>exit 0</code> at the end, it probably means that everything went well. However, I recommend you check a few things to make sure everything went <em>really</em> well.</p>
+<ul>
+<li>Check that all the <code>diag*</code> files are there. You will get 1 file per member and ensemble mean for each type of observation. If you don’t see any of these files, check the <a href="@issues-gsi">Issues</a> section. If you are missing the files for 1 type of observation, that probably means that the bufr file with the observations was not read properly or that is missing in the folder. Check if the script is linking the correct file to the <code>GSI</code> folder.</li>
+<li>Check the statistics for each type of observations. You will find this information in the <code>fit_&lt;obs&gt;.&lt;date&gt;</code> files. Each one may have different information or structure depending on the type of observation, but make sure to check the number of observations read and keep by the system. This information is also included in the <code>stdout</code> file, you can sear <code>READ_*</code> to find the section in the file.</li>
+</ul>
+<p>If you got an error number instead and, if you are lucky, the error code may be described in <code>gsimain.f90</code>.</p>
+</section>
+</section>
+<section id="running-enkf" class="level2">
+<h2 class="anchored" data-anchor-id="running-enkf">Running ENKF</h2>
+<p>The second step to run GSI with the Kalman Filter method is running the code that performs the analysis. GSI will take the information provided by the first step (the <code>diag*</code> files) an calculate the final analysis.</p>
+<p>Similarly to the first step, the script it’s almost ready to run and you only need to change <code>BASEDIR</code> and <code>GSIDIR</code> variables.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -N tutorial-enkf </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -m abe </span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -l walltime=03:00:00 </span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -l nodes=2:ppn=96 </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -j oe </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="va">BASEDIR</span><span class="op">=</span>/home/paola.corrales/datosmunin3/tutorial_gsi           <span class="co"># Path to the tutorial folder</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="va">GSIDIR</span><span class="op">=</span>/home/paola.corrales/datosmunin3/comGSIv3.7_EnKFv1.3     <span class="co"># Path to where the GSI/EnKF code is compiled</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="va">FECHA_INI</span><span class="op">=</span><span class="st">'11:00:00 2018-11-22'</span>                                 <span class="co"># Init time (analisis time - $ANALISIS)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="va">ANALISIS</span><span class="op">=</span>3600                                                   <span class="co"># Assimilation cycle in seconds</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="va">OBSWIN</span><span class="op">=</span>1                                                        <span class="co"># Assimilation window in hours</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="va">N_MEMBERS</span><span class="op">=</span>10                                                    <span class="co"># Ensemble size</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="va">E_WE</span><span class="op">=</span>200                                                        <span class="co"># West-East grid points</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="va">E_SN</span><span class="op">=</span>240                                                        <span class="co"># South-North grid points</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="va">E_BT</span><span class="op">=</span>37                                                         <span class="co"># Vertical levels</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="va">ENKFPROC</span><span class="op">=</span>20</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">OMP_NUM_THREADS</span><span class="op">=</span>1</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-x</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The script will look for the GSI folder to link the <code>diag*</code> files and copy the background files to modify them into the analysis.</p>
+<section id="possible-issues" class="level3">
+<h3 class="anchored" data-anchor-id="possible-issues">Possible issues</h3>
+<p>This script also assume where the configuration files, background and <code>diag*</code> are located. So, if something is not working, check first if all the files are being copied or linked correctly.</p>
+<p>It also includes a line to list all the types of observation and it is machine dependent, so that another source of problems. You can always type the list of observations by hand but you will need to update that every time.</p>
+</section>
+<section id="did-it-work-1" class="level3">
+<h3 class="anchored" data-anchor-id="did-it-work-1">Did it work?</h3>
+<p>If you get a <code>exit 0</code> at the end, it probably means that everything went well. Other things you can check:</p>
+<ul>
+<li><p><code>stdout</code> file: the main thing to check is the innovation statistics for the prior and posterior (search for “innovation”) and the statistics for satellite brightness temperature. It will tell you how many observations were assimilated a few more details to get a sense of the impact of the observations.</p></li>
+<li><p>Check the difference between the analysis and the background files. This requires a little more work but it is important to check this difference for at least one of the ensemble members. You can also do it for the ensemble mean, but note that the GSI system <strong>does not</strong> calculate the analysis ensemble mean, you will need to do it independently.</p></li>
+</ul>
+</section>
+</section>
+<section id="running-gsi-using-the-fgat-method" class="level2">
+<h2 class="anchored" data-anchor-id="running-gsi-using-the-fgat-method">Running GSI using the FGAT method</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>run_gsi.sh</code> and <code>run_enkf.sh</code> scripts mentioned in this tutorial are derived from the example scripts provided with the <a href="https://dtcenter.org/community-gsiv3-7-online-tutorial">Community GSIV3.7 Online Tutorial</a>.</p>
+</div>
+</div>
 
 
+</section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The current version of the GSI system compiled using gnu returns an error when the LETKF algorithm is used.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -429,7 +754,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
 </ul>
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/gsi/05-tutorial.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action">Report an issue</a></p></div></div></div>
+    </div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

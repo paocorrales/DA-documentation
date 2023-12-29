@@ -1,5 +1,103 @@
 [
   {
+    "objectID": "contributors.html",
+    "href": "contributors.html",
+    "title": "Contributors",
+    "section": "",
+    "text": "Contributors to this guide will appear here."
+  },
+  {
+    "objectID": "content/gsi/05-tutorial.html",
+    "href": "content/gsi/05-tutorial.html",
+    "title": "Tutoriales",
+    "section": "",
+    "text": "This tutorial is intended to showcase some of the capabilities of the GSI system. For a more complete set of examples, please visit the official website for GSI: variational methods and [Kalman Filter](https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf) methods.\nThe tutorial uses the serial Ensemble Square Root Filter (EnSRF) algorithm but could also be used to run the Local Ensemble Kalman Filter (LETKF) algorithm if the GSI system code is compiled using a intel compiler1. It also uses a version of the code that have the capability of assimilating GOES-16 observations."
+  },
+  {
+    "objectID": "content/gsi/05-tutorial.html#moving-parts",
+    "href": "content/gsi/05-tutorial.html#moving-parts",
+    "title": "Tutoriales",
+    "section": "Moving parts",
+    "text": "Moving parts\nThe first component to run the tutorial is the GSI system code that can be found in this repository: github.com/paocorrales/comGSIv3.7_EnKFv1.3. Alternatively, the original code without modifications is available here. The repository includes an example script compile_gsi_yakaira to compile the code. In any case it is important to include the option -DBUILD_WRF=ON to use the ENKF algorithm with WRF.\nThen, clone or download the repository with the scripts, namelists and specific config files from: https://github.com/paocorrales/tutorial_gsi. This repository also includes a bash scripts to download the necessary data to run the tutorial. This data is also available as a Zenodo record.\n\nObservations\nThe observations included in this tutorial are:\nConventional observations: surface and upper air observations (meteorological stations, radiosondes, airplanes, etc.). It also includes wind derived from satellite. The bufr file used here is created from the prepbufr file at 12 UTC of 2018/11/22 and includes also observations from automatic station networks in Argentina and other countries.\n\nFile: cimap.20181122.t12z.01h.prepbufr.nqc\n\nRadiance observations: radiances from polar and geostationary satellites. Observations from polar satellites comes from the Global Data Assimilation System (GDAS) Model: https://www.nco.ncep.noaa.gov/pmb/products/gfs. The GOES-16 observations (ABI sensor) are derived from the public netcdf files published by NOAA.\nFiles:\n\nabig16.20181122.t12z.bufr_d\n1bamua.20181122.t12z.bufr_d\nssmisu.20181122.t12z.bufr_d\n1bhrs4.20181122.t12z.bufr_d\nairsev.20181122.t12z.bufr_d\nmtiasi.20181122.t12z.bufr_d\n1bmhs.20181122.t12z.bufr_d\natms.20181122.t12z.bufr_d\nsatwnd.20181122.t12z.bufr_d\n\n\n\nBackground\nThe background files includes the 10-member ensemble generated using the WRF-ARW numerical model for a regional domain centered in the center and northern Argentina. For more information about the model configuration see https://doi.org/10.1016/j.atmosres.2022.106456\n\nThe 00 subfolder includes a 10-member ensemble and the ensemble mean to run the GSI system using the ENKF version.\nThe 01 to 10 subfolders include the background at the analysis time and files every 10 minutes inside the assimilation window to run the GSI system using the FGAT method"
+  },
+  {
+    "objectID": "content/gsi/05-tutorial.html#structure",
+    "href": "content/gsi/05-tutorial.html#structure",
+    "title": "Tutoriales",
+    "section": "Structure",
+    "text": "Structure\nBy cloning the tutorial repo and downloading the associated data with the provied script you will end up with the following folder structure.\ntutorial_gsi/\n├── download_data.sh\n├── fix\n│   ├── global_satinfo.txt\n│   ├── satbias_ang\n│   ├── satbias_in\n│   └── satbias_pc_in\n├── GUESS\n│   └── 20181122120000\n│       ├── 00\n│       │   ├── wrfarw.ensmean\n│       │   ├── wrfarw.mem001\n│       │   ├── wrfarw.mem002\n│       │   ├── wrfarw.mem003\n│       │   ├── wrfarw.mem004\n│       │   ├── wrfarw.mem005\n│       │   ├── wrfarw.mem006\n│       │   ├── wrfarw.mem007\n│       │   ├── wrfarw.mem008\n│       │   ├── wrfarw.mem009\n│       │   └── wrfarw.mem010\n│       ├── 01\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       ├── 02\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       ├── 03\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       ├── 04\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       ├── 05\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       ├── 06\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       ├── 07\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       ├── 08\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       ├── 09\n│       │   ├── wrf_inou1\n│       │   ├── wrf_inou2\n│       │   ├── wrf_inou3\n│       │   ├── wrf_inou4\n│       │   ├── wrf_inou5\n│       │   ├── wrf_inou6\n│       │   └── wrf_inou7\n│       └── 10\n│           ├── wrf_inou1\n│           ├── wrf_inou2\n│           ├── wrf_inou3\n│           ├── wrf_inou4\n│           ├── wrf_inou5\n│           ├── wrf_inou6\n│           └── wrf_inou7\n├── namelists\n│   ├── comenkf_namelist.sh\n│   └── comgsi_namelist.sh\n├── OBS\n│   ├── 1bamua.20181122.t12z.bufr_d\n│   ├── 1bhrs4.20181122.t12z.bufr_d\n│   ├── 1bmhs.20181122.t12z.bufr_d\n│   ├── abig16.20181122.t12z.bufr_d\n│   ├── airsev.20181122.t12z.bufr_d\n│   ├── atms.20181122.t12z.bufr_d\n│   ├── cimap.20181122.t12z.01h.prepbufr.nqc\n│   ├── mtiasi.20181122.t12z.bufr_d\n│   ├── satwnd.20181122.t12z.bufr_d\n│   └── ssmisu.20181122.t12z.bufr_d\n├── README.md\n├── run_enkf.sh\n└── run_gsi.sh\nA GSI folder will be created when running the run_gsi.sh script and a ENKF folder will be created when running the run_enkf.sh that performs the analysis."
+  },
+  {
+    "objectID": "content/gsi/05-tutorial.html#fgat",
+    "href": "content/gsi/05-tutorial.html#fgat",
+    "title": "Tutoriales",
+    "section": "Running GSI",
+    "text": "Running GSI\nAs we focus on running GSI with the Kalman Filter method, the first stem is to run GSI as Observation operator. So, the system will compare the observations with the background state and and save that information in diagnostic files.\nThe example used in this tutorial is relatively small, so while you may need a HPC system for real cases, this one can be run in a small server or even a computer with at least 10 processors.\nHere are the ~20 first lines of the script run_gsi.sh:\n#PBS -N TEST-1-GSI \n#PBS -m abe \n#PBS -l walltime=03:00:00 \n#PBS -l nodes=1:ppn=24 \n#PBS -j oe \n\nBASEDIR=/home/paola.corrales/datosmunin3/tutorial_gsi           # Path to the tutorial folder\nGSIDIR=/home/paola.corrales/datosmunin3/comGSIv3.7_EnKFv1.3     # Path to where the GSI/EnKF code is compiled \nFECHA_INI='11:00:00 2018-11-22'                                 # Init time (analysis time - $ANALISIS)\nANALISIS=3600                                                   # Assimilation cycle in seconds\nOBSWIN=1                                                        # Assimilation window in hours\nN_MEMBERS=10                                                    # Ensemble size\nE_WE=200                                                        # West-East grid points\nE_SN=240                                                        # South-North grid points\nE_BT=37                                                         # Vertical levels\n\n\nexport OMP_NUM_THREADS=1\nGSIPROC=10\n\nset-x\nIn principle, you only need to change BASEDIR and GSIDIR variables that are the path to the tutorial folder and the path to where GSI is compiled (the code expects to find a build folder with the executable files.\nSo, with that, you can run the script or send it to a queue.\n\nPossible issues\nThe script assume many things, in particular, where the configuration files, observations and background files are located. If you chance the structure of the folders and files, make sure to do the same in the script.\nThe other very possible issue is machine dependent. GSI creates files with the information of the observations and background called pe\\*something. Those files are later concatenated in diag_&lt;type_of_obs&gt;* files. This process depends on listing all the types of observations with some regex magic:\nlistall=`ls pe* | cut -f2 -d\".\" | awk '{print substr($0, 0, length($0)-2)}' | sort | uniq `\n\n   for type in $listall; do\n      count=`ls pe*${type}_${loop}* | wc -l`\n      if [[ $count -gt 0 ]]; then\n         cat pe*${type}_${loop}* &gt; diag_${type}_${string}.${ANAL_TIME} # For binary diag files\n      fi\n   done\nI had to slightly change that first line every time I changed machines. So, if you don’t see a bunch of diag* files in the GSI folder after running the script this is probably the reason.\n\n\nDid it work?\nIf you get a exit 0 at the end, it probably means that everything went well. However, I recommend you check a few things to make sure everything went really well.\n\nCheck that all the diag* files are there. You will get 1 file per member and ensemble mean for each type of observation. If you don’t see any of these files, check the Issues section. If you are missing the files for 1 type of observation, that probably means that the bufr file with the observations was not read properly or that is missing in the folder. Check if the script is linking the correct file to the GSI folder.\nCheck the statistics for each type of observations. You will find this information in the fit_&lt;obs&gt;.&lt;date&gt; files. Each one may have different information or structure depending on the type of observation, but make sure to check the number of observations read and keep by the system. This information is also included in the stdout file, you can sear READ_* to find the section in the file.\n\nIf you got an error number instead and, if you are lucky, the error code may be described in gsimain.f90."
+  },
+  {
+    "objectID": "content/gsi/05-tutorial.html#running-enkf",
+    "href": "content/gsi/05-tutorial.html#running-enkf",
+    "title": "Tutoriales",
+    "section": "Running ENKF",
+    "text": "Running ENKF\nThe second step to run GSI with the Kalman Filter method is running the code that performs the analysis. GSI will take the information provided by the first step (the diag* files) an calculate the final analysis.\nSimilarly to the first step, the script it’s almost ready to run and you only need to change BASEDIR and GSIDIR variables.\n#PBS -N tutorial-enkf \n#PBS -m abe \n#PBS -l walltime=03:00:00 \n#PBS -l nodes=2:ppn=96 \n#PBS -j oe \n\nBASEDIR=/home/paola.corrales/datosmunin3/tutorial_gsi           # Path to the tutorial folder\nGSIDIR=/home/paola.corrales/datosmunin3/comGSIv3.7_EnKFv1.3     # Path to where the GSI/EnKF code is compiled\nFECHA_INI='11:00:00 2018-11-22'                                 # Init time (analisis time - $ANALISIS)\nANALISIS=3600                                                   # Assimilation cycle in seconds\nOBSWIN=1                                                        # Assimilation window in hours\nN_MEMBERS=10                                                    # Ensemble size\nE_WE=200                                                        # West-East grid points\nE_SN=240                                                        # South-North grid points\nE_BT=37                                                         # Vertical levels\n\nENKFPROC=20\nexport OMP_NUM_THREADS=1\n\nset -x\nThe script will look for the GSI folder to link the diag* files and copy the background files to modify them into the analysis.\n\nPossible issues\nThis script also assume where the configuration files, background and diag* are located. So, if something is not working, check first if all the files are being copied or linked correctly.\nIt also includes a line to list all the types of observation and it is machine dependent, so that another source of problems. You can always type the list of observations by hand but you will need to update that every time.\n\n\nDid it work?\nIf you get a exit 0 at the end, it probably means that everything went well. Other things you can check:\n\nstdout file: the main thing to check is the innovation statistics for the prior and posterior (search for “innovation”) and the statistics for satellite brightness temperature. It will tell you how many observations were assimilated a few more details to get a sense of the impact of the observations.\nCheck the difference between the analysis and the background files. This requires a little more work but it is important to check this difference for at least one of the ensemble members. You can also do it for the ensemble mean, but note that the GSI system does not calculate the analysis ensemble mean, you will need to do it independently."
+  },
+  {
+    "objectID": "content/gsi/05-tutorial.html#running-gsi-using-the-fgat-method",
+    "href": "content/gsi/05-tutorial.html#running-gsi-using-the-fgat-method",
+    "title": "Tutoriales",
+    "section": "Running GSI using the FGAT method",
+    "text": "Running GSI using the FGAT method\n\n\n\n\n\n\nImportant\n\n\n\nThe run_gsi.sh and run_enkf.sh scripts mentioned in this tutorial are derived from the example scripts provided with the Community GSIV3.7 Online Tutorial."
+  },
+  {
+    "objectID": "content/gsi/05-tutorial.html#footnotes",
+    "href": "content/gsi/05-tutorial.html#footnotes",
+    "title": "Tutoriales",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nThe current version of the GSI system compiled using gnu returns an error when the LETKF algorithm is used.↩︎"
+  },
+  {
+    "objectID": "content/gsi/02-convencionals.html",
+    "href": "content/gsi/02-convencionals.html",
+    "title": "Intro a GSI",
+    "section": "",
+    "text": "sobre el prepbufr\nconvinfo y errores de las observaciones"
+  },
+  {
+    "objectID": "content/gsi/01-gsi.html",
+    "href": "content/gsi/01-gsi.html",
+    "title": "Intro a GSI",
+    "section": "",
+    "text": "Intro\nCaracteristicas generales de GSI y LETKF\n4D"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "DA-documentation",
+    "section": "",
+    "text": "This is a work in progress\n\n\n\nComeback later to see more or, if you want to contribute, open an issue in the associated repo.\nThis website compiles a series of tutorials, scripts and in general a comprehensive documentation around the GSI system V3.7 - EnKF V1.3. It focus on the use of GSI as a observation operator along with the LETKF version. It covers everything you need from how to deal with observations (in bufr format), how to configure the system to how read and interpret GSI outputs."
+  },
+  {
+    "objectID": "index.html#a-note-about-using-this-material",
+    "href": "index.html#a-note-about-using-this-material",
+    "title": "DA-documentation",
+    "section": "A note about using this material",
+    "text": "A note about using this material\nWhile the text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License, specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the Licence note associated to each section and cite it appropriately."
+  },
+  {
+    "objectID": "index.html#citing-this-guide",
+    "href": "index.html#citing-this-guide",
+    "title": "DA-documentation",
+    "section": "Citing this guide",
+    "text": "Citing this guide\nYou can cite this guide using its Zenodo metadata and DOI ."
+  },
+  {
+    "objectID": "index.html#do-you-want-to-contribute",
+    "href": "index.html#do-you-want-to-contribute",
+    "title": "DA-documentation",
+    "section": "Do you want to contribute?",
+    "text": "Do you want to contribute?\nAny contribution is welcome, please read this guide to learn how to do it."
+  },
+  {
     "objectID": "contribute.html",
     "href": "contribute.html",
     "title": "How to contribute",
@@ -35,27 +133,6 @@
     "text": "Acknowledgements\nIf you contribute to this guide, I’d like to publicly acknowledge you work. Please indicate in you PR if you want to be add to the Contributors page."
   },
   {
-    "objectID": "content/gsi/02-convencionals.html",
-    "href": "content/gsi/02-convencionals.html",
-    "title": "Intro a GSI",
-    "section": "",
-    "text": "sobre el prepbufr\nconvinfo y errores de las observaciones"
-  },
-  {
-    "objectID": "content/gsi/05-tutorial.html",
-    "href": "content/gsi/05-tutorial.html",
-    "title": "Tutoriales",
-    "section": "",
-    "text": "Ejemplo asimilando todo\ngsi\nletkf"
-  },
-  {
-    "objectID": "content/gsi/04-diagfiles.html",
-    "href": "content/gsi/04-diagfiles.html",
-    "title": "Undestanding diag files",
-    "section": "",
-    "text": "Scrips para decodificar\nrutina que los genera"
-  },
-  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
@@ -63,39 +140,11 @@
     "text": "This guide is a compilation of many tools scripts, pieces of code and routines that I used during my PhD. As the name says, everything goes around assimilating observations using the GSI system. I spent a lot of time working with the conventional and Radiance observations so you will find a comprehensive tutorial and documentation on how to assimilate these types of observations. This includes the processing of the observations, how to configure the system and all the quality control steps GSI performs during the assimilation process.\nSometimes you will find everything inside the website and sometimes you will need to go to a specific repository to get the code or the data associated with the the specific topic. And while I tried to be mindful during my PhD at commenting and documenting everything along the way I’m sure that there are gaps and missing pieces. If you find anything that can be improved please open an issue in the repository of this website and contribute to making this guide better.\nMany of these tools come from different sources. Sometimes someone else wrote the code and I adapted it to my specific needs, sometimes I wrote the code from scratch. So it’s important to read the license note in each section so you know who created that code and in which way you can use it."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "DA-documentation",
-    "section": "",
-    "text": "This is a work in progress\n\n\n\nComeback later to see more or, if you want to contribute, open an issue in the associated repo.\nThis website compiles a series of tutorials, scripts and in general a comprehensive documentation around the GSI system V3.7 - EnKF V1.3. It focus on the use of GSI as a observation operator along with the LETKF version. It covers everything you need from how to deal with observations (in bufr format), how to configure the system to how read and interpret GSI outputs."
-  },
-  {
-    "objectID": "index.html#a-note-about-using-this-material",
-    "href": "index.html#a-note-about-using-this-material",
-    "title": "DA-documentation",
-    "section": "A note about using this material",
-    "text": "A note about using this material\nWhile the text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License, specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the Licence note associated to each section and cite it appropriately."
-  },
-  {
-    "objectID": "index.html#citing-this-guide",
-    "href": "index.html#citing-this-guide",
-    "title": "DA-documentation",
-    "section": "Citing this guide",
-    "text": "Citing this guide\nYou can cite this guide using its Zenodo metadata and DOI ."
-  },
-  {
-    "objectID": "index.html#do-you-want-to-contribute",
-    "href": "index.html#do-you-want-to-contribute",
-    "title": "DA-documentation",
-    "section": "Do you want to contribute?",
-    "text": "Do you want to contribute?\nAny contribution is welcome, please read this guide to learn how to do it."
-  },
-  {
-    "objectID": "contributors.html",
-    "href": "contributors.html",
-    "title": "Contributors",
-    "section": "",
-    "text": "Contributors to this guide will appear here."
+    "objectID": "about.html#about-my-phd",
+    "href": "about.html#about-my-phd",
+    "title": "About",
+    "section": "About my PhD",
+    "text": "About my PhD\nThe main goal of may research was to applied data assimilation techniques to improve short-term forecasts of severe events in Argentina. In particular, the research focuses on data assimilation of observations from automatic stations and radiances from polar and geostationary satellites. You can read the final dissertation (in Spanish) here.\nI worked in the Centro de Investigaciones del Mar y la Atmósfera (CIMA), for that reason you may find mentions to Hydra or Yakaira, their HPC and a server I used a lot."
   },
   {
     "objectID": "content/observations/01-bufr.html",
@@ -112,11 +161,11 @@
     "text": "crtm\nsatinfo\ncorreccion de bias"
   },
   {
-    "objectID": "content/gsi/01-gsi.html",
-    "href": "content/gsi/01-gsi.html",
-    "title": "Intro a GSI",
+    "objectID": "content/gsi/04-diagfiles.html",
+    "href": "content/gsi/04-diagfiles.html",
+    "title": "Undestanding diag files",
     "section": "",
-    "text": "Intro\nCaracteristicas generales de GSI y LETKF\n4D"
+    "text": "Scrips para decodificar\nrutina que los genera"
   },
   {
     "objectID": "license.html",
