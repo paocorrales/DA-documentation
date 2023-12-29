@@ -48,7 +48,7 @@ The background files includes the 10-member ensemble generated using the WRF-ARW
 
 By cloning the tutorial repo and downloading the associated data with the provied script you will end up with the following folder structure.
 
-```{bash}
+```bash
 tutorial_gsi/
 ├── download_data.sh
 ├── fix
@@ -177,9 +177,9 @@ As we focus on running GSI with the Kalman Filter method, the first stem is to r
 
 The example used in this tutorial is relatively small, so while you may need a HPC system for real cases, this one can be run in a small server or even a computer with at least 10 processors.
 
-Here are the \~20 first lines of the script:
+Here are the \~20 first lines of the script `run_gsi.sh`:
 
-```{bash}
+```bash
 #PBS -N TEST-1-GSI 
 #PBS -m abe 
 #PBS -l walltime=03:00:00 
@@ -211,9 +211,9 @@ So, with that, you can run the script or send it to a queue.
 
 The script assume many things, in particular, where the configuration files, observations and background files are located. If you chance the structure of the folders and files, make sure to do the same in the script.
 
-The other very possible issue is machine dependent. GSI creates files with the information of the observations and backgroud called `pe\*something`. Those files are later concatenated in `diag_<type_of_obs>*` files. This process depends on listing all the types of observations with some regex magic:
+The other very possible issue is machine dependent. GSI creates files with the information of the observations and background called `pe\*something`. Those files are later concatenated in `diag_<type_of_obs>*` files. This process depends on listing all the types of observations with some regex magic:
 
-```{bash}
+```bash
 listall=`ls pe* | cut -f2 -d"." | awk '{print substr($0, 0, length($0)-2)}' | sort | uniq `
 
    for type in $listall; do
@@ -224,7 +224,7 @@ listall=`ls pe* | cut -f2 -d"." | awk '{print substr($0, 0, length($0)-2)}' | so
    done
 ```
 
-I had to slightly change that first line every time I changed machines. So, if you dont see a bunch of `diag*` files in the `GSI` folder after running the script this is probably the reason.
+I had to slightly change that first line every time I changed machines. So, if you don't see a bunch of `diag*` files in the `GSI` folder after running the script this is probably the reason.
 
 ### Did it work?
 
@@ -237,4 +237,51 @@ If you got an error number instead and, if you are lucky, the error code may be 
 
 ## Running ENKF
 
+The second step to run GSI with the Kalman Filter method is running the code that performs the analysis. GSI will take the information provided by the first step (the `diag*` files) an calculate the final analysis.
+
+Similarly to the first step, the script it's almost ready to run and you only need to change `BASEDIR` and `GSIDIR` variables.
+
+```bash
+#PBS -N tutorial-enkf 
+#PBS -m abe 
+#PBS -l walltime=03:00:00 
+#PBS -l nodes=2:ppn=96 
+#PBS -j oe 
+
+BASEDIR=/home/paola.corrales/datosmunin3/tutorial_gsi           # Path to the tutorial folder
+GSIDIR=/home/paola.corrales/datosmunin3/comGSIv3.7_EnKFv1.3     # Path to where the GSI/EnKF code is compiled
+FECHA_INI='11:00:00 2018-11-22'                                 # Init time (analisis time - $ANALISIS)
+ANALISIS=3600                                                   # Assimilation cycle in seconds
+OBSWIN=1                                                        # Assimilation window in hours
+N_MEMBERS=10                                                    # Ensemble size
+E_WE=200                                                        # West-East grid points
+E_SN=240                                                        # South-North grid points
+E_BT=37                                                         # Vertical levels
+
+ENKFPROC=20
+export OMP_NUM_THREADS=1
+
+set -x
+```
+
+The script will look for the GSI folder to link the `diag*` files and copy the background files to modify them into the analysis.
+
+### Possible issues
+
+This script also assume where the configuration files, background and `diag*` are located. So, if something is not working, check first if all the files are being copied or linked correctly.
+
+It also includes a line to list all the types of observation and it is machine dependent, so that another source of problems. You can always type the list of observations by hand but you will need to update that every time.
+
+### Did it work?
+
+If you get a `exit 0` at the end, it probably means that everything went well. Other things you can check:
+
+-   `stdout` file: the main thing to check is the innovation statistics for the prior and posterior (search for "innovation") and the statistics for satellite brightness temperature. It will tell you how many observations were assimilated a few more details to get a sense of the impact of the observations.
+
+-   Check the difference between the analysis and the background files. This requires a little more work but it is important to check this difference for at least one of the ensemble members. You can also do it for the ensemble mean, but note that the GSI system **does not** calculate the analysis ensemble mean, you will need to do it independently.
+
 ## Running GSI using the FGAT method
+
+::: callout-important
+The `run_gsi.sh` and `run_enkf.sh` scripts mentioned in this tutorial are derived from the example scripts provided with the [Community GSIV3.7 Online Tutorial](https://dtcenter.org/community-gsiv3-7-online-tutorial).
+:::
