@@ -51,8 +51,9 @@ website:
 format:
   html:
     theme: flatly
+    highlight-style: solarized
     code-copy: true
-    code-overflow: wrap
+    code-overflow: scroll
     css: styles.css
     toc: true
 
