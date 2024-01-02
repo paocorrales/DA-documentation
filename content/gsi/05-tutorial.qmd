@@ -48,7 +48,7 @@ The background files includes the 10-member ensemble generated using the WRF-ARW
 
 By cloning the tutorial repo and downloading the associated data with the provied script you will end up with the following folder structure.
 
-```bash
+``` bash
 tutorial_gsi/
 ├── download_data.sh
 ├── fix
@@ -179,7 +179,7 @@ The example used in this tutorial is relatively small, so while you may need a H
 
 Here are the \~20 first lines of the script `run_gsi.sh`:
 
-```bash
+``` bash
 #PBS -N TEST-1-GSI 
 #PBS -m abe 
 #PBS -l walltime=03:00:00 
@@ -213,7 +213,7 @@ The script assume many things, in particular, where the configuration files, obs
 
 The other very possible issue is machine dependent. GSI creates files with the information of the observations and background called `pe\*something`. Those files are later concatenated in `diag_<type_of_obs>*` files. This process depends on listing all the types of observations with some regex magic:
 
-```bash
+``` bash
 listall=`ls pe* | cut -f2 -d"." | awk '{print substr($0, 0, length($0)-2)}' | sort | uniq `
 
    for type in $listall; do
@@ -241,7 +241,7 @@ The second step to run GSI with the Kalman Filter method is running the code tha
 
 Similarly to the first step, the script it's almost ready to run and you only need to change `BASEDIR` and `GSIDIR` variables.
 
-```bash
+``` bash
 #PBS -N tutorial-enkf 
 #PBS -m abe 
 #PBS -l walltime=03:00:00 
@@ -281,6 +281,161 @@ If you get a `exit 0` at the end, it probably means that everything went well. O
 -   Check the difference between the analysis and the background files. This requires a little more work but it is important to check this difference for at least one of the ensemble members. You can also do it for the ensemble mean, but note that the GSI system **does not** calculate the analysis ensemble mean, you will need to do it independently.
 
 ## Running GSI using the FGAT method
+
+The tutorial is configured to use the FGAT (First Guess at Appropriate Time) methods, this means that will GSI attempt to read multiple time level backgrounds a show in the following diagram.
+
+![FGAT method](img/fgat_diagram.png){fig-alt="A diagram that shows the assimilation window of 1 h centered at 12 UTC. The observations are used every 10 minutes"}
+
+There is no option in the namelist or configuration files to use the FGAT method. To "activate" this option GSI needs to find the appropiate files in appropriate folder. In this example we have 7 files in total for each member, 1 background file at the assimilation time plus 3 files every 10 minutes before and after the assimilation time.
+
+So, GSI will expect to find files called `wrf_inou1` to `wrf_inou7`. The fonder structure looks like this:
+
+``` bash
+GUESS/
+└── 20181122120000
+    ├── 00
+    │   ├── wrfarw.ensmean
+    │   ├── wrfarw.mem001
+    │   ├── wrfarw.mem002
+    │   ├── wrfarw.mem003
+    │   ├── wrfarw.mem004
+    │   ├── wrfarw.mem005
+    │   ├── wrfarw.mem006
+    │   ├── wrfarw.mem007
+    │   ├── wrfarw.mem008
+    │   ├── wrfarw.mem009
+    │   └── wrfarw.mem010
+    ├── 01
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    ├── 02
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    ├── 03
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    ├── 04
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    ├── 05
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    ├── 06
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    ├── 07
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    ├── 08
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    ├── 09
+    │   ├── wrf_inou1
+    │   ├── wrf_inou2
+    │   ├── wrf_inou3
+    │   ├── wrf_inou4
+    │   ├── wrf_inou5
+    │   ├── wrf_inou6
+    │   └── wrf_inou7
+    └── 10
+        ├── wrf_inou1
+        ├── wrf_inou2
+        ├── wrf_inou3
+        ├── wrf_inou4
+        ├── wrf_inou5
+        ├── wrf_inou6
+        └── wrf_inou7
+```
+
+The files in folders `01` to `10` are the ones used during the assimilation. The files in fonder `00` where used to calculate the ensemble mean and can be also used to run GSI without the FGAT option. For that it is necessary to uncomment line 102 in the `run_gsi.sh` script:
+
+``` bash
+# BK_FILE_mem=${BK_ROOT}/wrfarw.mem
+```
+
+and change lines 600 and 601 from:
+
+``` bash
+cp ${BK_ROOT}/${ensmemid}/wrf_inou* .
+BK_FILE_ANA=wrf_inou4
+```
+
+to:
+
+``` bash
+cp ${BK_ROOT}/00/wrfarw_mem0${ensmemid}.
+BK_FILE_ANA=${BK_FILE}
+```
+
+That way, GSI will ignore the other folder and only use 1 background file for each member.
+
+To check if GSI is doing what's suppose to, we need to check the `stdout` file created during the observation operator step.
+
+``` bash
+CONVERT_NETCDF_MASS:  problem with flnm1 = wrf_inou1, Status =        -1021
+```
+
+Means that GSI did not find all the background files and only used the one at the analysis time.
+
+Instead if you see something this:
+
+``` bash
+convert wrf_inou1 to sigf01
+  iy,m,d,h,m,s=        2018          11          22          11          30           0
+  dh1  =            1
+ rmse_var = SMOIS
+ ndim1 =            3
+ ordering = XYZ
+ staggering =  N/A
+ start_index =            1           1           1           0
+ end_index =          199         239           4           0
+```
+
+You'll know that GSI is using the FGAT method. The example here shows that GSI found the `wrf_inout1` file that is renaming to `sig01` and then, information related to the time and domain characteristics. This will be repeated for each background file. In this case the first file corresponds to th 11:30 UTC of November 2018 and after that there is 1 file every 10 minutes.
+
+This period between background files (10 minutes) is defined by the user when saving the background files. Again there is no configuration option to do this. GSI relies on finding the files in the especified folder.
+
+------------------------------------------------------------------------
 
 ::: callout-important
 The `run_gsi.sh` and `run_enkf.sh` scripts mentioned in this tutorial are derived from the example scripts provided with the [Community GSIV3.7 Online Tutorial](https://dtcenter.org/community-gsiv3-7-online-tutorial).
