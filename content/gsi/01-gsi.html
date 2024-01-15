@@ -20,7 +20,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -179,11 +198,11 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="the-gsi-assimilation-system" class="level2">
 <h2 class="anchored" data-anchor-id="the-gsi-assimilation-system">The GSI assimilation system</h2>
-<p>The GSI (Gridpoint Statistical Interpolation) System, is a state-of-the-art data assimilation system initially developed by the Environmental Modeling Center at NCEP. It was designed as a traditional 3DVAR system applied in the gridpoint space of models to facilitate the implementation of inhomogeneous anisotropic covariances <span class="citation" data-cites="wu2002 purser2003a purser2003">[@wu2002; @purser2003a; @purser2003]</span>. It is designed to run on various computational platforms, create analyses for different numerical forecast models, and remain flexible enough to handle future scientific developments, such as the use of new observation types, improved data selection, and new state variables <span class="citation" data-cites="kleist2009">[@kleist2009]</span>.</p>
-<p>The- 3DVAR system replaced the NCEP regional grid-point operational analysis system by the North American Mesoscale Prediction System (NAM) in 2006 and the <em>Spectral Statistical Interpolation</em> (SSI) global analysis system used to generate <em>Global Forecast System</em> (GFS) initial conditions in 2007 <span class="citation" data-cites="kleist2009">[@kleist2009]</span>. In recent years, GSI has evolved to include various data assimilation techniques for multiple operational applications, including 2DVAR [e.g., the <em>Real-Time Mesoscale Analysis</em> (RTMA) system; <span class="citation" data-cites="pondeca2011">@pondeca2011</span>], the hybrid EnVar technique (e.g., data assimilation systems for the GFS, the <em>Rapid Refresh system</em> (RAP), the NAM, the HWRF, etc. ), and 4DVAR [e.g., the data assimilation system for NASA’s Goddard Earth Observing System, version 5 (GEOS-5); <span class="citation" data-cites="zhu2008">@zhu2008</span>]. GSI also includes a hybrid 4D-EnVar approach that is currently used for GFS generation.</p>
-<p>In addition to the development of hybrid techniques, GSI allows the use of ensemble assimilation methods. To achieve this, it uses the same observation operator as the variational methods to compare the preliminary field or background with the observations. In this way the exhaustive quality controls developed for variational methods are also applied in ensemble assimilation methods. The EnKF code was developed by the Earth System Research Lab (ESRL) of the National Oceanic and Atmospheric Administration (NOAA) in collaboration with the scientific community. It contains two different algorithms for calculating the analysis increment, the serial Ensemble Square Root Filter <span class="citation" data-cites="whitaker2002">[EnSRF, @whitaker2002]</span> and the LETKF <span class="citation" data-cites="hunt2007">[@hunt2007]</span> contributed by Yoichiro Ota of the Japan Meteorological Agency (JMA).</p>
+<p>The GSI (Gridpoint Statistical Interpolation) System, is a state-of-the-art data assimilation system initially developed by the Environmental Modeling Center at NCEP. It was designed as a traditional 3DVAR system applied in the gridpoint space of models to facilitate the implementation of inhomogeneous anisotropic covariances <span class="citation" data-cites="wu2002 purser2003a purser2003">(<a href="#ref-wu2002" role="doc-biblioref">Wu, Purser, and Parrish 2002</a>; <a href="#ref-purser2003a" role="doc-biblioref">Purser et al. 2003b</a>, <a href="#ref-purser2003" role="doc-biblioref">2003a</a>)</span>. It is designed to run on various computational platforms, create analyses for different numerical forecast models, and remain flexible enough to handle future scientific developments, such as the use of new observation types, improved data selection, and new state variables <span class="citation" data-cites="kleist2009">(<a href="#ref-kleist2009" role="doc-biblioref">Kleist et al. 2009</a>)</span>.</p>
+<p>The- 3DVAR system replaced the NCEP regional grid-point operational analysis system by the North American Mesoscale Prediction System (NAM) in 2006 and the <em>Spectral Statistical Interpolation</em> (SSI) global analysis system used to generate <em>Global Forecast System</em> (GFS) initial conditions in 2007 <span class="citation" data-cites="kleist2009">(<a href="#ref-kleist2009" role="doc-biblioref">Kleist et al. 2009</a>)</span>. In recent years, GSI has evolved to include various data assimilation techniques for multiple operational applications, including 2DVAR [e.g., the <em>Real-Time Mesoscale Analysis</em> (RTMA) system; <span class="citation" data-cites="pondeca2011">Pondeca et al. (<a href="#ref-pondeca2011" role="doc-biblioref">2011</a>)</span>], the hybrid EnVar technique (e.g., data assimilation systems for the GFS, the <em>Rapid Refresh system</em> (RAP), the NAM, the HWRF, etc. ), and 4DVAR [e.g., the data assimilation system for NASA’s Goddard Earth Observing System, version 5 (GEOS-5); <span class="citation" data-cites="zhu2008">Zhu and Gelaro (<a href="#ref-zhu2008" role="doc-biblioref">2008</a>)</span>]. GSI also includes a hybrid 4D-EnVar approach that is currently used for GFS generation.</p>
+<p>In addition to the development of hybrid techniques, GSI allows the use of ensemble assimilation methods. To achieve this, it uses the same observation operator as the variational methods to compare the preliminary field or background with the observations. In this way the exhaustive quality controls developed for variational methods are also applied in ensemble assimilation methods. The EnKF code was developed by the Earth System Research Lab (ESRL) of the National Oceanic and Atmospheric Administration (NOAA) in collaboration with the scientific community. It contains two different algorithms for calculating the analysis increment, the serial Ensemble Square Root Filter <span class="citation" data-cites="whitaker2002">(EnSRF, <a href="#ref-whitaker2002" role="doc-biblioref">Whitaker and Hamill 2002</a>)</span> and the LETKF <span class="citation" data-cites="hunt2007">(<a href="#ref-hunt2007" role="doc-biblioref">Hunt, Kostelich, and Szunyogh 2007</a>)</span> contributed by Yoichiro Ota of the Japan Meteorological Agency (JMA).</p>
 <p>To reduce the impact of spurious covariances on the increment applied to the analysis, ensemble systems apply a localization to the covariance matrix of the errors of the observations <span class="math inline">\(R\)</span> in both the horizontal and vertical directions. GSI uses a polynomial of order 5 to reduce the impact of each observation gradually until a limiting distance is reached at which the impact is zero. The vertical location scale is defined in terms of the logarithm of the pressure and the horizontal scale is usually defined in kilometers. These parameters are important in obtaining a good analysis and depend on factors such as the size of the ensemble and the resolution of the model.</p>
-<p>GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">[CRTM, @liu2008]</span> as an operator for the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with satellite sensor observations. GSI also implements a bias correction algorithm for the satellite radiance observations. The preliminary field estimate with the CRMT is compared with the radiance observations to obtain the innovation. This innovation is then used to calculate a bias that is applied to an updated innovation. This process can be repeated several times until the innovation and the bias correction coefficients converge.</p>
+<p>GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">(CRTM, <a href="#ref-liu2008" role="doc-biblioref">Liu et al. 2008</a>)</span> as an operator for the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with satellite sensor observations. GSI also implements a bias correction algorithm for the satellite radiance observations. The preliminary field estimate with the CRMT is compared with the radiance observations to obtain the innovation. This innovation is then used to calculate a bias that is applied to an updated innovation. This process can be repeated several times until the innovation and the bias correction coefficients converge.</p>
 </section>
 <section id="available-observations-for-assimilation" class="level2">
 <h2 class="anchored" data-anchor-id="available-observations-for-assimilation">Available observations for assimilation</h2>
@@ -350,10 +369,39 @@ ul.task-list li input[type="checkbox"] {
 </table>
 
 
+
 </section>
 
 
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-hunt2007" class="csl-entry" role="listitem">
+Hunt, Brian R., Eric J. Kostelich, and Istvan Szunyogh. 2007. <span>“Efficient Data Assimilation for Spatiotemporal Chaos: <span>A</span> Local Ensemble Transform <span>Kalman</span> Filter.”</span> <em>Physica D: Nonlinear Phenomena</em> 230 (1-2): 112–26. <a href="https://doi.org/10.1016/j.physd.2006.11.008">https://doi.org/10.1016/j.physd.2006.11.008</a>.
+</div>
+<div id="ref-kleist2009" class="csl-entry" role="listitem">
+Kleist, Daryl T., David F. Parrish, John C. Derber, Russ Treadon, Wan-Shu Wu, and Stephen Lord. 2009. <span>“Introduction of the <span>GSI</span> into the <span>NCEP Global Data Assimilation System</span>.”</span> <em>Weather and Forecasting</em> 24 (6): 1691–1705. <a href="https://doi.org/10.1175/2009WAF2222201.1">https://doi.org/10.1175/2009WAF2222201.1</a>.
+</div>
+<div id="ref-liu2008" class="csl-entry" role="listitem">
+Liu, Quanhua, Fuzhong Weng, Yong Han, and Paul van Delst. 2008. <span>“Community <span>Radiative Transfer Model</span> for <span>Scattering Transfer</span> and <span>Applications</span>.”</span> In <em><span>IGARSS</span> 2008 - 2008 <span>IEEE International Geoscience</span> and <span>Remote Sensing Symposium</span></em>, 4:IV - 1193-IV - 1196. <a href="https://doi.org/10.1109/IGARSS.2008.4779942">https://doi.org/10.1109/IGARSS.2008.4779942</a>.
+</div>
+<div id="ref-pondeca2011" class="csl-entry" role="listitem">
+Pondeca, Manuel S. F. V. De, Geoffrey S. Manikin, Geoff DiMego, Stanley G. Benjamin, David F. Parrish, R. James Purser, Wan-Shu Wu, et al. 2011. <span>“The <span>Real-Time Mesoscale Analysis</span> at <span>NOAA</span>’s <span>National Centers</span> for <span>Environmental Prediction</span>: <span>Current Status</span> and <span>Development</span>.”</span> <em>Weather and Forecasting</em> 26 (5): 593–612. <a href="https://doi.org/10.1175/WAF-D-10-05037.1">https://doi.org/10.1175/WAF-D-10-05037.1</a>.
+</div>
+<div id="ref-purser2003" class="csl-entry" role="listitem">
+Purser, R. James, Wan-Shu Wu, David F. Parrish, and Nigel M. Roberts. 2003a. <span>“Numerical <span>Aspects</span> of the <span>Application</span> of <span>Recursive Filters</span> to <span>Variational Statistical Analysis</span>. <span>Part I</span>: <span>Spatially Homogeneous</span> and <span>Isotropic Gaussian Covariances</span>.”</span> <em>Monthly Weather Review</em> 131 (8): 1524–35. <a href="https://doi.org/10.1175//1520-0493(2003)131<1524:NAOTAO>2.0.CO;2">https://doi.org/10.1175//1520-0493(2003)131&lt;1524:NAOTAO&gt;2.0.CO;2</a>.
+</div>
+<div id="ref-purser2003a" class="csl-entry" role="listitem">
+———. 2003b. <span>“Numerical <span>Aspects</span> of the <span>Application</span> of <span>Recursive Filters</span> to <span>Variational Statistical Analysis</span>. <span>Part II</span>: <span>Spatially Inhomogeneous</span> and <span>Anisotropic General Covariances</span>.”</span> <em>Monthly Weather Review</em> 131 (8): 1536–48. <a href="https://doi.org/10.1175//2543.1">https://doi.org/10.1175//2543.1</a>.
+</div>
+<div id="ref-whitaker2002" class="csl-entry" role="listitem">
+Whitaker, Jeffrey S., and Thomas M. Hamill. 2002. <span>“Ensemble <span>Data Assimilation</span> Without <span>Perturbed Observations</span>.”</span> <em>Monthly Weather Review</em> 130 (7): 1913–24. <a href="https://doi.org/10.1175/1520-0493(2002)130<1913:EDAWPO>2.0.CO;2">https://doi.org/10.1175/1520-0493(2002)130&lt;1913:EDAWPO&gt;2.0.CO;2</a>.
+</div>
+<div id="ref-wu2002" class="csl-entry" role="listitem">
+Wu, Wan-Shu, R. James Purser, and David F. Parrish. 2002. <span>“Three-<span>Dimensional Variational Analysis</span> with <span>Spatially Inhomogeneous Covariances</span>.”</span> <em>Monthly Weather Review</em> 130 (12): 2905–16. <a href="https://doi.org/10.1175/1520-0493(2002)130<2905:TDVAWS>2.0.CO;2">https://doi.org/10.1175/1520-0493(2002)130&lt;2905:TDVAWS&gt;2.0.CO;2</a>.
+</div>
+<div id="ref-zhu2008" class="csl-entry" role="listitem">
+Zhu, Yanqiu, and Ronald Gelaro. 2008. <span>“Observation <span>Sensitivity Calculations Using</span> the <span>Adjoint</span> of the <span>Gridpoint Statistical Interpolation</span> (<span>GSI</span>) <span>Analysis System</span>.”</span> <em>Monthly Weather Review</em> 136 (1): 335–51. <a href="https://doi.org/10.1175/MWR3525.1">https://doi.org/10.1175/MWR3525.1</a>.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
 <li id="fn1"><p>This files need to be downloaded separately as they are to big to be part of the GSI repository. Also the coefficient files can be updated with better approximations over time.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
