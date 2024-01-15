@@ -147,6 +147,13 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#the-gsi-assimilation-system" id="toc-the-gsi-assimilation-system" class="nav-link active" data-scroll-target="#the-gsi-assimilation-system">The GSI assimilation system</a></li>
+  <li><a href="#available-observations-for-assimilation" id="toc-available-observations-for-assimilation" class="nav-link" data-scroll-target="#available-observations-for-assimilation">Available observations for assimilation</a>
+  <ul class="collapse">
+  <li><a href="#conventional-observations-including-satellite-retrievals" id="toc-conventional-observations-including-satellite-retrievals" class="nav-link" data-scroll-target="#conventional-observations-including-satellite-retrievals">Conventional observations (including satellite retrievals):</a></li>
+  <li><a href="#satellite-radiancebrightness-temperature-observations-instrumentsatellite-id" id="toc-satellite-radiancebrightness-temperature-observations-instrumentsatellite-id" class="nav-link" data-scroll-target="#satellite-radiancebrightness-temperature-observations-instrumentsatellite-id">Satellite radiance/brightness temperature observations (instrument/satellite ID):</a></li>
+  <li><a href="#others" id="toc-others" class="nav-link" data-scroll-target="#others">Others:</a></li>
+  </ul></li>
+  <li><a href="#running-gsi" id="toc-running-gsi" class="nav-link" data-scroll-target="#running-gsi">Running GSI</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/gsi/01-gsi.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -170,21 +177,188 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="the-gsi-assimilation-system" class="level3">
-<h3 class="anchored" data-anchor-id="the-gsi-assimilation-system">The GSI assimilation system</h3>
+<section id="the-gsi-assimilation-system" class="level2">
+<h2 class="anchored" data-anchor-id="the-gsi-assimilation-system">The GSI assimilation system</h2>
 <p>The GSI (Gridpoint Statistical Interpolation) System, is a state-of-the-art data assimilation system initially developed by the Environmental Modeling Center at NCEP. It was designed as a traditional 3DVAR system applied in the gridpoint space of models to facilitate the implementation of inhomogeneous anisotropic covariances <span class="citation" data-cites="wu2002 purser2003a purser2003">[@wu2002; @purser2003a; @purser2003]</span>. It is designed to run on various computational platforms, create analyses for different numerical forecast models, and remain flexible enough to handle future scientific developments, such as the use of new observation types, improved data selection, and new state variables <span class="citation" data-cites="kleist2009">[@kleist2009]</span>.</p>
 <p>The- 3DVAR system replaced the NCEP regional grid-point operational analysis system by the North American Mesoscale Prediction System (NAM) in 2006 and the <em>Spectral Statistical Interpolation</em> (SSI) global analysis system used to generate <em>Global Forecast System</em> (GFS) initial conditions in 2007 <span class="citation" data-cites="kleist2009">[@kleist2009]</span>. In recent years, GSI has evolved to include various data assimilation techniques for multiple operational applications, including 2DVAR [e.g., the <em>Real-Time Mesoscale Analysis</em> (RTMA) system; <span class="citation" data-cites="pondeca2011">@pondeca2011</span>], the hybrid EnVar technique (e.g., data assimilation systems for the GFS, the <em>Rapid Refresh system</em> (RAP), the NAM, the HWRF, etc. ), and 4DVAR [e.g., the data assimilation system for NASA’s Goddard Earth Observing System, version 5 (GEOS-5); <span class="citation" data-cites="zhu2008">@zhu2008</span>]. GSI also includes a hybrid 4D-EnVar approach that is currently used for GFS generation.</p>
 <p>In addition to the development of hybrid techniques, GSI allows the use of ensemble assimilation methods. To achieve this, it uses the same observation operator as the variational methods to compare the preliminary field or background with the observations. In this way the exhaustive quality controls developed for variational methods are also applied in ensemble assimilation methods. The EnKF code was developed by the Earth System Research Lab (ESRL) of the National Oceanic and Atmospheric Administration (NOAA) in collaboration with the scientific community. It contains two different algorithms for calculating the analysis increment, the serial Ensemble Square Root Filter <span class="citation" data-cites="whitaker2002">[EnSRF, @whitaker2002]</span> and the LETKF <span class="citation" data-cites="hunt2007">[@hunt2007]</span> contributed by Yoichiro Ota of the Japan Meteorological Agency (JMA).</p>
 <p>To reduce the impact of spurious covariances on the increment applied to the analysis, ensemble systems apply a localization to the covariance matrix of the errors of the observations <span class="math inline">\(R\)</span> in both the horizontal and vertical directions. GSI uses a polynomial of order 5 to reduce the impact of each observation gradually until a limiting distance is reached at which the impact is zero. The vertical location scale is defined in terms of the logarithm of the pressure and the horizontal scale is usually defined in kilometers. These parameters are important in obtaining a good analysis and depend on factors such as the size of the ensemble and the resolution of the model.</p>
 <p>GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">[CRTM, @liu2008]</span> as an operator for the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with satellite sensor observations. GSI also implements a bias correction algorithm for the satellite radiance observations. The preliminary field estimate with the CRMT is compared with the radiance observations to obtain the innovation. This innovation is then used to calculate a bias that is applied to an updated innovation. This process can be repeated several times until the innovation and the bias correction coefficients converge.</p>
-<p>Que observaciones asimila</p>
-<p>Ciclo de asimilacion para ENKF con diagrama</p>
-<p>4D</p>
+</section>
+<section id="available-observations-for-assimilation" class="level2">
+<h2 class="anchored" data-anchor-id="available-observations-for-assimilation">Available observations for assimilation</h2>
+<p>Here is the list of observations that can be assimilated by GSI. In bold are the observations for with I have experience and/or the ones <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">I’ve adapted the code for it</a>.</p>
+<section id="conventional-observations-including-satellite-retrievals" class="level3">
+<h3 class="anchored" data-anchor-id="conventional-observations-including-satellite-retrievals">Conventional observations (including satellite retrievals):</h3>
+<ul>
+<li><strong>Radiosondes</strong></li>
+<li>Pilot ballon (PIBAL) winds</li>
+<li>Synthetic tropical cyclone winds</li>
+<li>Wind profilers: USA, Jan Meteorological Agency (JMA)</li>
+<li><strong>Conventional aircraft reports</strong></li>
+<li>Aircraft to Satellite Data Relay (ASDAR) aircraft reports</li>
+<li>Meteorological Data Collection and Reporting System (MDCRS) aircraft reports</li>
+<li>Dropsondes</li>
+<li><strong>Moderate Resolution Imaging Spectroradiometer (MODIS) IR and water vapor winds</strong></li>
+<li><strong>Geostationary Meteorological Satellite (GMS), JMA, and Meteosat cloud drift IR and visible winds</strong></li>
+<li><strong>European Organization for the Exploitation of Meteorological Satellites (EUMETSAT) and GOES water vapor cloud top winds</strong></li>
+<li>GEOS hourly IR and cloud top wind</li>
+<li><strong>Surface land observations</strong></li>
+<li>Surface ship and buoy observations</li>
+<li>Special Sensor Microwave Imager (SSMI) wind speeds</li>
+<li>Quick Scatterometer (QuikSCAT), the Advanced Scatterometer (ASCAT) and Oceansat-2 Scatterometer (OSCAT) wind speed and direction</li>
+<li>RapidScat observations</li>
+<li>SSM/I and Tropical Rainfall Measuring Mission (TRMM) Microwave Imager (TMI) precipitation estimates</li>
+<li>Velocity-Azimuth Display (VAD) Next Generation Weather Radar ((NEXRAD) winds</li>
+<li>Global Positioning System (GPS) precipitable water estimates Sea surface temperatures (SSTs)</li>
+<li>Doppler wind Lidar</li>
+<li>Aviation routine weather report (METAR) cloud coverage</li>
+<li>Flight level and Stepped Frequency Microwave Radiometer (SFMR) High Density Observation (HDOB) from reconnaissance aircraft</li>
+<li>Tall tower wind</li>
+</ul>
+</section>
+<section id="satellite-radiancebrightness-temperature-observations-instrumentsatellite-id" class="level3">
+<h3 class="anchored" data-anchor-id="satellite-radiancebrightness-temperature-observations-instrumentsatellite-id">Satellite radiance/brightness temperature observations (instrument/satellite ID):</h3>
+<ul>
+<li>SBUV: NOAA-17, NOAA-18, NOAA-19</li>
+<li><strong>High Resolution Infrared Radiation Sounder (HIRS): Meteorological Operational-A(MetOp-A), MetOp-B, NOAA-17, NOAA-19</strong></li>
+<li>GOES imager: GOES-11, GOES-12</li>
+<li><strong>Atmospheric IR Sounder (AIRS): aqua</strong></li>
+<li><strong>AMSU-A: MetOp-A, MetOp-B, NOAA-15, NOAA-18, NOAA-19, aqua</strong></li>
+<li><strong>AMSU-B: MetOp-B, NOAA-17</strong></li>
+<li><strong>Microwave Humidity Sounder (MHS): MetOp-A, MetOp-B, NOAA-18, NOAA-19</strong></li>
+<li>SSMI: DMSP F14, F15, F19</li>
+<li>SSMI/S: DMSP F16</li>
+<li>Advanced Microwave Scanning Radiometer for Earth Observing System (AMSR-E): aqua</li>
+<li>GOES Sounder (SNDR): GOES-11, GOES-12, GOES-13</li>
+<li><strong>Infrared Atmospheric Sounding Interferometer (IASI): MetOp-A, MetOp-B</strong></li>
+<li>Global Ozone Monitoring Experiment (GOME): MetOp-A, MetOp-B</li>
+<li>Ozone Monitoring Instrument (OMI): aura</li>
+<li>Spinning Enhanced Visible and Infrared Imager (SEVIRI): Meteosat-8, Meteosat-9, Meteosat-10</li>
+<li>Advanced Technology Microwave Sounder (ATMS): Suomi NPP</li>
+<li>Cross-track Infrared Sounder (CrIS): Suomi NPP</li>
+<li>GCOM-W1 AMSR2</li>
+<li>GPM GMI</li>
+<li>Megha-Tropiques SAPHIR</li>
+<li>Himawari AHI</li>
+<li><strong>GOES ABI</strong></li>
+</ul>
+</section>
+<section id="others" class="level3">
+<h3 class="anchored" data-anchor-id="others">Others:</h3>
+<ul>
+<li>GPS Radio occultation (RO) refractivity and bending angle profiles</li>
+<li>Solar Backscatter Ultraviolet (SBUV) ozone profiles, Microwave Limb Sounder (MLS) (including NRT) ozone, * and Ozone Monitoring Instrument (OMI) total ozone</li>
+<li>Doppler radar radial velocities radar reflectivity Mosaic</li>
+<li>Tail Doppler Radar (TDR) radial velocity and super-observation</li>
+<li>Tropical Cyclone Vitals Database (TCVital)</li>
+<li>Particulate matter (PM) of 10-um diameter, 2.5-um diameter or less</li>
+<li>MODIS AOD (when using GSI-chem package)</li>
+<li>Significant wave height observations from JASON-2, JASON-3, SARAL/ALTIKA and CRYOSAT-2</li>
+</ul>
+</section>
+</section>
+<section id="running-gsi" class="level2">
+<h2 class="anchored" data-anchor-id="running-gsi">Running GSI</h2>
+<p>Every assimilation cycle starts with the background, a forecast generated using a numerical model (WRF-ARW for this guide), that was initialized from previous analysis and observations (in bufr format) that enters the GSI system. GSI will also need “fixed” files with information about the observations. This files define which observations are going to be assimilated, they errors and quality control options.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/cycle_diagram.png" class="img-fluid figure-img" alt="Diagram that shows a cycle. First the background (forecasts generated using a numerical model, WRF-ARW, initialized from previous analysis) and Observations (from bufr files) enters the GSI system. Inside the system, the Observation Operator takes care of the quality control and bias correction and then calculates the innovation and generates the diag files. Then the ENKF part calculates the update appling the innovation to the background to generate the analysis. The analysis is used to create a new background to star the cycle again"></p>
+<figcaption class="figure-caption">Diagram of an assimilation cycle</figcaption>
+</figure>
+</div>
+<p>GSI can also be used with the following background files:</p>
+<ul>
+<li>WRF-NMM input fields in binary format</li>
+<li>WRF-NMM input fields in NetCDF format</li>
+<li>WRF-ARW input fields in binary format</li>
+<li><strong>WRF-ARW input fields in NetCDF format</strong></li>
+<li>GFS input fields in binary format or through NEMS I/O</li>
+<li>NEMS-NMMB input fields</li>
+<li>RTMA input files (2-dimensional binary format)</li>
+<li>WRF-Chem GOCART input fields with NetCDF format</li>
+<li>CMAQ binary file</li>
+</ul>
+<p>And the official tutorials are a good starting point to grasp the use of this options.</p>
+<p>GSI can also be run <em>without observations</em> to test the code, this is with a single synthetic observation defined in the SINGLEOB_TEST section in the namelist.</p>
+<p>The fixed files are located in the <code>fix/</code> folder and includes statistic files, configuration files, bias correction files, and CRTM coefficient files<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. The information of the configuration files is saved in the output files after running GSI.</p>
+<table class="table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 36%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>GSI Name</th>
+<th>Content</th>
+<th>File names</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>anavinfo</td>
+<td>Information file to set control and analysis variables</td>
+<td>anavinfo_arw_netcdf</td>
+</tr>
+<tr class="even">
+<td>berror_stats</td>
+<td>background error covariance (for variacional methods)</td>
+<td>nam_nmmstat_na.gcv, nam_glb_berror.f77.gcv,</td>
+</tr>
+<tr class="odd">
+<td>errtable</td>
+<td>Observation error table</td>
+<td>prepobs_errtable.global</td>
+</tr>
+<tr class="even">
+<td>convinfo</td>
+<td>Conventional observation information file</td>
+<td>global_convinfo.txt</td>
+</tr>
+<tr class="odd">
+<td>satinfo</td>
+<td>satellite channel information file</td>
+<td>global_satinfo.txt</td>
+</tr>
+<tr class="even">
+<td>pcpinfo</td>
+<td>precipitation rate observation information file</td>
+<td>global_pcpinfo.txt</td>
+</tr>
+<tr class="odd">
+<td>ozinfo</td>
+<td>ozone observation information file</td>
+<td>global_ozinfo.txt</td>
+</tr>
+<tr class="even">
+<td>satbias_angle</td>
+<td>satellite scan angle dependent bias correction file</td>
+<td>global_satangbias.txt</td>
+</tr>
+<tr class="odd">
+<td>satbias_in</td>
+<td>satellite mass bias correction coefficient file</td>
+<td>sample.satbias</td>
+</tr>
+<tr class="even">
+<td>satbias_in</td>
+<td>combined satellite angle dependent and mass bias correction coefficient file</td>
+<td>gdas1.t00z.abias.new</td>
+</tr>
+</tbody>
+</table>
 
 
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>This files need to be downloaded separately as they are to big to be part of the GSI repository. Also the coefficient files can be updated with better approximations over time.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
