@@ -2,7 +2,7 @@
 title: "Intro a GSI"
 ---
 
-### The GSI assimilation system
+## The GSI assimilation system
 
 The GSI (Gridpoint Statistical Interpolation) System, is a state-of-the-art data assimilation system initially developed by the Environmental Modeling Center at NCEP. It was designed as a traditional 3DVAR system applied in the gridpoint space of models to facilitate the implementation of inhomogeneous anisotropic covariances [@wu2002; @purser2003a; @purser2003]. It is designed to run on various computational platforms, create analyses for different numerical forecast models, and remain flexible enough to handle future scientific developments, such as the use of new observation types, improved data selection, and new state variables [@kleist2009].
 
@@ -14,8 +14,108 @@ To reduce the impact of spurious covariances on the increment applied to the ana
 
 GSI uses the Community Radiative Transfer Model [CRTM, @liu2008] as an operator for the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with satellite sensor observations. GSI also implements a bias correction algorithm for the satellite radiance observations. The preliminary field estimate with the CRMT is compared with the radiance observations to obtain the innovation. This innovation is then used to calculate a bias that is applied to an updated innovation. This process can be repeated several times until the innovation and the bias correction coefficients converge.
 
-Que observaciones asimila
+## Available observations for assimilation
 
-Ciclo de asimilacion para ENKF con diagrama
+Here is the list of observations that can be assimilated by GSI. In bold are the observations for with I have experience and/or the ones [I've adapted the code for it](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3).
 
-4D
+### Conventional observations (including satellite retrievals):
+
+-   **Radiosondes**
+-   Pilot ballon (PIBAL) winds
+-   Synthetic tropical cyclone winds
+-   Wind profilers: USA, Jan Meteorological Agency (JMA)
+-   **Conventional aircraft reports**
+-   Aircraft to Satellite Data Relay (ASDAR) aircraft reports
+-   Meteorological Data Collection and Reporting System (MDCRS) aircraft reports
+-   Dropsondes
+-   **Moderate Resolution Imaging Spectroradiometer (MODIS) IR and water vapor winds**
+-   **Geostationary Meteorological Satellite (GMS), JMA, and Meteosat cloud drift IR and visible winds**
+-   **European Organization for the Exploitation of Meteorological Satellites (EUMETSAT) and GOES water vapor cloud top winds**
+-   GEOS hourly IR and cloud top wind
+-   **Surface land observations**
+-   Surface ship and buoy observations
+-   Special Sensor Microwave Imager (SSMI) wind speeds
+-   Quick Scatterometer (QuikSCAT), the Advanced Scatterometer (ASCAT) and Oceansat-2 Scatterometer (OSCAT) wind speed and direction
+-   RapidScat observations
+-   SSM/I and Tropical Rainfall Measuring Mission (TRMM) Microwave Imager (TMI) precipitation estimates
+-   Velocity-Azimuth Display (VAD) Next Generation Weather Radar ((NEXRAD) winds
+-   Global Positioning System (GPS) precipitable water estimates Sea surface temperatures (SSTs)
+-   Doppler wind Lidar
+-   Aviation routine weather report (METAR) cloud coverage
+-   Flight level and Stepped Frequency Microwave Radiometer (SFMR) High Density Observation (HDOB) from reconnaissance aircraft
+-   Tall tower wind
+
+### Satellite radiance/brightness temperature observations (instrument/satellite ID):
+
+-   SBUV: NOAA-17, NOAA-18, NOAA-19
+-   **High Resolution Infrared Radiation Sounder (HIRS): Meteorological Operational-A(MetOp-A), MetOp-B, NOAA-17, NOAA-19**
+-   GOES imager: GOES-11, GOES-12
+-   **Atmospheric IR Sounder (AIRS): aqua**
+-   **AMSU-A: MetOp-A, MetOp-B, NOAA-15, NOAA-18, NOAA-19, aqua**
+-   **AMSU-B: MetOp-B, NOAA-17**
+-   **Microwave Humidity Sounder (MHS): MetOp-A, MetOp-B, NOAA-18, NOAA-19**
+-   SSMI: DMSP F14, F15, F19
+-   SSMI/S: DMSP F16
+-   Advanced Microwave Scanning Radiometer for Earth Observing System (AMSR-E): aqua
+-   GOES Sounder (SNDR): GOES-11, GOES-12, GOES-13
+-   **Infrared Atmospheric Sounding Interferometer (IASI): MetOp-A, MetOp-B**
+-   Global Ozone Monitoring Experiment (GOME): MetOp-A, MetOp-B
+-   Ozone Monitoring Instrument (OMI): aura
+-   Spinning Enhanced Visible and Infrared Imager (SEVIRI): Meteosat-8, Meteosat-9, Meteosat-10
+-   Advanced Technology Microwave Sounder (ATMS): Suomi NPP
+-   Cross-track Infrared Sounder (CrIS): Suomi NPP
+-   GCOM-W1 AMSR2
+-   GPM GMI
+-   Megha-Tropiques SAPHIR
+-   Himawari AHI
+-   **GOES ABI**
+
+### Others:
+
+-   GPS Radio occultation (RO) refractivity and bending angle profiles
+-   Solar Backscatter Ultraviolet (SBUV) ozone profiles, Microwave Limb Sounder (MLS) (including NRT) ozone, \* and Ozone Monitoring Instrument (OMI) total ozone
+-   Doppler radar radial velocities radar reflectivity Mosaic
+-   Tail Doppler Radar (TDR) radial velocity and super-observation
+-   Tropical Cyclone Vitals Database (TCVital)
+-   Particulate matter (PM) of 10-um diameter, 2.5-um diameter or less
+-   MODIS AOD (when using GSI-chem package)
+-   Significant wave height observations from JASON-2, JASON-3, SARAL/ALTIKA and CRYOSAT-2
+
+## Running GSI
+
+Every assimilation cycle starts with the background, a forecast generated using a numerical model (WRF-ARW for this guide), that was initialized from previous analysis and observations (in bufr format) that enters the GSI system. GSI will also need "fixed" files with information about the observations. This files define which observations are going to be assimilated, they errors and quality control options.
+
+![Diagram of an assimilation cycle](img/cycle_diagram.png){fig-alt="Diagram that shows a cycle. First the background (forecasts generated using a numerical model, WRF-ARW, initialized from previous analysis) and Observations (from bufr files) enters the GSI system. Inside the system, the Observation Operator takes care of the quality control and bias correction and then calculates the innovation and generates the diag files. Then the ENKF part calculates the update appling the innovation to the background to generate the analysis. The analysis is used to create a new background to star the cycle again"}
+
+GSI can also be used with the following background files:
+
+-   WRF-NMM input fields in binary format
+-   WRF-NMM input fields in NetCDF format
+-   WRF-ARW input fields in binary format
+-   **WRF-ARW input fields in NetCDF format**
+-   GFS input fields in binary format or through NEMS I/O
+-   NEMS-NMMB input fields
+-   RTMA input files (2-dimensional binary format)
+-   WRF-Chem GOCART input fields with NetCDF format
+-   CMAQ binary file
+
+And the official tutorials are a good starting point to grasp the use of this options.
+
+GSI can also be run *without observations* to test the code, this is with a single synthetic observation defined in the SINGLEOB_TEST section in the namelist.
+
+The fixed files are located in the `fix/` folder and includes statistic files, configuration files, bias correction files, and CRTM coefficient files[^1]. The information of the configuration files is saved in the output files after running GSI. 
+
+[^1]: This files need to be downloaded separately as they are to big to be part of the GSI repository. Also the coefficient files can be updated with better approximations over time.
+
+| GSI Name      | Content                                                                      | File names                                                 |
+|-----------------------|---------------------------|-----------------------|
+| anavinfo      | Information file to set control and analysis variables                       | anavinfo_arw_netcdf |
+| berror_stats  | background error covariance (for variacional methods) | nam_nmmstat_na.gcv, nam_glb_berror.f77.gcv,                        |
+| errtable      | Observation error table                                                      | prepobs_errtable.global                          |
+| convinfo      | Conventional observation information file                                    | global_convinfo.txt                       |
+| satinfo       | satellite channel information file                                           | global_satinfo.txt                                                 |
+| pcpinfo       | precipitation rate observation information file                              | global_pcpinfo.txt                                                 |
+| ozinfo        | ozone observation information file                                           | global_ozinfo.txt                                                  |
+| satbias_angle | satellite scan angle dependent bias correction file                          | global_satangbias.txt                                              |
+| satbias_in    | satellite mass bias correction coefficient file                              | sample.satbias                                                     |
+| satbias_in    | combined satellite angle dependent and mass bias correction coefficient file | gdas1.t00z.abias.new                                               |
