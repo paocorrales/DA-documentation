@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - Intro a GSI</title>
+<title>DA-documentation - The GSI assimilation system</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -165,8 +165,7 @@ div.csl-indent {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#the-gsi-assimilation-system" id="toc-the-gsi-assimilation-system" class="nav-link active" data-scroll-target="#the-gsi-assimilation-system">The GSI assimilation system</a></li>
-  <li><a href="#available-observations-for-assimilation" id="toc-available-observations-for-assimilation" class="nav-link" data-scroll-target="#available-observations-for-assimilation">Available observations for assimilation</a>
+  <li><a href="#available-observations-for-assimilation" id="toc-available-observations-for-assimilation" class="nav-link active" data-scroll-target="#available-observations-for-assimilation">Available observations for assimilation</a>
   <ul class="collapse">
   <li><a href="#conventional-observations-including-satellite-retrievals" id="toc-conventional-observations-including-satellite-retrievals" class="nav-link" data-scroll-target="#conventional-observations-including-satellite-retrievals">Conventional observations (including satellite retrievals):</a></li>
   <li><a href="#satellite-radiancebrightness-temperature-observations-instrumentsatellite-id" id="toc-satellite-radiancebrightness-temperature-observations-instrumentsatellite-id" class="nav-link" data-scroll-target="#satellite-radiancebrightness-temperature-observations-instrumentsatellite-id">Satellite radiance/brightness temperature observations (instrument/satellite ID):</a></li>
@@ -181,7 +180,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Intro a GSI</h1>
+<h1 class="title">The GSI assimilation system</h1>
 </div>
 
 
@@ -196,14 +195,11 @@ div.csl-indent {
 
 </header>
 
-<section id="the-gsi-assimilation-system" class="level2">
-<h2 class="anchored" data-anchor-id="the-gsi-assimilation-system">The GSI assimilation system</h2>
 <p>The GSI (Gridpoint Statistical Interpolation) System, is a state-of-the-art data assimilation system initially developed by the Environmental Modeling Center at NCEP. It was designed as a traditional 3DVAR system applied in the gridpoint space of models to facilitate the implementation of inhomogeneous anisotropic covariances <span class="citation" data-cites="wu2002 purser2003a purser2003">(<a href="#ref-wu2002" role="doc-biblioref">Wu, Purser, and Parrish 2002</a>; <a href="#ref-purser2003a" role="doc-biblioref">Purser et al. 2003b</a>, <a href="#ref-purser2003" role="doc-biblioref">2003a</a>)</span>. It is designed to run on various computational platforms, create analyses for different numerical forecast models, and remain flexible enough to handle future scientific developments, such as the use of new observation types, improved data selection, and new state variables <span class="citation" data-cites="kleist2009">(<a href="#ref-kleist2009" role="doc-biblioref">Kleist et al. 2009</a>)</span>.</p>
 <p>The- 3DVAR system replaced the NCEP regional grid-point operational analysis system by the North American Mesoscale Prediction System (NAM) in 2006 and the <em>Spectral Statistical Interpolation</em> (SSI) global analysis system used to generate <em>Global Forecast System</em> (GFS) initial conditions in 2007 <span class="citation" data-cites="kleist2009">(<a href="#ref-kleist2009" role="doc-biblioref">Kleist et al. 2009</a>)</span>. In recent years, GSI has evolved to include various data assimilation techniques for multiple operational applications, including 2DVAR [e.g., the <em>Real-Time Mesoscale Analysis</em> (RTMA) system; <span class="citation" data-cites="pondeca2011">Pondeca et al. (<a href="#ref-pondeca2011" role="doc-biblioref">2011</a>)</span>], the hybrid EnVar technique (e.g., data assimilation systems for the GFS, the <em>Rapid Refresh system</em> (RAP), the NAM, the HWRF, etc. ), and 4DVAR [e.g., the data assimilation system for NASA’s Goddard Earth Observing System, version 5 (GEOS-5); <span class="citation" data-cites="zhu2008">Zhu and Gelaro (<a href="#ref-zhu2008" role="doc-biblioref">2008</a>)</span>]. GSI also includes a hybrid 4D-EnVar approach that is currently used for GFS generation.</p>
 <p>In addition to the development of hybrid techniques, GSI allows the use of ensemble assimilation methods. To achieve this, it uses the same observation operator as the variational methods to compare the preliminary field or background with the observations. In this way the exhaustive quality controls developed for variational methods are also applied in ensemble assimilation methods. The EnKF code was developed by the Earth System Research Lab (ESRL) of the National Oceanic and Atmospheric Administration (NOAA) in collaboration with the scientific community. It contains two different algorithms for calculating the analysis increment, the serial Ensemble Square Root Filter <span class="citation" data-cites="whitaker2002">(EnSRF, <a href="#ref-whitaker2002" role="doc-biblioref">Whitaker and Hamill 2002</a>)</span> and the LETKF <span class="citation" data-cites="hunt2007">(<a href="#ref-hunt2007" role="doc-biblioref">Hunt, Kostelich, and Szunyogh 2007</a>)</span> contributed by Yoichiro Ota of the Japan Meteorological Agency (JMA).</p>
 <p>To reduce the impact of spurious covariances on the increment applied to the analysis, ensemble systems apply a localization to the covariance matrix of the errors of the observations <span class="math inline">\(R\)</span> in both the horizontal and vertical directions. GSI uses a polynomial of order 5 to reduce the impact of each observation gradually until a limiting distance is reached at which the impact is zero. The vertical location scale is defined in terms of the logarithm of the pressure and the horizontal scale is usually defined in kilometers. These parameters are important in obtaining a good analysis and depend on factors such as the size of the ensemble and the resolution of the model.</p>
 <p>GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">(CRTM, <a href="#ref-liu2008" role="doc-biblioref">Liu et al. 2008</a>)</span> as an operator for the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with satellite sensor observations. GSI also implements a bias correction algorithm for the satellite radiance observations. The preliminary field estimate with the CRMT is compared with the radiance observations to obtain the innovation. This innovation is then used to calculate a bias that is applied to an updated innovation. This process can be repeated several times until the innovation and the bias correction coefficients converge.</p>
-</section>
 <section id="available-observations-for-assimilation" class="level2">
 <h2 class="anchored" data-anchor-id="available-observations-for-assimilation">Available observations for assimilation</h2>
 <p>Here is the list of observations that can be assimilated by GSI. In bold are the observations for with I have experience and/or the ones <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">I’ve adapted the code for it</a>.</p>
