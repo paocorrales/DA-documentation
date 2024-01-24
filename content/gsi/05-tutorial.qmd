@@ -1,5 +1,5 @@
 ---
-title: "Tutoriales"
+title: "GSI tutorial"
 ---
 
 This tutorial is intended to showcase some of the capabilities of the GSI system. For a more complete set of examples, please visit the official website for GSI: [variational methods](https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi) and \[Kalman Filter\](<https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf>) methods.

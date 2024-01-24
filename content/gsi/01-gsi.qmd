@@ -1,9 +1,8 @@
 ---
-title: "Intro a GSI"
+title: "The GSI assimilation system"
 bibliography: references.bib
 ---
 
-## The GSI assimilation system
 
 The GSI (Gridpoint Statistical Interpolation) System, is a state-of-the-art data assimilation system initially developed by the Environmental Modeling Center at NCEP. It was designed as a traditional 3DVAR system applied in the gridpoint space of models to facilitate the implementation of inhomogeneous anisotropic covariances [@wu2002; @purser2003a; @purser2003]. It is designed to run on various computational platforms, create analyses for different numerical forecast models, and remain flexible enough to handle future scientific developments, such as the use of new observation types, improved data selection, and new state variables [@kleist2009].
 
