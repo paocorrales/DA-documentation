@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -205,7 +239,7 @@ window.Quarto = {
   <li><a href="#observation-errors-and-quality-control" id="toc-observation-errors-and-quality-control" class="nav-link" data-scroll-target="#observation-errors-and-quality-control">Observation errors and quality control</a>
   <ul class="collapse">
   <li><a href="#thinning" id="toc-thinning" class="nav-link" data-scroll-target="#thinning">Thinning</a></li>
-  <li><a href="#bias-correction" id="toc-bias-correction" class="nav-link" data-scroll-target="#bias-correction">Bias correction</a></li>
+  <li><a href="#sec-bias-correction" id="toc-sec-bias-correction" class="nav-link" data-scroll-target="#sec-bias-correction">Bias correction</a></li>
   <li><a href="#cloud-detection" id="toc-cloud-detection" class="nav-link" data-scroll-target="#cloud-detection">Cloud detection</a></li>
   <li><a href="#other-quality-controls" id="toc-other-quality-controls" class="nav-link" data-scroll-target="#other-quality-controls">Other quality controls</a></li>
   </ul></li>
@@ -247,7 +281,123 @@ window.Quarto = {
 </section>
 <section id="specific-configuration" class="level2">
 <h2 class="anchored" data-anchor-id="specific-configuration">Specific configuration</h2>
-<p>The vertical location of each radiance observation was estimated as the model level at which its weight function computed by CRTM was maximized. The weight function of each channel corresponds to the change in transmittance with height and its maximum describes the layer of the atmosphere from which the radiation captured by the channel was emitted. Multispectral sensors have good vertical coverage and are capable of capturing from the lower troposphere to the lower stratosphere. The channels chosen for assimilation and their associated errors were defined taking into account the configuration that GSI uses to generate GFS analyses and forecasts, the model cap chosen in this work (50 hPa) and the possible influence of the surface (Table @ref(tab:table-rad)).</p>
+<p>The assimilation of radiance observations is controlled with the <code>satinfo</code> file and the GSI namelist. Let’s check the <code>global_satinfo.txt</code> file we get as an example:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">!sensor/instr/sat</span>      chan iuse  error  error_cld  ermax   var_b    var_pg  icld_det icloud iaerosol</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               1   1    3.000   20.000    4.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               2   1    2.200   18.000    4.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               3   1    2.000   12.000    4.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               4   1    0.600    3.000    2.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               5   1    0.300    0.500    2.000   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               6  <span class="at">-1</span>    0.230    0.300    2.000   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               7   1    0.250    0.250    2.000   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               8   1    0.275    0.275    2.000   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>               9   1    0.340    0.340    2.000   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>              10   1    0.400    0.400    2.000   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>              11  <span class="at">-1</span>    0.600    0.600    2.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>              12   1    1.000    1.000    3.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>              13   1    1.500    1.500    4.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>              14  <span class="at">-1</span>    2.000    2.000    4.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>              15   1    3.500   18.000    4.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a> <span class="ex">hirs3_n17</span>               1  <span class="at">-1</span>    2.000    0.000    4.500   10.000    0.000     <span class="at">-1</span>     <span class="at">-1</span>     <span class="at">-1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The file includes a line for each sensor/satellite and each channel (chan). Usually you will change the <code>iuse</code> and <code>error</code> columns to configure the assimilation of each channel. The options for <code>iuse</code> are:</p>
+<ul>
+<li>-2 do not use</li>
+<li>-1 monitor if diagnostics produced</li>
+<li>0 monitor and use in QC only</li>
+<li>1 use data with complete quality control</li>
+<li>2 use data with no airmass bias correction</li>
+<li>3 use data with no angle dependent bias correction</li>
+<li>4 use data with no bias correction</li>
+</ul>
+<p>Defining the observation error is one of the difficult part of the assimilation process, so I usually keep the GFS values to be on the safe side.</p>
+<p>To successfully assimilate radiances using the EnKF method it is critical to save in the diag files the vertical location of each radiance observation that is estimated as the model level at which its weight function<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> computed by CRTM maximize. It is also important to save the predictors calculated during the <a href="#sec-bias-correction">bias correction step</a>.</p>
+<p>Here is an incomplete list of parameters in the GSI and ENKF namelists.</p>
+<p><strong>GSI namelist</strong></p>
+<table class="table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 61%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Needed value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>passive_bc</td>
+<td>option to turn on bias correction for passive (monitored) channels</td>
+<td>.true.</td>
+</tr>
+<tr class="even">
+<td>use_edges</td>
+<td>option to exclude radiance data on scan edges</td>
+<td>.false.</td>
+</tr>
+<tr class="odd">
+<td>lwrite_predterms</td>
+<td>option to write out actual predictor terms instead of predicted bias to the radiance diagnostic files</td>
+<td>.true.</td>
+</tr>
+<tr class="even">
+<td>lwrite_peakwt</td>
+<td>option to write out the approximate pressure of the peak of the weighting function for satellite data to the radiance diagnostic</td>
+<td>.true.</td>
+</tr>
+<tr class="odd">
+<td>emiss_bc</td>
+<td>option to turn on emissivity bias predictor</td>
+<td>.true.</td>
+</tr>
+</tbody>
+</table>
+<p>This namelist will also includes a list with the type of observations and the name of the bufr file for each one (<code>dfile</code>).</p>
+<p><strong>ENKF namelist</strong></p>
+<table class="table">
+<caption>This namelist will also includes a list with the type of observations and the name of each one inside GSI. For example <code>amsua_n15</code> represent the observations of the AMSU-A sensor on board NOAA-15.</caption>
+<colgroup>
+<col style="width: 16%">
+<col style="width: 66%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Needed value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>adp_anglebc</td>
+<td>turn off or on the variational radiance angle bias correction</td>
+<td>.true.</td>
+</tr>
+<tr class="even">
+<td>angord</td>
+<td>order of polynomial for angle bias correction</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>use_edges</td>
+<td>logical to use data on scan edges (.true.=to use)</td>
+<td>.false.</td>
+</tr>
+<tr class="even">
+<td>emiss_bc</td>
+<td>If true, turn on emissivity bias correction</td>
+<td>.true.</td>
+</tr>
+<tr class="odd">
+<td>upd_pred</td>
+<td>bias update indicator for radiance bias correction; 1.0=bias correction coefficients evolve</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="observation-errors-and-quality-control" class="level2">
 <h2 class="anchored" data-anchor-id="observation-errors-and-quality-control">Observation errors and quality control</h2>
@@ -255,14 +405,28 @@ window.Quarto = {
 <section id="thinning" class="level3">
 <h3 class="anchored" data-anchor-id="thinning">Thinning</h3>
 <p>During the thinning process the observations to be assimilated are chosen based on their distance to the model grid points, the quality of the observation (based on available data quality information) and the number of available channels (for the same pixel and sensor). The thinning algorithm determines the quality of each observation based on the available information about the channels and their known errors, the type of surface below each pixel (preferring observations over the sea to those over land or snow) and predictors that give information about the quality of the observations <span class="citation" data-cites="hu2018">(<a href="#ref-hu2018" role="doc-biblioref">M. Hu et al. 2018</a>)</span>. By applying the thinning we avoid incorporating information from smaller scale processes than the model can not represent and to reduce the error correlation of the observations from the same sensor.</p>
+<p>The thinning resolution is configured in the GSI namelist:</p>
+<p>In this case we have 3 possible resolutions in kilometers: <code>dmesh(1)=120.0, dmesh(2)=60.0, dmesh(3)=10.0</code>. We define which resolution to use for each sensor in the <code>dthin</code> column. Here <code>amsua_n15</code> will use a thinning of 60 km and <code>abi_g16</code> a thinning of 10 km.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;</span><span class="ex">OBS_INPUT</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>   <span class="ex">dmesh</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span><span class="ex">=120.0,</span> dmesh<span class="er">(</span><span class="ex">2</span><span class="kw">)</span><span class="ex">=60.0,</span> dmesh<span class="er">(</span><span class="ex">3</span><span class="kw">)</span><span class="ex">=10.0,</span> time_window_max=0.5,ext_sonde=.true.,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> <span class="ex">/</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">OBS_INPUT::</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ot">! </span> <span class="ex">dfile</span>          dtype       dplat     dsis                 dval    dthin dsfcalc</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>   <span class="ex">amsuabufr</span>      amsua       n15       amsua_n15           10.0     2     0</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>   <span class="ex">amsuabufr</span>      amsua       n18       amsua_n18           10.0     2     0</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>   <span class="ex">amsuabufr</span>      amsua       n19       amsua_n19           10.0     2     0</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>   <span class="ex">amsuabufr</span>      amsua       metop-a   amsua_metop-a       10.0     2     0</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>   <span class="ex">amsuabufr</span>      amsua       metop-b   amsua_metop-b       10.0     2     0</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>   <span class="ex">airsbufr</span>       amsua       aqua      amsua_aqua           5.0     2     0</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>   <span class="ex">abibufr</span>        abi         g16       abi_g16              1.0     3     0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="bias-correction" class="level3">
-<h3 class="anchored" data-anchor-id="bias-correction">Bias correction</h3>
+<section id="sec-bias-correction" class="level3">
+<h3 class="anchored" data-anchor-id="sec-bias-correction">Bias correction</h3>
 <p>After the thinning, a bias correction is applied. The bias correction methodology implemented in GSI depends on thermodynamic characteristics of the air and on the scan angle <span class="citation" data-cites="zhu2014">(<a href="#ref-zhu2014" role="doc-biblioref">Zhu et al. 2014</a>)</span>. It is computed as a linear polynomial of N predictors <span class="math inline">\(p_i(x)\)</span>, with associated coefficients <span class="math inline">\(beta_i\)</span>. Therefore, the bias-corrected brightness temperature (<span class="math inline">\(BT_{cb}\)</span>) can be obtained as:</p>
 <p><span class="math display">\[\mathrm{\mathit{BT_{cb}} =\mathit{ BT} + \sum_{i = 0}^{N} \beta_i p_i (x)}\]</span></p>
-<p>The polynomial has a constant bias correction term (<span class="math inline">\(p_0 = 1\)</span>) while the remaining terms and their predictors are the cloud liquid water (CLW) content, the rate of change of temperature with pressure, the square of the rate of change of temperature with pressure, and the sensitivity to the surface emissivity to account for the difference between land and sea. The scan angle-dependent bias is modeled as a polynomial of 4<span class="math inline">\(^\circ\)</span> order <span class="citation" data-cites="zhu2014">(<a href="#ref-zhu2014" role="doc-biblioref">Zhu et al. 2014</a>)</span>.</p>
-<p>In the GSI system, the coefficients <span class="math inline">\(beta_i\)</span> are trained using a variational estimation method that generates the <span class="math inline">\(beta_i\)</span> that provides the best fit between the simulation and the observations. The EnKF step also calculate the coefficients for the assimilation.</p>
-<p>It is important to evaluate the training of the coefficients and the performance of the bias correction. One way to train the coefficients according to <span class="citation" data-cites="zhu2024">(<a href="#ref-zhu2024" role="doc-biblioref"><strong>zhu2024?</strong></a>)</span> is to run the assimilation cycles for a long period of time, updating the coefficients at each cycle. While is possible to start the training with coefficients equal to zero, using the coefficients the GFS generates can help to speed up the process.</p>
+<p>The polynomial has a constant bias correction term (<span class="math inline">\(p_0 = 1\)</span>) while the remaining terms and their predictors are the cloud liquid water (CLW) content, the temperature laps rate, the square of the temperature laps rate, and the sensitivity to the surface emissivity to account for the difference between land and sea. The scan angle-dependent bias is modeled as a polynomial of 4<span class="math inline">\(^\circ\)</span> order <span class="citation" data-cites="zhu2014">(<a href="#ref-zhu2014" role="doc-biblioref">Zhu et al. 2014</a>)</span>.</p>
+<p>In the GSI system, the coefficients <span class="math inline">\(\beta_i\)</span> are trained using a variational estimation method that generates the <span class="math inline">\(\beta_i\)</span> that provides the best fit between the simulation and the observations. The EnKF step also calculate the coefficients for the assimilation.</p>
+<p>It is important to evaluate the training of the coefficients and the performance of the bias correction. One way to train the coefficients according to <span class="citation" data-cites="zhu2014">Zhu et al. (<a href="#ref-zhu2014" role="doc-biblioref">2014</a>)</span> is to run the assimilation cycles for a long period of time, updating the coefficients at each cycle. While is possible to start the training with coefficients equal to zero, using the coefficients the GFS generates can help to speed up the process.</p>
 <p>To check if the coefficients are correctly trained we can analysed the evolution of the different coefficients for each sensor and channel with time. As an example, here we show the coefficients for AMSU-A on board NOAA-15. Following <span class="citation" data-cites="zhu2014">Zhu et al. (<a href="#ref-zhu2014" role="doc-biblioref">2014</a>)</span>, we expected the coefficients to reach a stable range of values after a certain period of time, this is evident for channel 4, 5, 6 and 8 but we see a continuous variation in channels 7 and 9.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -278,6 +442,38 @@ window.Quarto = {
 </figure>
 </div>
 <p>The training of the coefficients requires a lot of computational resources and can be challenging for observations from polar satellites used in regional applications. The reason for this is that the observations are only available 1 or 2 times a day, making the training a slow process. It is important to check that GSI is not penalizing the coefficients when there are no observations available.</p>
+<p>The coefficients are saved in the <code>satbias</code> file, a plain text file that looks like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1</span> amsua_n15                1   0.423099E+00   0.481606E+06   999</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>        <span class="ex">2.680195</span>    0.000000    0.001042    0.004029    0.228152    0.000000    0.000000   <span class="at">-0.009346</span>    3.972107    2.986645</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>       <span class="ex">-4.770297</span>   <span class="at">-1.960179</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2</span> amsua_n15                2   0.235695E+00   0.519067E+06   999</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="ex">1.704236</span>    0.000000    0.010259   14.889464   <span class="at">-3.720292</span>    0.000000    0.000000   <span class="at">-0.011583</span>    3.896762    9.125687</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>       <span class="ex">-4.712555</span>   <span class="at">-1.727947</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">3</span> amsua_n15                3   0.150663E+01   0.593685E+06   999</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="ex">1.771621</span>    0.000000    0.009938    0.507936   <span class="at">-0.328143</span>    0.000000    0.000000   <span class="at">-0.013321</span>   <span class="at">-2.458213</span>   <span class="at">-0.946619</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>       <span class="ex">-1.233838</span>    0.234034</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">4</span> amsua_n15                4   0.342465E+01   0.104715E+07   999</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>       <span class="ex">-0.123787</span>    0.000000    0.013865    0.050019   <span class="at">-0.037143</span>    0.000000    0.000000    0.007463   <span class="at">-0.460992</span>   <span class="at">-0.542148</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>       <span class="ex">-0.876047</span>   <span class="at">-0.110968</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">5</span> amsua_n15                5   0.445149E+01   0.112750E+07   999</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="ex">0.332174</span>    0.000000    0.007298    0.010457   <span class="at">-0.071543</span>    0.000000    0.000000   <span class="at">-0.009200</span>    0.827698   <span class="at">-0.965067</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>       <span class="ex">-1.350357</span>    0.100073</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>So, for each sensor and satellite and each channel there are 12 coefficients that are updated in each assimilation cycle. I recommend to save these files to analyses the BC process. Radiance bias correction terms are as follows:</p>
+<ol type="1">
+<li>global offset</li>
+<li>zenith angle predictor, is not used and set to zero now</li>
+<li>cloud liquid water predictor for clear-sky microwave radiance assimilation</li>
+<li>square of temperature laps rate predictor</li>
+<li>temperature laps rate predictor</li>
+<li>cosinusoidal predictor for SSMI/S ascending/descending bias</li>
+<li>sinusoidal predictor for SSMI/S</li>
+<li>emissivity sensitivity predictor for land/sea differences</li>
+<li>fourth order polynomial of angle bias correction</li>
+<li>third order polynomial of angle bias correction</li>
+<li>second order polynomial of angle bias correction</li>
+<li>first order polynomial of angle bias correction</li>
+</ol>
+<p>On the other hand the predictors are saved in the diag files (see the <a href="../../content/gsi/04-diagfiles.html">Undestanding diag files</a> section).</p>
 </section>
 <section id="cloud-detection" class="level3">
 <h3 class="anchored" data-anchor-id="cloud-detection">Cloud detection</h3>
@@ -285,12 +481,13 @@ window.Quarto = {
 </section>
 <section id="other-quality-controls" class="level3">
 <h3 class="anchored" data-anchor-id="other-quality-controls">Other quality controls</h3>
-<p>The GSI quality control filters out those observations from channels close to the visible range over water surfaces with a zenith angle greater than 60<span class="math inline">\(^{{circ}\)</span> to reject those observations that could be contaminated by reflection. For infrared and microwave observations it also performs an emissivity check to detect observations contaminated by surface effects. Finally, a <em>gross check</em> is applied, i.e.&nbsp;the difference between the observation and the observation simulated by the model is compared with a predefined threshold depending on the observation error to reject erroneous observations.</p>
+<p>The GSI quality control filters out those observations from channels close to the visible range over water surfaces with a zenith angle greater than 60<span class="math inline">\(^{\circ}\)</span> to reject those observations that could be contaminated by reflection. For infrared and microwave observations it also performs an emissivity check to detect observations contaminated by surface effects. Finally, a <em>gross check</em> is applied, i.e.&nbsp;the difference between the observation and the observation simulated by the model is compared with a predefined threshold depending on the observation error to reject erroneous observations.</p>
 
 
 
 </section>
 </section>
+
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-barton2021" class="csl-entry" role="listitem">
@@ -335,7 +532,12 @@ Zhu, Yanqiu, John Derber, Andrew Collard, Dick Dee, Russ Treadon, George Gayno, 
 <div id="ref-zhu2016" class="csl-entry" role="listitem">
 Zhu, Yanqiu, Emily Liu, Rahul Mahajan, Catherine Thomas, David Groff, Paul Van Delst, Andrew Collard, Daryl Kleist, Russ Treadon, and John C. Derber. 2016. <span>“All-<span>Sky Microwave Radiance Assimilation</span> in <span>NCEP</span>’s <span>GSI Analysis System</span>.”</span> <em>Monthly Weather Review</em> 144 (12): 4709–35. <a href="https://doi.org/10.1175/MWR-D-15-0445.1">https://doi.org/10.1175/MWR-D-15-0445.1</a>.
 </div>
-</div></section></div></main> <!-- /main -->
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The weight function of each channel corresponds to the change in transmittance with height and its maximum describes the layer of the atmosphere from which the radiation captured by the channel was emitted. Multispectral sensors have good vertical coverage and are capable of capturing from the lower troposphere to the lower stratosphere.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
