@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - Intro a GSI</title>
+<title>DA-documentation - Assimilating Radiance Observations</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -45,7 +65,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -54,12 +80,42 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -68,9 +124,9 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">DA-documentation</span>
     </a>
@@ -82,56 +138,56 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html" rel="" target="">
- <span class="menu-text">Home</span></a>
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html" rel="" target="">
- <span class="menu-text">About this page</span></a>
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About this page</span></a>
   </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-gsi" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-gsi" role="button" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">GSI</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-gsi">    
         <li>
-    <a class="dropdown-item" href="../../content/gsi/01-gsi.html" rel="" target="">
+    <a class="dropdown-item" href="../../content/gsi/01-gsi.html">
  <span class="dropdown-text">How GSI works</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../content/gsi/02-convencionals.html" rel="" target="">
+    <a class="dropdown-item" href="../../content/gsi/02-convencionals.html">
  <span class="dropdown-text">Assimilation of conventional obs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../content/gsi/03-radiances.html" rel="" target="">
+    <a class="dropdown-item" href="../../content/gsi/03-radiances.html">
  <span class="dropdown-text">Assimilation of radiances</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../content/gsi/04-diagfiles.html" rel="" target="">
+    <a class="dropdown-item" href="../../content/gsi/04-diagfiles.html">
  <span class="dropdown-text">Undestanding diag files</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../content/gsi/05-tutorial.html" rel="" target="">
+    <a class="dropdown-item" href="../../content/gsi/05-tutorial.html">
  <span class="dropdown-text">Tutorial</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-observations" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-observations" role="button" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Observations</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-observations">    
         <li>
-    <a class="dropdown-item" href="../../content/observations/01-bufr.html" rel="" target="">
+    <a class="dropdown-item" href="../../content/observations/01-bufr.html">
  <span class="dropdown-text">Working with bufr files</span></a>
   </li>  
     </ul>
   </li>
 </ul>
-            <div class="quarto-navbar-tools ms-auto">
-    <a href="https://github.com/paocorrales/DA-documentation" rel="" title="GitHub" class="quarto-navigation-tool px-1" aria-label="GitHub"><i class="bi bi-github"></i></a>
-</div>
           </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+    <a href="https://github.com/paocorrales/DA-documentation" title="GitHub" class="quarto-navigation-tool px-1" aria-label="GitHub"><i class="bi bi-github"></i></a>
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -140,14 +196,28 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-crtm-radiative-transfer-model" id="toc-the-crtm-radiative-transfer-model" class="nav-link active" data-scroll-target="#the-crtm-radiative-transfer-model">The CRTM radiative transfer model</a></li>
+  <li><a href="#specific-configuration" id="toc-specific-configuration" class="nav-link" data-scroll-target="#specific-configuration">Specific configuration</a></li>
+  <li><a href="#observation-errors-and-quality-control" id="toc-observation-errors-and-quality-control" class="nav-link" data-scroll-target="#observation-errors-and-quality-control">Observation errors and quality control</a>
+  <ul class="collapse">
+  <li><a href="#thinning" id="toc-thinning" class="nav-link" data-scroll-target="#thinning">Thinning</a></li>
+  <li><a href="#bias-correction" id="toc-bias-correction" class="nav-link" data-scroll-target="#bias-correction">Bias correction</a></li>
+  <li><a href="#cloud-detection" id="toc-cloud-detection" class="nav-link" data-scroll-target="#cloud-detection">Cloud detection</a></li>
+  <li><a href="#other-quality-controls" id="toc-other-quality-controls" class="nav-link" data-scroll-target="#other-quality-controls">Other quality controls</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/gsi/03-radiances.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Intro a GSI</h1>
+<h1 class="title">Assimilating Radiance Observations</h1>
 </div>
 
 
@@ -160,15 +230,112 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
 
-<p>crtm</p>
-<p>satinfo</p>
-<p>correccion de bias</p>
+
+<p>Assimilating radiance observations is more complicated than assimilating conventional observations as radiances are not state variables. We need a observation operator to transform the model variables to radiances. GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">(CRTM, <a href="#ref-liu2008" role="doc-biblioref">Liu et al. 2008</a>)</span> as an operator of the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with the observations from satellite sensors.</p>
+<section id="the-crtm-radiative-transfer-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-crtm-radiative-transfer-model">The CRTM radiative transfer model</h2>
+<p>The CRTM is a fast radiative transfer model that was jointly developed by the <em>NOAA Center for Satellite Applications and Research</em> and the <em>Joint Center for Satellite Data Assimilation</em> (JCSDA). It is a model widely used by the remote sensing community as it is open source and publicly available. In addition, it is used for satellite instrument calibration <span class="citation" data-cites="weng2013 iacovazzi2020 crews2021">(<a href="#ref-weng2013" role="doc-biblioref">Weng et al. 2013</a>; <a href="#ref-iacovazzi2020" role="doc-biblioref">Iacovazzi et al. 2020</a>; <a href="#ref-crews2021" role="doc-biblioref">Crews et al. 2021</a>)</span>, and in turn to generate retrievals from satellite observations <span class="citation" data-cites="boukabara2011 hu2019 hu2021">(<a href="#ref-boukabara2011" role="doc-biblioref">Boukabara et al. 2011</a>; <a href="#ref-hu2019" role="doc-biblioref">H. Hu et al. 2019</a>; <a href="#ref-hu2021" role="doc-biblioref">H. Hu and Han 2021</a>)</span>. It is also used as an operator of observations as part of the assimilation of satellite radiances <span class="citation" data-cites="tong2020 barton2021">(<a href="#ref-tong2020" role="doc-biblioref">Tong et al. 2020</a>; <a href="#ref-barton2021" role="doc-biblioref">Barton et al. 2021</a>)</span>.</p>
+<p>The CRTM is capable of simulating microwave, infrared and visible radiances, under clear and cloudy sky conditions, using atmospheric profiles of pressure, temperature, humidity and other species such as ozone. Recently <span class="citation" data-cites="cutraro2021">Cutraro, Galligani, and Skabar (<a href="#ref-cutraro2021" role="doc-biblioref">2021</a>)</span> evaluated their takeoff in the region with good results in simulating GOES-16 observations.</p>
+<p>CRTM is a sensor-oriented radiative transfer model, i.e.&nbsp;it contains pre-calculated parameterizations and coefficient tables specifically for operational sensors. It includes modules that calculate thermal radiation from gaseous absorption, absorption and scattering by aerosols and clouds, and emission and reflection of radiation by the Earth’s surface. The inputs of CRTM include atmospheric state variables, e.g., temperature, water vapor, pressure, and ozone concentration in user-defined layers, and surface state variables and parameters, including emissivity, surface temperature, and wind.</p>
+<p>CRTM is capable to simulate satellite observations from the state of the atmosphere. This is necessary during the assimilation process but is also used to verify the accuracy and errors of radiance observations.</p>
+<p>The necessary calculations to simulate observations has a very high computational cost as it requires transposing a high dimensional matrix and the minimization of a cost function. This <span class="math inline">\(K^{*}\)</span> matrix is constructed from the partial derivatives of the radiances with respect to geophysical parameters. CRTM performs these calculations very quickly so it can be used in operational contexts.</p>
+<p>To obtain fast results, CRTM applies certain simplifications and approximations when solving the radiative transfer equation. First, it assumes that the Earth’s atmosphere consists of plane-parallel and homogeneous layers in thermodynamic equilibrium and where three-dimensional and polarization effects can be ignored.</p>
+<p>In the context of clear skies, it is also assumed that there is no scattering and only the absorption of gases in the atmosphere is considered. In cloudy skies, the scattering generated by clouds is included. In the latter case, the radiative transfer equation cannot be solved analytically and numerical solutions are used.</p>
+</section>
+<section id="specific-configuration" class="level2">
+<h2 class="anchored" data-anchor-id="specific-configuration">Specific configuration</h2>
+<p>The vertical location of each radiance observation was estimated as the model level at which its weight function computed by CRTM was maximized. The weight function of each channel corresponds to the change in transmittance with height and its maximum describes the layer of the atmosphere from which the radiation captured by the channel was emitted. Multispectral sensors have good vertical coverage and are capable of capturing from the lower troposphere to the lower stratosphere. The channels chosen for assimilation and their associated errors were defined taking into account the configuration that GSI uses to generate GFS analyses and forecasts, the model cap chosen in this work (50 hPa) and the possible influence of the surface (Table @ref(tab:table-rad)).</p>
+</section>
+<section id="observation-errors-and-quality-control" class="level2">
+<h2 class="anchored" data-anchor-id="observation-errors-and-quality-control">Observation errors and quality control</h2>
+<p>The preprocessing and quality control of the data is an essential step in the assimilation of radiances and depends on each sensor and channel. This process includes spatial <em>thinning</em>, bias correction, and in clear-sky applications, the detection of cloudy sky observations.</p>
+<section id="thinning" class="level3">
+<h3 class="anchored" data-anchor-id="thinning">Thinning</h3>
+<p>During the thinning process the observations to be assimilated are chosen based on their distance to the model grid points, the quality of the observation (based on available data quality information) and the number of available channels (for the same pixel and sensor). The thinning algorithm determines the quality of each observation based on the available information about the channels and their known errors, the type of surface below each pixel (preferring observations over the sea to those over land or snow) and predictors that give information about the quality of the observations <span class="citation" data-cites="hu2018">(<a href="#ref-hu2018" role="doc-biblioref">M. Hu et al. 2018</a>)</span>. By applying the thinning we avoid incorporating information from smaller scale processes than the model can not represent and to reduce the error correlation of the observations from the same sensor.</p>
+</section>
+<section id="bias-correction" class="level3">
+<h3 class="anchored" data-anchor-id="bias-correction">Bias correction</h3>
+<p>After the thinning, a bias correction is applied. The bias correction methodology implemented in GSI depends on thermodynamic characteristics of the air and on the scan angle <span class="citation" data-cites="zhu2014">(<a href="#ref-zhu2014" role="doc-biblioref">Zhu et al. 2014</a>)</span>. It is computed as a linear polynomial of N predictors <span class="math inline">\(p_i(x)\)</span>, with associated coefficients <span class="math inline">\(beta_i\)</span>. Therefore, the bias-corrected brightness temperature (<span class="math inline">\(BT_{cb}\)</span>) can be obtained as:</p>
+<p><span class="math display">\[\mathrm{\mathit{BT_{cb}} =\mathit{ BT} + \sum_{i = 0}^{N} \beta_i p_i (x)}\]</span></p>
+<p>The polynomial has a constant bias correction term (<span class="math inline">\(p_0 = 1\)</span>) while the remaining terms and their predictors are the cloud liquid water (CLW) content, the rate of change of temperature with pressure, the square of the rate of change of temperature with pressure, and the sensitivity to the surface emissivity to account for the difference between land and sea. The scan angle-dependent bias is modeled as a polynomial of 4<span class="math inline">\(^\circ\)</span> order <span class="citation" data-cites="zhu2014">(<a href="#ref-zhu2014" role="doc-biblioref">Zhu et al. 2014</a>)</span>.</p>
+<p>In the GSI system, the coefficients <span class="math inline">\(beta_i\)</span> are trained using a variational estimation method that generates the <span class="math inline">\(beta_i\)</span> that provides the best fit between the simulation and the observations. The EnKF step also calculate the coefficients for the assimilation.</p>
+<p>It is important to evaluate the training of the coefficients and the performance of the bias correction. One way to train the coefficients according to <span class="citation" data-cites="zhu2024">(<a href="#ref-zhu2024" role="doc-biblioref"><strong>zhu2024?</strong></a>)</span> is to run the assimilation cycles for a long period of time, updating the coefficients at each cycle. While is possible to start the training with coefficients equal to zero, using the coefficients the GFS generates can help to speed up the process.</p>
+<p>To check if the coefficients are correctly trained we can analysed the evolution of the different coefficients for each sensor and channel with time. As an example, here we show the coefficients for AMSU-A on board NOAA-15. Following <span class="citation" data-cites="zhu2014">Zhu et al. (<a href="#ref-zhu2014" role="doc-biblioref">2014</a>)</span>, we expected the coefficients to reach a stable range of values after a certain period of time, this is evident for channel 4, 5, 6 and 8 but we see a continuous variation in channels 7 and 9.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/bc_training.png" class="img-fluid figure-img" alt="Line chart showing the evolution of the coefficients over time for channels 4 to 9 of AMSU-A. For some of the channels the coefficient values are more or lest constant."></p>
+<figcaption>Bias correction coefficients as function of time (days) for the training and experiment period. Channels 4 to 9 of AMSU-A on NOAA-15.</figcaption>
+</figure>
+</div>
+<p>Using the resulting coefficients from the training period it is also important to check the impact of the bias correction. An easy way to see this is to calculate the mean difference between the observations and the first-guess (OmB) before and after the correction of the bias for each sensor. In the next figure there is an evident improvement as the mean OmB after the BC is now centered around zero and its standard deviation is smaller. This indicate that the BC correction worked as expected.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/omb_bc.png" class="img-fluid figure-img"></p>
+<figcaption>Mean difference between observations and first-guess after and before the correction of the bias calculate over a 3 days period for each sensor.</figcaption>
+</figure>
+</div>
+<p>The training of the coefficients requires a lot of computational resources and can be challenging for observations from polar satellites used in regional applications. The reason for this is that the observations are only available 1 or 2 times a day, making the training a slow process. It is important to check that GSI is not penalizing the coefficients when there are no observations available.</p>
+</section>
+<section id="cloud-detection" class="level3">
+<h3 class="anchored" data-anchor-id="cloud-detection">Cloud detection</h3>
+<p>The cloud pixel detection methodology depends on the wavelength of the observations. For microwave radiances, potentially cloud-contaminated observations are detected using scattering and Liquid Water Path (LWP) indices calculated from differences between different channels of each sensor <span class="citation" data-cites="weston2019 zhu2016">(<a href="#ref-weston2019" role="doc-biblioref">Weston et al. 2019</a>; <a href="#ref-zhu2016" role="doc-biblioref">Zhu et al. 2016</a>)</span>. For infrared channels, cloud contaminated observations are detected using the transmittance profile calculated by the CRTM model. In addition, GSI checks the difference between the observations and the simulated brightness temperature to detect cloudy pixels. A particular case is the ABI observations since the cloud mask (level 2 product) available at the same resolution as the observations is used. This cloud mask is generated by combining information from 8 channels of the ABI sensor from the spatial and temporal point of view.</p>
+</section>
+<section id="other-quality-controls" class="level3">
+<h3 class="anchored" data-anchor-id="other-quality-controls">Other quality controls</h3>
+<p>The GSI quality control filters out those observations from channels close to the visible range over water surfaces with a zenith angle greater than 60<span class="math inline">\(^{{circ}\)</span> to reject those observations that could be contaminated by reflection. For infrared and microwave observations it also performs an emissivity check to detect observations contaminated by surface effects. Finally, a <em>gross check</em> is applied, i.e.&nbsp;the difference between the observation and the observation simulated by the model is compared with a predefined threshold depending on the observation error to reject erroneous observations.</p>
 
 
 
-</main> <!-- /main -->
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-barton2021" class="csl-entry" role="listitem">
+Barton, Neil, E. Joseph Metzger, Carolyn A. Reynolds, Benjamin Ruston, Clark Rowley, Ole Martin Smedstad, James A. Ridout, et al. 2021. <span>“The <span>Navy</span>’s <span>Earth System Prediction Capability</span>: <span>A New Global Coupled Atmosphere-Ocean-Sea Ice Prediction System Designed</span> for <span>Daily</span> to <span>Subseasonal Forecasting</span>.”</span> <em>Earth and Space Science</em> 8 (4): e2020EA001199. <a href="https://doi.org/10.1029/2020EA001199">https://doi.org/10.1029/2020EA001199</a>.
+</div>
+<div id="ref-boukabara2011" class="csl-entry" role="listitem">
+Boukabara, Sid-Ahmed, Kevin Garrett, Wanchun Chen, Flavio Iturbide-Sanchez, Christopher Grassotti, Cezar Kongoli, Ruiyue Chen, et al. 2011. <span>“<span>MiRS</span>: <span>An All-Weather 1DVAR Satellite Data Assimilation</span> and <span>Retrieval System</span>.”</span> <em>IEEE Transactions on Geoscience and Remote Sensing</em> 49 (9): 3249–72. <a href="https://doi.org/10.1109/TGRS.2011.2158438">https://doi.org/10.1109/TGRS.2011.2158438</a>.
+</div>
+<div id="ref-crews2021" class="csl-entry" role="listitem">
+Crews, Angela, William J. Blackwell, R. Vincent Leslie, Michael Grant, Idahosa A. Osaretin, Michael DiLiberto, Adam Milstein, Stephen Leroy, Amelia Gagnon, and Kerri Cahoy. 2021. <span>“Initial <span>Radiance Validation</span> of the <span>Microsized Microwave Atmospheric Satellite-2A</span>.”</span> <em>IEEE Transactions on Geoscience and Remote Sensing</em> 59 (4): 2703–14. <a href="https://doi.org/10.1109/TGRS.2020.3011200">https://doi.org/10.1109/TGRS.2020.3011200</a>.
+</div>
+<div id="ref-cutraro2021" class="csl-entry" role="listitem">
+Cutraro, Federico, Victoria Sol Galligani, and Yanina García Skabar. 2021. <span>“Evaluation of Synthetic Satellite Images Computed from Radiative Transfer Models over a Region of <span>South America</span> Using <span>WRF</span> and <span>GOES-13</span>/16 Observations.”</span> <em>Quarterly Journal of the Royal Meteorological Society</em> 147 (738): 2988–3003. <a href="https://doi.org/10.1002/qj.4111">https://doi.org/10.1002/qj.4111</a>.
+</div>
+<div id="ref-hu2021" class="csl-entry" role="listitem">
+Hu, Hao, and Yang Han. 2021. <span>“Comparing the <span>Thermal Structures</span> of <span>Tropical Cyclones Derived From Suomi NPP ATMS</span> and <span>FY-3D Microwave Sounders</span>.”</span> <em>IEEE Transactions on Geoscience and Remote Sensing</em> 59 (10): 8073–83. <a href="https://doi.org/10.1109/TGRS.2020.3034262">https://doi.org/10.1109/TGRS.2020.3034262</a>.
+</div>
+<div id="ref-hu2019" class="csl-entry" role="listitem">
+Hu, Hao, Fuzhong Weng, Yang Han, and Yihong Duan. 2019. <span>“Remote <span>Sensing</span> of <span>Tropical Cyclone Thermal Structure</span> from <span>Satellite Microwave Sounding Instruments</span>: <span>Impacts</span> of <span>Background Profiles</span> on <span>Retrievals</span>.”</span> <em>Journal of Meteorological Research</em> 33 (1): 89–103. <a href="https://doi.org/10.1007/s13351-019-8094-1">https://doi.org/10.1007/s13351-019-8094-1</a>.
+</div>
+<div id="ref-hu2018" class="csl-entry" role="listitem">
+Hu, Ming, Guoqing Ge, Chunhua Zhou, Don Stark, Hui Shao, Kathryn Newman, Jeff Beck, and Xin Zhang. 2018. <span>“Grid-Point <span>Statistical Interpolation</span> (<span>GSI</span>) <span>User</span>’s <span>Guide Version</span> 3.7.”</span> <span>Developmental Testbed Center</span>. <a href="https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi/documentation">https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi/documentation</a>.
+</div>
+<div id="ref-iacovazzi2020" class="csl-entry" role="listitem">
+Iacovazzi, Robbie, Lin Lin, Ninghai Sun, and Quanhua Liu. 2020. <span>“<span>NOAA Operational Microwave Sounding Radiometer Data Quality Monitoring</span> and <span>Anomaly Assessment Using COSMIC GNSS Radio-Occultation Soundings</span>.”</span> <em>Remote Sensing</em> 12 (5, 5): 828. <a href="https://doi.org/10.3390/rs12050828">https://doi.org/10.3390/rs12050828</a>.
+</div>
+<div id="ref-liu2008" class="csl-entry" role="listitem">
+Liu, Quanhua, Fuzhong Weng, Yong Han, and Paul van Delst. 2008. <span>“Community <span>Radiative Transfer Model</span> for <span>Scattering Transfer</span> and <span>Applications</span>.”</span> In <em><span>IGARSS</span> 2008 - 2008 <span>IEEE International Geoscience</span> and <span>Remote Sensing Symposium</span></em>, 4:IV - 1193-IV - 1196. <a href="https://doi.org/10.1109/IGARSS.2008.4779942">https://doi.org/10.1109/IGARSS.2008.4779942</a>.
+</div>
+<div id="ref-tong2020" class="csl-entry" role="listitem">
+Tong, Mingjing, Yanqiu Zhu, Linjiong Zhou, Emily Liu, Ming Chen, Quanhua Liu, and Shian-Jiann Lin. 2020. <span>“Multiple <span>Hydrometeors All-Sky Microwave Radiance Assimilation</span> in <span>FV3GFS</span>.”</span> <em>Monthly Weather Review</em> 148 (7): 2971–95. <a href="https://doi.org/10.1175/MWR-D-19-0231.1">https://doi.org/10.1175/MWR-D-19-0231.1</a>.
+</div>
+<div id="ref-weng2013" class="csl-entry" role="listitem">
+Weng, Fuzhong, Xiaolei Zou, Ninghai Sun, Hu Yang, Miao Tian, William J. Blackwell, Xiang Wang, Lin Lin, and Kent Anderson. 2013. <span>“Calibration of <span>Suomi</span> National Polar-Orbiting Partnership Advanced Technology Microwave Sounder.”</span> <em>Journal of Geophysical Research: Atmospheres</em> 118 (19): 11, 187–11, 200. <a href="https://doi.org/10.1002/jgrd.50840">https://doi.org/10.1002/jgrd.50840</a>.
+</div>
+<div id="ref-weston2019" class="csl-entry" role="listitem">
+Weston, Peter, Alan Geer, Niels Bormann, and Niels Bormann. 2019. <span>“Investigations into the Assimilation of <span>AMSU-A</span> in the Presence of Cloud and Precipitation.”</span> <span>EUMETSAT</span>/<span>ECMWF Fellowship Programme Research Report</span>. <span>ECMWF</span>. 2019. <a href="https://doi.org/10.21957/ewahn9ce">https://doi.org/10.21957/ewahn9ce</a>.
+</div>
+<div id="ref-zhu2014" class="csl-entry" role="listitem">
+Zhu, Yanqiu, John Derber, Andrew Collard, Dick Dee, Russ Treadon, George Gayno, and James A. Jung. 2014. <span>“Enhanced Radiance Bias Correction in the <span>National Centers</span> for <span>Environmental Prediction</span>’s <span>Gridpoint Statistical Interpolation</span> Data Assimilation System.”</span> <em>Quarterly Journal of the Royal Meteorological Society</em> 140 (682): 1479–92. <a href="https://doi.org/10.1002/qj.2233">https://doi.org/10.1002/qj.2233</a>.
+</div>
+<div id="ref-zhu2016" class="csl-entry" role="listitem">
+Zhu, Yanqiu, Emily Liu, Rahul Mahajan, Catherine Thomas, David Groff, Paul Van Delst, Andrew Collard, Daryl Kleist, Russ Treadon, and John C. Derber. 2016. <span>“All-<span>Sky Microwave Radiance Assimilation</span> in <span>NCEP</span>’s <span>GSI Analysis System</span>.”</span> <em>Monthly Weather Review</em> 144 (12): 4709–35. <a href="https://doi.org/10.1175/MWR-D-15-0445.1">https://doi.org/10.1175/MWR-D-15-0445.1</a>.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -248,10 +415,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -261,8 +427,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -275,6 +450,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -318,6 +612,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -343,6 +638,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -411,16 +732,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-center">
       <ul class="footer-items list-unstyled">
     <li class="nav-item">
-    <a class="nav-link" href="../../about.html">About</a>
+    <a class="nav-link" href="../../about.html">
+<p>About</p>
+</a>
   </li>  
     <li class="nav-item">
-    <a class="nav-link" href="../../license.html">License</a>
+    <a class="nav-link" href="../../license.html">
+<p>License</p>
+</a>
   </li>  
     <li class="nav-item">
-    <a class="nav-link" href="../../contribute.html">Contribute</a>
+    <a class="nav-link" href="../../contribute.html">
+<p>Contribute</p>
+</a>
   </li>  
     <li class="nav-item">
-    <a class="nav-link" href="../../contributors.html">Contributors</a>
+    <a class="nav-link" href="../../contributors.html">
+<p>Contributors</p>
+</a>
   </li>  
     <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/paocorrales/DA-documentation">
@@ -429,12 +758,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
 </ul>
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/gsi/03-radiances.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action">Report an issue</a></p></div></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/gsi/03-radiances.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
   </div>
 </footer>
+
 
 
 

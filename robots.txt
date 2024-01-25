@@ -1,1 +1,1 @@
-Sitemap: https://github.com/paocorrales/DA-documentation/sitemap.xml
+Sitemap: https://paocorrales.github.io/DA-documentation/sitemap.xml

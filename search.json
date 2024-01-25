@@ -1,10 +1,17 @@
 [
   {
-    "objectID": "contributors.html",
-    "href": "contributors.html",
-    "title": "Contributors",
+    "objectID": "license.html",
+    "href": "license.html",
+    "title": "Licence",
     "section": "",
-    "text": "Contributors to this guide will appear here."
+    "text": "The text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License. Specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the Licence note associated to each section and cite it appropriately."
+  },
+  {
+    "objectID": "content/gsi/02-convencionals.html",
+    "href": "content/gsi/02-convencionals.html",
+    "title": "Assimilating Conventional Observations",
+    "section": "",
+    "text": "Conventional observations are assimilated from PREPBUFR files. NCEP ADP Global Upper Air and Surface Weather Observations (PREPBUFR format) are composed of a global set of surface and upper air reports operationally collected by the National Centers for Environmental Prediction (NCEP). These include land surface, marine surface, radiosonde, pibal and aircraft reports from the Global Telecommunications System (GTS), profiler and US radar derived winds, SSM/I oceanic winds and TCW retrievals, and satellite wind data from the National Environmental Satellite Data and Information Service (NESDIS). The reports can include pressure, geopotential height, temperature, dew point temperature, wind direction and speed [@cisl_rda_ds337.0].\nWhile the PREPBUFR includes wind derived from satellite observations, GSI ignores this observations and uses the ones provided by the specific bufr file gdas.t00z.satwnd.tm00.bufr_d.\nPREPBUFR files usually contains observations from a 6 to 12 h window and can be modify using FORTRAN routines provided with the GSI code (see util/bufr_tools in the GSI source code folder). You can also create your own bufr file or add new observation to an existing bufr file (see Working with bufr files).\n\nControlling which observations are assimilated\nThe assimilation of conventional observations is controlled with the convinfo file. Let’s check the global_convinfo.txt file we get as an example:\n! otype   = observation type (a7, t, uv, q, etc.)\n! type    = prepbufr observation type (if available)\n! sub     = prepbufr subtype (not yet available)\n! iuse    = flag if to use/not use / monitor data\n!         = 1  use data\n!         = 0  do not use data\n!         = -1 monitor data\n! twindow = time window (+/- hours)\n! numgrp  = cross validation parameter - number of groups\n! ngroup  = cross validation parameter - group to remove from data use\n! nmiter  = cross validation parameter - external iteration to introduce removed data\n! gross   = gross error parameter - gross error\n! ermax   = gross error parameter - max error\n! ermin   = gross error parameter - min error\n! var_b   = variational quality control parameter -  b parameter\n! var_pg ithin rmesh npred  = variational quality control parameter -  pg parameter\n! pmot: the optione to keep thinned datai as monitored, 0: not to keep, other values: to keep\n! ptime: time interval for thinning, 0, no temporal thinning, other values define time interval (less than 6)\n!otype   type  sub iuse twindow numgrp ngroup nmiter gross ermax ermin var_b    var_pg ithin rmesh  pmesh  npred  pmot  ptime\n tcp      112    0    1     3.0      0      0      0  75.0   5.0   1.0  75.0  0.000000     0    0.     0.      0    0.     0.\n ps       120    0    1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.\n ps       132    0   -1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.\n ps       180    0    1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.\n ps       180    01   1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.\nThe head of the file explains the content of each column but there are a few more things to add:\n\ntype: this is defined by the bufr tables, particular Table 2. It is worth checking this table as includes information about which observations are assimilated in GFS, errors asociated to specific instruments and other details.\ntwindow: while the assimilation window is defined in the gsi namalist, it is possible to control an assimilation window for specific observations. This is useful if, for example the assimilation window is 3 h and you want to assimilate temperature in a 1h window.\n\nIn general you only change the isue column to assimilate or not a type of observation and maybe just maybe the gross, ermax, and ermin parameters if you want to modify the quality control of the observations.\n\n\nObservation errors and quality control\nFor regional assimilation GSI uses an error table located in the errtable file that you’ll find in the ./fix folder under the name prepobs_errtable.global (it is confusing that the table for regional errors in in a file called global). Here is a small example of the content of the file for observations from surface stations.\n181 OBSERVATION TYPE\n  0.11000E+04 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.10500E+04 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.10000E+04 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.95000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.90000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.85000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.80000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.75000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.70000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\nThe meaning of each column is described in the following table:\n\n\n\n\n\n\n\n\n\n\n\n\nColumn #\n1\n2\n3\n4\n5\n6\n\n\n\n\nContent\nPressure\nT\nRH\nUV\nPs\nPw\n\n\nUnit\nhPa\ndegreeC\npercent/10\nm/s\nmb\nkg/m2 (or mm)\n\n\n\nSo column 1 define the pressure level associated to the errors for each variable in columns 2 to 6. In the errtable a 0.10000E+10 is a NA.\nGSI will perform a quality control for each observation. In general terms this involves a gross check and specific controls depending on the type of observation.\nFor the gross check, GSI first calculates a ratio:\n\\[ ratio = (obs - bk)/max(ermin, min(ermax, obserror)) \\] The main error parameters are controlled by the convinfo file. The obserror is the observation error defined in the prepbufr file for each observation as a result to the quality control perform while generating that file.\nIf \\(ration &gt; gross\\) the observation is rejected.\nOther piece of information used during the quality control is the quality control flag that is included in the prepbufr file a part if it quality control process. The possible values for conventional observations are:\n\n\n\n\n\n\n\nqc flag\nmeaning\n\n\n\n\n0-2\n–&gt; Obs is assimilated\n\n\n3\nSuspicious obs –&gt; gross check is more strict\n\n\n4-15\n–&gt; Obs is rejected (for some cases 9 o 15 means that the obs is monitored\n\n\n\nYou can find more details about the quality control flags in Table 7.\nGSI can also perform a thinning for conventional observations. You can activate that option for each type of observation changing ithin = 1 in the convinfo file.\nFor each observation GSI will check different things and change the observation error accordingly. The final observation error is recorded in the diag file and then used during the assimilation."
   },
   {
     "objectID": "content/gsi/05-tutorial.html",
@@ -56,11 +63,88 @@
     "text": "Footnotes\n\n\nThe current version of the GSI system compiled using gnu returns an error when the LETKF algorithm is used.↩︎"
   },
   {
-    "objectID": "content/gsi/02-convencionals.html",
-    "href": "content/gsi/02-convencionals.html",
-    "title": "Assimilating Conventional Observations",
+    "objectID": "content/gsi/03-radiances.html",
+    "href": "content/gsi/03-radiances.html",
+    "title": "Assimilating Radiance Observations",
     "section": "",
-    "text": "Conventional observations are assimilated from PREPBUFR files. NCEP ADP Global Upper Air and Surface Weather Observations (PREPBUFR format) are composed of a global set of surface and upper air reports operationally collected by the National Centers for Environmental Prediction (NCEP). These include land surface, marine surface, radiosonde, pibal and aircraft reports from the Global Telecommunications System (GTS), profiler and US radar derived winds, SSM/I oceanic winds and TCW retrievals, and satellite wind data from the National Environmental Satellite Data and Information Service (NESDIS). The reports can include pressure, geopotential height, temperature, dew point temperature, wind direction and speed [@cisl_rda_ds337.0].\nWhile the PREPBUFR includes wind derived from satellite observations, GSI ignores this observations and uses the ones provided by the specific bufr file gdas.t00z.satwnd.tm00.bufr_d.\nPREPBUFR files usually contains observations from a 6 to 12 h window and can be modify using FORTRAN routines provided with the GSI code (see util/bufr_tools in the GSI source code folder). You can also create your own bufr file or add new observation to an existing bufr file (see Working with bufr files).\n\nControlling which observations are assimilated\nThe assimilation of conventional observations is controlled with the convinfo file. Let’s check the global_convinfo.txt file we get as an example:\n! otype   = observation type (a7, t, uv, q, etc.)\n! type    = prepbufr observation type (if available)\n! sub     = prepbufr subtype (not yet available)\n! iuse    = flag if to use/not use / monitor data\n!         = 1  use data\n!         = 0  do not use data\n!         = -1 monitor data\n! twindow = time window (+/- hours)\n! numgrp  = cross validation parameter - number of groups\n! ngroup  = cross validation parameter - group to remove from data use\n! nmiter  = cross validation parameter - external iteration to introduce removed data\n! gross   = gross error parameter - gross error\n! ermax   = gross error parameter - max error\n! ermin   = gross error parameter - min error\n! var_b   = variational quality control parameter -  b parameter\n! var_pg ithin rmesh npred  = variational quality control parameter -  pg parameter\n! pmot: the optione to keep thinned datai as monitored, 0: not to keep, other values: to keep\n! ptime: time interval for thinning, 0, no temporal thinning, other values define time interval (less than 6)\n!otype   type  sub iuse twindow numgrp ngroup nmiter gross ermax ermin var_b    var_pg ithin rmesh  pmesh  npred  pmot  ptime\n tcp      112    0    1     3.0      0      0      0  75.0   5.0   1.0  75.0  0.000000     0    0.     0.      0    0.     0.\n ps       120    0    1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.\n ps       132    0   -1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.\n ps       180    0    1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.\n ps       180    01   1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.\nThe head of the file explains the content of each column but there are a few more things to add:\n\ntype: this is defined by the bufr tables, particular Table 2. It is worth checking this table as includes information about which observations are assimilated in GFS, errors asociated to specific instruments and other details.\ntwindow: while the assimilation window is defined in the gsi namalist, it is possible to control an assimilation window for specific observations. This is useful if, for example the assimilation window is 3 h and you want to assimilate temperature in a 1h window.\n\nIn general you only change the isue column to assimilate or not a type of observation and maybe just maybe the gross, ermax, and ermin parameters if you want to modify the quality control of the observations.\n\n\nObservation errors and quality control\nFor regional assimilation GSI uses an error table located in the errtable file that you’ll find in the ./fix folder under the name prepobs_errtable.global (it is confusing that the table for regional errors in in a file called global). Here is a small example of the content of the file for observations from surface stations.\n181 OBSERVATION TYPE\n  0.11000E+04 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.10500E+04 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.10000E+04 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.95000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.90000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.85000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.80000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.75000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\n  0.70000E+03 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10\nThe meaning of each column is described in the following table:\n\n\n\n\n\n\n\n\n\n\n\n\nColumn #\n1\n2\n3\n4\n5\n6\n\n\n\n\nContent\nPressure\nT\nRH\nUV\nPs\nPw\n\n\nUnit\nhPa\ndegreeC\npercent/10\nm/s\nmb\nkg/m2 (or mm)\n\n\n\nSo column 1 define the pressure level associated to the errors for each variable in columns 2 to 6. In the errtable a 0.10000E+10 is a NA.\nGSI will perform a quality control for each observation. In general terms this involves a gross check and specific controls depending on the type of observation.\nFor the gross check, GSI first calculates a ratio:\n\\[ ratio = (obs - bk)/max(ermin, min(ermax, obserror)) \\] The main error parameters are controlled by the convinfo file. The obserror is the observation error defined in the prepbufr file for each observation as a result to the quality control perform while generating that file.\nIf \\(ration &gt; gross\\) the observation is rejected.\nOther piece of information used during the quality control is the quality control flag that is included in the prepbufr file a part if it quality control process. The possible values for conventional observations are:\n\n\n\n\n\n\n\nqc flag\nmeaning\n\n\n\n\n0-2\n–&gt; Obs is assimilated\n\n\n3\nSuspicious obs –&gt; gross check is more strict\n\n\n4-15\n–&gt; Obs is rejected (for some cases 9 o 15 means that the obs is monitored\n\n\n\nYou can find more details about the quality control flags in Table 7.\nGSI can also perform a thinning for conventional observations. You can activate that option for each type of observation changing ithin = 1 in the convinfo file.\nFor each observation GSI will check different things and change the observation error accordingly. The final observation error is recorded in the diag file and then used during the assimilation."
+    "text": "Assimilating radiance observations is more complicated than assimilating conventional observations as radiances are not state variables. We need a observation operator to transform the model variables to radiances. GSI uses the Community Radiative Transfer Model (CRTM, Liu et al. 2008) as an operator of the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with the observations from satellite sensors."
+  },
+  {
+    "objectID": "content/gsi/03-radiances.html#the-crtm-radiative-transfer-model",
+    "href": "content/gsi/03-radiances.html#the-crtm-radiative-transfer-model",
+    "title": "Assimilating Radiance Observations",
+    "section": "The CRTM radiative transfer model",
+    "text": "The CRTM radiative transfer model\nThe CRTM is a fast radiative transfer model that was jointly developed by the NOAA Center for Satellite Applications and Research and the Joint Center for Satellite Data Assimilation (JCSDA). It is a model widely used by the remote sensing community as it is open source and publicly available. In addition, it is used for satellite instrument calibration (Weng et al. 2013; Iacovazzi et al. 2020; Crews et al. 2021), and in turn to generate retrievals from satellite observations (Boukabara et al. 2011; H. Hu et al. 2019; H. Hu and Han 2021). It is also used as an operator of observations as part of the assimilation of satellite radiances (Tong et al. 2020; Barton et al. 2021).\nThe CRTM is capable of simulating microwave, infrared and visible radiances, under clear and cloudy sky conditions, using atmospheric profiles of pressure, temperature, humidity and other species such as ozone. Recently Cutraro, Galligani, and Skabar (2021) evaluated their takeoff in the region with good results in simulating GOES-16 observations.\nCRTM is a sensor-oriented radiative transfer model, i.e. it contains pre-calculated parameterizations and coefficient tables specifically for operational sensors. It includes modules that calculate thermal radiation from gaseous absorption, absorption and scattering by aerosols and clouds, and emission and reflection of radiation by the Earth’s surface. The inputs of CRTM include atmospheric state variables, e.g., temperature, water vapor, pressure, and ozone concentration in user-defined layers, and surface state variables and parameters, including emissivity, surface temperature, and wind.\nCRTM is capable to simulate satellite observations from the state of the atmosphere. This is necessary during the assimilation process but is also used to verify the accuracy and errors of radiance observations.\nThe necessary calculations to simulate observations has a very high computational cost as it requires transposing a high dimensional matrix and the minimization of a cost function. This \\(K^{*}\\) matrix is constructed from the partial derivatives of the radiances with respect to geophysical parameters. CRTM performs these calculations very quickly so it can be used in operational contexts.\nTo obtain fast results, CRTM applies certain simplifications and approximations when solving the radiative transfer equation. First, it assumes that the Earth’s atmosphere consists of plane-parallel and homogeneous layers in thermodynamic equilibrium and where three-dimensional and polarization effects can be ignored.\nIn the context of clear skies, it is also assumed that there is no scattering and only the absorption of gases in the atmosphere is considered. In cloudy skies, the scattering generated by clouds is included. In the latter case, the radiative transfer equation cannot be solved analytically and numerical solutions are used."
+  },
+  {
+    "objectID": "content/gsi/03-radiances.html#specific-configuration",
+    "href": "content/gsi/03-radiances.html#specific-configuration",
+    "title": "Assimilating Radiance Observations",
+    "section": "Specific configuration",
+    "text": "Specific configuration\nThe vertical location of each radiance observation was estimated as the model level at which its weight function computed by CRTM was maximized. The weight function of each channel corresponds to the change in transmittance with height and its maximum describes the layer of the atmosphere from which the radiation captured by the channel was emitted. Multispectral sensors have good vertical coverage and are capable of capturing from the lower troposphere to the lower stratosphere. The channels chosen for assimilation and their associated errors were defined taking into account the configuration that GSI uses to generate GFS analyses and forecasts, the model cap chosen in this work (50 hPa) and the possible influence of the surface (Table @ref(tab:table-rad))."
+  },
+  {
+    "objectID": "content/gsi/03-radiances.html#observation-errors-and-quality-control",
+    "href": "content/gsi/03-radiances.html#observation-errors-and-quality-control",
+    "title": "Assimilating Radiance Observations",
+    "section": "Observation errors and quality control",
+    "text": "Observation errors and quality control\nThe preprocessing and quality control of the data is an essential step in the assimilation of radiances and depends on each sensor and channel. This process includes spatial thinning, bias correction, and in clear-sky applications, the detection of cloudy sky observations.\n\nThinning\nDuring the thinning process the observations to be assimilated are chosen based on their distance to the model grid points, the quality of the observation (based on available data quality information) and the number of available channels (for the same pixel and sensor). The thinning algorithm determines the quality of each observation based on the available information about the channels and their known errors, the type of surface below each pixel (preferring observations over the sea to those over land or snow) and predictors that give information about the quality of the observations (M. Hu et al. 2018). By applying the thinning we avoid incorporating information from smaller scale processes than the model can not represent and to reduce the error correlation of the observations from the same sensor.\n\n\nBias correction\nAfter the thinning, a bias correction is applied. The bias correction methodology implemented in GSI depends on thermodynamic characteristics of the air and on the scan angle (Zhu et al. 2014). It is computed as a linear polynomial of N predictors \\(p_i(x)\\), with associated coefficients \\(beta_i\\). Therefore, the bias-corrected brightness temperature (\\(BT_{cb}\\)) can be obtained as:\n\\[\\mathrm{\\mathit{BT_{cb}} =\\mathit{ BT} + \\sum_{i = 0}^{N} \\beta_i p_i (x)}\\]\nThe polynomial has a constant bias correction term (\\(p_0 = 1\\)) while the remaining terms and their predictors are the cloud liquid water (CLW) content, the rate of change of temperature with pressure, the square of the rate of change of temperature with pressure, and the sensitivity to the surface emissivity to account for the difference between land and sea. The scan angle-dependent bias is modeled as a polynomial of 4\\(^\\circ\\) order (Zhu et al. 2014).\nIn the GSI system, the coefficients \\(beta_i\\) are trained using a variational estimation method that generates the \\(beta_i\\) that provides the best fit between the simulation and the observations. The EnKF step also calculate the coefficients for the assimilation.\nIt is important to evaluate the training of the coefficients and the performance of the bias correction. One way to train the coefficients according to (zhu2024?) is to run the assimilation cycles for a long period of time, updating the coefficients at each cycle. While is possible to start the training with coefficients equal to zero, using the coefficients the GFS generates can help to speed up the process.\nTo check if the coefficients are correctly trained we can analysed the evolution of the different coefficients for each sensor and channel with time. As an example, here we show the coefficients for AMSU-A on board NOAA-15. Following Zhu et al. (2014), we expected the coefficients to reach a stable range of values after a certain period of time, this is evident for channel 4, 5, 6 and 8 but we see a continuous variation in channels 7 and 9.\n\n\n\nBias correction coefficients as function of time (days) for the training and experiment period. Channels 4 to 9 of AMSU-A on NOAA-15.\n\n\nUsing the resulting coefficients from the training period it is also important to check the impact of the bias correction. An easy way to see this is to calculate the mean difference between the observations and the first-guess (OmB) before and after the correction of the bias for each sensor. In the next figure there is an evident improvement as the mean OmB after the BC is now centered around zero and its standard deviation is smaller. This indicate that the BC correction worked as expected.\n\n\n\nMean difference between observations and first-guess after and before the correction of the bias calculate over a 3 days period for each sensor.\n\n\nThe training of the coefficients requires a lot of computational resources and can be challenging for observations from polar satellites used in regional applications. The reason for this is that the observations are only available 1 or 2 times a day, making the training a slow process. It is important to check that GSI is not penalizing the coefficients when there are no observations available.\n\n\nCloud detection\nThe cloud pixel detection methodology depends on the wavelength of the observations. For microwave radiances, potentially cloud-contaminated observations are detected using scattering and Liquid Water Path (LWP) indices calculated from differences between different channels of each sensor (Weston et al. 2019; Zhu et al. 2016). For infrared channels, cloud contaminated observations are detected using the transmittance profile calculated by the CRTM model. In addition, GSI checks the difference between the observations and the simulated brightness temperature to detect cloudy pixels. A particular case is the ABI observations since the cloud mask (level 2 product) available at the same resolution as the observations is used. This cloud mask is generated by combining information from 8 channels of the ABI sensor from the spatial and temporal point of view.\n\n\nOther quality controls\nThe GSI quality control filters out those observations from channels close to the visible range over water surfaces with a zenith angle greater than 60\\(^{{circ}\\) to reject those observations that could be contaminated by reflection. For infrared and microwave observations it also performs an emissivity check to detect observations contaminated by surface effects. Finally, a gross check is applied, i.e. the difference between the observation and the observation simulated by the model is compared with a predefined threshold depending on the observation error to reject erroneous observations."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "This guide is a compilation of many tools scripts, pieces of code and routines that I used during my PhD. As the name says, everything goes around assimilating observations using the GSI system. I spent a lot of time working with the conventional and Radiance observations so you will find a comprehensive tutorial and documentation on how to assimilate these types of observations. This includes the processing of the observations, how to configure the system and all the quality control steps GSI performs during the assimilation process.\nSometimes you will find everything inside the website and sometimes you will need to go to a specific repository to get the code or the data associated with the the specific topic. And while I tried to be mindful during my PhD at commenting and documenting everything along the way I’m sure that there are gaps and missing pieces. If you find anything that can be improved please open an issue in the repository of this website and contribute to making this guide better.\nMany of these tools come from different sources. Sometimes someone else wrote the code and I adapted it to my specific needs, sometimes I wrote the code from scratch. So it’s important to read the license note in each section so you know who created that code and in which way you can use it."
+  },
+  {
+    "objectID": "about.html#about-my-phd",
+    "href": "about.html#about-my-phd",
+    "title": "About",
+    "section": "About my PhD",
+    "text": "About my PhD\nThe main goal of may research was to applied data assimilation techniques to improve short-term forecasts of severe events in Argentina. In particular, the research focuses on data assimilation of observations from automatic stations and radiances from polar and geostationary satellites. You can read the final dissertation (in Spanish) here.\nI worked in the Centro de Investigaciones del Mar y la Atmósfera (CIMA), for that reason you may find mentions to Hydra or Yakaira, their HPC and a server I used a lot."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "DA-documentation",
+    "section": "",
+    "text": "This is a work in progress\n\n\n\nComeback later to see more or, if you want to contribute, open an issue in the associated repo.\nThis website compiles a series of tutorials, scripts and in general a comprehensive documentation around the GSI system V3.7 - EnKF V1.3. It focus on the use of GSI as a observation operator along with the LETKF version. It covers everything you need from how to deal with observations (in bufr format), how to configure the system to how read and interpret GSI outputs."
+  },
+  {
+    "objectID": "index.html#a-note-about-using-this-material",
+    "href": "index.html#a-note-about-using-this-material",
+    "title": "DA-documentation",
+    "section": "A note about using this material",
+    "text": "A note about using this material\nWhile the text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License, specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the Licence note associated to each section and cite it appropriately."
+  },
+  {
+    "objectID": "index.html#citing-this-guide",
+    "href": "index.html#citing-this-guide",
+    "title": "DA-documentation",
+    "section": "Citing this guide",
+    "text": "Citing this guide\nYou can cite this guide using its Zenodo metadata and DOI ."
+  },
+  {
+    "objectID": "index.html#do-you-want-to-contribute",
+    "href": "index.html#do-you-want-to-contribute",
+    "title": "DA-documentation",
+    "section": "Do you want to contribute?",
+    "text": "Do you want to contribute?\nAny contribution is welcome, please read this guide to learn how to do it."
+  },
+  {
+    "objectID": "contributors.html",
+    "href": "contributors.html",
+    "title": "Contributors",
+    "section": "",
+    "text": "Contributors to this guide will appear here."
+  },
+  {
+    "objectID": "content/observations/01-bufr.html",
+    "href": "content/observations/01-bufr.html",
+    "title": "Working with bufr files",
+    "section": "",
+    "text": "Intro\nTablas"
   },
   {
     "objectID": "content/gsi/01-gsi.html",
@@ -91,32 +175,11 @@
     "text": "Footnotes\n\n\nThis files need to be downloaded separately as they are to big to be part of the GSI repository. Also the coefficient files can be updated with better approximations over time.↩︎"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "DA-documentation",
+    "objectID": "content/gsi/04-diagfiles.html",
+    "href": "content/gsi/04-diagfiles.html",
+    "title": "Undestanding diag files",
     "section": "",
-    "text": "This is a work in progress\n\n\n\nComeback later to see more or, if you want to contribute, open an issue in the associated repo.\nThis website compiles a series of tutorials, scripts and in general a comprehensive documentation around the GSI system V3.7 - EnKF V1.3. It focus on the use of GSI as a observation operator along with the LETKF version. It covers everything you need from how to deal with observations (in bufr format), how to configure the system to how read and interpret GSI outputs."
-  },
-  {
-    "objectID": "index.html#a-note-about-using-this-material",
-    "href": "index.html#a-note-about-using-this-material",
-    "title": "DA-documentation",
-    "section": "A note about using this material",
-    "text": "A note about using this material\nWhile the text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License, specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the Licence note associated to each section and cite it appropriately."
-  },
-  {
-    "objectID": "index.html#citing-this-guide",
-    "href": "index.html#citing-this-guide",
-    "title": "DA-documentation",
-    "section": "Citing this guide",
-    "text": "Citing this guide\nYou can cite this guide using its Zenodo metadata and DOI ."
-  },
-  {
-    "objectID": "index.html#do-you-want-to-contribute",
-    "href": "index.html#do-you-want-to-contribute",
-    "title": "DA-documentation",
-    "section": "Do you want to contribute?",
-    "text": "Do you want to contribute?\nAny contribution is welcome, please read this guide to learn how to do it."
+    "text": "Scrips para decodificar\nrutina que los genera"
   },
   {
     "objectID": "contribute.html",
@@ -152,47 +215,5 @@
     "title": "How to contribute",
     "section": "Acknowledgements",
     "text": "Acknowledgements\nIf you contribute to this guide, I’d like to publicly acknowledge you work. Please indicate in you PR if you want to be add to the Contributors page."
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "This guide is a compilation of many tools scripts, pieces of code and routines that I used during my PhD. As the name says, everything goes around assimilating observations using the GSI system. I spent a lot of time working with the conventional and Radiance observations so you will find a comprehensive tutorial and documentation on how to assimilate these types of observations. This includes the processing of the observations, how to configure the system and all the quality control steps GSI performs during the assimilation process.\nSometimes you will find everything inside the website and sometimes you will need to go to a specific repository to get the code or the data associated with the the specific topic. And while I tried to be mindful during my PhD at commenting and documenting everything along the way I’m sure that there are gaps and missing pieces. If you find anything that can be improved please open an issue in the repository of this website and contribute to making this guide better.\nMany of these tools come from different sources. Sometimes someone else wrote the code and I adapted it to my specific needs, sometimes I wrote the code from scratch. So it’s important to read the license note in each section so you know who created that code and in which way you can use it."
-  },
-  {
-    "objectID": "about.html#about-my-phd",
-    "href": "about.html#about-my-phd",
-    "title": "About",
-    "section": "About my PhD",
-    "text": "About my PhD\nThe main goal of may research was to applied data assimilation techniques to improve short-term forecasts of severe events in Argentina. In particular, the research focuses on data assimilation of observations from automatic stations and radiances from polar and geostationary satellites. You can read the final dissertation (in Spanish) here.\nI worked in the Centro de Investigaciones del Mar y la Atmósfera (CIMA), for that reason you may find mentions to Hydra or Yakaira, their HPC and a server I used a lot."
-  },
-  {
-    "objectID": "content/observations/01-bufr.html",
-    "href": "content/observations/01-bufr.html",
-    "title": "Working with bufr files",
-    "section": "",
-    "text": "Intro\nTablas"
-  },
-  {
-    "objectID": "content/gsi/03-radiances.html",
-    "href": "content/gsi/03-radiances.html",
-    "title": "Intro a GSI",
-    "section": "",
-    "text": "crtm\nsatinfo\ncorreccion de bias"
-  },
-  {
-    "objectID": "content/gsi/04-diagfiles.html",
-    "href": "content/gsi/04-diagfiles.html",
-    "title": "Undestanding diag files",
-    "section": "",
-    "text": "Scrips para decodificar\nrutina que los genera"
-  },
-  {
-    "objectID": "license.html",
-    "href": "license.html",
-    "title": "Licence",
-    "section": "",
-    "text": "The text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License. Specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the Licence note associated to each section and cite it appropriately."
   }
 ]
