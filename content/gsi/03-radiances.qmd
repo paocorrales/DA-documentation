@@ -3,7 +3,7 @@ title: "Assimilating Radiance Observations"
 bibliography: references.bib
 ---
 
-Assimilating radiance observations is more complicated than assimilating conventional observations as radiances are not state variables. We need a observation operator to transform the model variables to radiances. GSI uses the Community Radiative Transfer Model [CRTM, @liu2008] as an operator of the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with the observations from satellite sensors. 
+Assimilating radiance observations is more complicated than assimilating conventional observations as radiances are not state variables. We need a observation operator to transform the model variables to radiances. GSI uses the Community Radiative Transfer Model [CRTM, @liu2008] as an operator of the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with the observations from satellite sensors.
 
 ## The CRTM radiative transfer model
 
@@ -23,14 +23,11 @@ In the context of clear skies, it is also assumed that there is no scattering an
 
 ## Specific configuration
 
-
 The vertical location of each radiance observation was estimated as the model level at which its weight function computed by CRTM was maximized. The weight function of each channel corresponds to the change in transmittance with height and its maximum describes the layer of the atmosphere from which the radiation captured by the channel was emitted. Multispectral sensors have good vertical coverage and are capable of capturing from the lower troposphere to the lower stratosphere. The channels chosen for assimilation and their associated errors were defined taking into account the configuration that GSI uses to generate GFS analyses and forecasts, the model cap chosen in this work (50 hPa) and the possible influence of the surface (Table \@ref(tab:table-rad)).
-
-
 
 ## Observation errors and quality control
 
-The preprocessing and quality control of the data is an essential step in the assimilation of radiances and depends on each sensor and channel. This process includes spatial *thinning*, bias correction, and in clear-sky applications, the detection of cloudy sky observations. 
+The preprocessing and quality control of the data is an essential step in the assimilation of radiances and depends on each sensor and channel. This process includes spatial *thinning*, bias correction, and in clear-sky applications, the detection of cloudy sky observations.
 
 ### Thinning
 
@@ -40,14 +37,23 @@ During the thinning process the observations to be assimilated are chosen based 
 
 After the thinning, a bias correction is applied. The bias correction methodology implemented in GSI depends on thermodynamic characteristics of the air and on the scan angle [@zhu2014]. It is computed as a linear polynomial of N predictors $p_i(x)$, with associated coefficients $beta_i$. Therefore, the bias-corrected brightness temperature ($BT_{cb}$) can be obtained as:
 
-
 $$\mathrm{\mathit{BT_{cb}} =\mathit{ BT} + \sum_{i = 0}^{N} \beta_i p_i (x)}$$
 
 The polynomial has a constant bias correction term ($p_0 = 1$) while the remaining terms and their predictors are the cloud liquid water (CLW) content, the rate of change of temperature with pressure, the square of the rate of change of temperature with pressure, and the sensitivity to the surface emissivity to account for the difference between land and sea. The scan angle-dependent bias is modeled as a polynomial of 4$^\circ$ order [@zhu2014].
 
-In the GSI system, the coefficients $beta_i$ are trained using a variational estimation method that generates the $beta_i$ that provides the best fit between the simulation and the observations.
+In the GSI system, the coefficients $beta_i$ are trained using a variational estimation method that generates the $beta_i$ that provides the best fit between the simulation and the observations. The EnKF step also calculate the coefficients for the assimilation.
 
-More about BC, figures and how to train the coeff.
+It is important to evaluate the training of the coefficients and the performance of the bias correction. One way to train the coefficients according to @zhu2024 is to run the assimilation cycles for a long period of time, updating the coefficients at each cycle. While is possible to start the training with coefficients equal to zero, using the coefficients the GFS generates can help to speed up the process.
+
+To check if the coefficients are correctly trained we can analysed the evolution of the different coefficients for each sensor and channel with time. As an example, here we show the coefficients for AMSU-A on board NOAA-15. Following @zhu2014, we expected the coefficients to reach a stable range of values after a certain period of time, this is evident for channel 4, 5, 6 and 8 but we see a continuous variation in channels 7 and 9.
+
+![Bias correction coefficients as function of time (days) for the training and experiment period. Channels 4 to 9 of AMSU-A on NOAA-15.](img/bc_training.png){fig-alt="Line chart showing the evolution of the coefficients over time for channels 4 to 9 of AMSU-A. For some of the channels the coefficient values are more or lest constant."}
+
+Using the resulting coefficients from the training period it is also important to check the impact of the bias correction. An easy way to see this is to calculate the mean difference between the observations and the first-guess (OmB) before and after the correction of the bias for each sensor. In the next figure there is an evident improvement as the mean OmB after the BC is now centered around zero and its standard deviation is smaller. This indicate that the BC correction worked as expected.
+
+![Mean difference between observations and first-guess after and before the correction of the bias calculate over a 3 days period for each sensor.](img/omb_bc.png)
+
+The training of the coefficients requires a lot of computational resources and can be challenging for observations from polar satellites used in regional applications. The reason for this is that the observations are only available 1 or 2 times a day, making the training a slow process. It is important to check that GSI is not penalizing the coefficients when there are no observations available.
 
 ### Cloud detection
 
@@ -56,5 +62,3 @@ The cloud pixel detection methodology depends on the wavelength of the observati
 ### Other quality controls
 
 The GSI quality control filters out those observations from channels close to the visible range over water surfaces with a zenith angle greater than 60$^{{circ}$ to reject those observations that could be contaminated by reflection. For infrared and microwave observations it also performs an emissivity check to detect observations contaminated by surface effects. Finally, a *gross check* is applied, i.e. the difference between the observation and the observation simulated by the model is compared with a predefined threshold depending on the observation error to reject erroneous observations.
-
-
