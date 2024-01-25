@@ -23,7 +23,69 @@ In the context of clear skies, it is also assumed that there is no scattering an
 
 ## Specific configuration
 
-The vertical location of each radiance observation was estimated as the model level at which its weight function computed by CRTM was maximized. The weight function of each channel corresponds to the change in transmittance with height and its maximum describes the layer of the atmosphere from which the radiation captured by the channel was emitted. Multispectral sensors have good vertical coverage and are capable of capturing from the lower troposphere to the lower stratosphere. The channels chosen for assimilation and their associated errors were defined taking into account the configuration that GSI uses to generate GFS analyses and forecasts, the model cap chosen in this work (50 hPa) and the possible influence of the surface (Table \@ref(tab:table-rad)).
+The assimilation of radiance observations is controlled with the `satinfo` file and the GSI namelist. Let's check the `global_satinfo.txt` file we get as an example:
+
+``` bash
+!sensor/instr/sat      chan iuse  error  error_cld  ermax   var_b    var_pg  icld_det icloud iaerosol
+ amsua_n15               1   1    3.000   20.000    4.500   10.000    0.000     -2      1     -1
+ amsua_n15               2   1    2.200   18.000    4.500   10.000    0.000     -2      1     -1
+ amsua_n15               3   1    2.000   12.000    4.500   10.000    0.000     -2      1     -1
+ amsua_n15               4   1    0.600    3.000    2.500   10.000    0.000     -2      1     -1
+ amsua_n15               5   1    0.300    0.500    2.000   10.000    0.000     -2      1     -1
+ amsua_n15               6  -1    0.230    0.300    2.000   10.000    0.000     -2      1     -1
+ amsua_n15               7   1    0.250    0.250    2.000   10.000    0.000     -2      1     -1
+ amsua_n15               8   1    0.275    0.275    2.000   10.000    0.000     -2      1     -1
+ amsua_n15               9   1    0.340    0.340    2.000   10.000    0.000     -2      1     -1
+ amsua_n15              10   1    0.400    0.400    2.000   10.000    0.000     -2      1     -1
+ amsua_n15              11  -1    0.600    0.600    2.500   10.000    0.000     -2      1     -1
+ amsua_n15              12   1    1.000    1.000    3.500   10.000    0.000     -2      1     -1
+ amsua_n15              13   1    1.500    1.500    4.500   10.000    0.000     -2      1     -1
+ amsua_n15              14  -1    2.000    2.000    4.500   10.000    0.000     -2      1     -1
+ amsua_n15              15   1    3.500   18.000    4.500   10.000    0.000     -2      1     -1
+ hirs3_n17               1  -1    2.000    0.000    4.500   10.000    0.000     -1     -1     -1
+```
+
+The file includes a line for each sensor/satellite and each channel (chan). Usually you will change the `iuse` and `error` columns to configure the assimilation of each channel. The options for `iuse` are:
+
+-   -2 do not use
+-   -1 monitor if diagnostics produced
+-   0 monitor and use in QC only
+-   1 use data with complete quality control
+-   2 use data with no airmass bias correction
+-   3 use data with no angle dependent bias correction
+-   4 use data with no bias correction
+
+Defining the observation error is one of the difficult part of the assimilation process, so I usually keep the GFS values to be on the safe side.
+
+To successfully assimilate radiances using the EnKF method it is critical to save in the diag files the vertical location of each radiance observation that is estimated as the model level at which its weight function[^1] computed by CRTM maximize. It is also important to save the predictors calculated during the [bias correction step](#sec-bias-correction).
+
+[^1]: The weight function of each channel corresponds to the change in transmittance with height and its maximum describes the layer of the atmosphere from which the radiation captured by the channel was emitted. Multispectral sensors have good vertical coverage and are capable of capturing from the lower troposphere to the lower stratosphere.
+
+Here is an incomplete list of parameters in the GSI and ENKF namelists.
+
+**GSI namelist**
+
+| Parameter        | Description                                                                                                                      | Needed value |
+|--------------|--------------------------------------------|--------------|
+| passive_bc       | option to turn on bias correction for passive (monitored) channels                                                               | .true.       |
+| use_edges        | option to exclude radiance data on scan edges                                                                                    | .false.      |
+| lwrite_predterms | option to write out actual predictor terms instead of predicted bias to the radiance diagnostic files                            | .true.       |
+| lwrite_peakwt    | option to write out the approximate pressure of the peak of the weighting function for satellite data to the radiance diagnostic | .true.       |
+| emiss_bc         | option to turn on emissivity bias predictor                                                                                      | .true.       |
+
+This namelist will also includes a list with the type of observations and the name of the bufr file for each one (`dfile`).
+
+**ENKF namelist**
+
+| Parameter   | Description                                                                                 | Needed value |
+|------------|------------------------------------------------|------------|
+| adp_anglebc | turn off or on the variational radiance angle bias correction                               | .true.       |
+| angord      | order of polynomial for angle bias correction                                               | 4            |
+| use_edges   | logical to use data on scan edges (.true.=to use)                                           | .false.      |
+| emiss_bc    | If true, turn on emissivity bias correction                                                 | .true.       |
+| upd_pred    | bias update indicator for radiance bias correction; 1.0=bias correction coefficients evolve | 1            |
+
+: This namelist will also includes a list with the type of observations and the name of each one inside GSI. For example `amsua_n15` represent the observations of the AMSU-A sensor on board NOAA-15.
 
 ## Observation errors and quality control
 
@@ -33,17 +95,36 @@ The preprocessing and quality control of the data is an essential step in the as
 
 During the thinning process the observations to be assimilated are chosen based on their distance to the model grid points, the quality of the observation (based on available data quality information) and the number of available channels (for the same pixel and sensor). The thinning algorithm determines the quality of each observation based on the available information about the channels and their known errors, the type of surface below each pixel (preferring observations over the sea to those over land or snow) and predictors that give information about the quality of the observations [@hu2018]. By applying the thinning we avoid incorporating information from smaller scale processes than the model can not represent and to reduce the error correlation of the observations from the same sensor.
 
-### Bias correction
+The thinning resolution is configured in the GSI namelist:
+
+In this case we have 3 possible resolutions in kilometers: `dmesh(1)=120.0, dmesh(2)=60.0, dmesh(3)=10.0`. We define which resolution to use for each sensor in the `dthin` column. Here `amsua_n15` will use a thinning of 60 km and `abi_g16` a thinning of 10 km.
+
+``` bash
+ &OBS_INPUT
+   dmesh(1)=120.0, dmesh(2)=60.0, dmesh(3)=10.0, time_window_max=0.5,ext_sonde=.true.,
+ /
+OBS_INPUT::
+!  dfile          dtype       dplat     dsis                 dval    dthin dsfcalc
+   amsuabufr      amsua       n15       amsua_n15           10.0     2     0
+   amsuabufr      amsua       n18       amsua_n18           10.0     2     0
+   amsuabufr      amsua       n19       amsua_n19           10.0     2     0
+   amsuabufr      amsua       metop-a   amsua_metop-a       10.0     2     0
+   amsuabufr      amsua       metop-b   amsua_metop-b       10.0     2     0
+   airsbufr       amsua       aqua      amsua_aqua           5.0     2     0
+   abibufr        abi         g16       abi_g16              1.0     3     0
+```
+
+### Bias correction {#sec-bias-correction}
 
 After the thinning, a bias correction is applied. The bias correction methodology implemented in GSI depends on thermodynamic characteristics of the air and on the scan angle [@zhu2014]. It is computed as a linear polynomial of N predictors $p_i(x)$, with associated coefficients $beta_i$. Therefore, the bias-corrected brightness temperature ($BT_{cb}$) can be obtained as:
 
 $$\mathrm{\mathit{BT_{cb}} =\mathit{ BT} + \sum_{i = 0}^{N} \beta_i p_i (x)}$$
 
-The polynomial has a constant bias correction term ($p_0 = 1$) while the remaining terms and their predictors are the cloud liquid water (CLW) content, the rate of change of temperature with pressure, the square of the rate of change of temperature with pressure, and the sensitivity to the surface emissivity to account for the difference between land and sea. The scan angle-dependent bias is modeled as a polynomial of 4$^\circ$ order [@zhu2014].
+The polynomial has a constant bias correction term ($p_0 = 1$) while the remaining terms and their predictors are the cloud liquid water (CLW) content, the temperature laps rate, the square of the temperature laps rate, and the sensitivity to the surface emissivity to account for the difference between land and sea. The scan angle-dependent bias is modeled as a polynomial of 4$^\circ$ order [@zhu2014].
 
-In the GSI system, the coefficients $beta_i$ are trained using a variational estimation method that generates the $beta_i$ that provides the best fit between the simulation and the observations. The EnKF step also calculate the coefficients for the assimilation.
+In the GSI system, the coefficients $\beta_i$ are trained using a variational estimation method that generates the $\beta_i$ that provides the best fit between the simulation and the observations. The EnKF step also calculate the coefficients for the assimilation.
 
-It is important to evaluate the training of the coefficients and the performance of the bias correction. One way to train the coefficients according to @zhu2024 is to run the assimilation cycles for a long period of time, updating the coefficients at each cycle. While is possible to start the training with coefficients equal to zero, using the coefficients the GFS generates can help to speed up the process.
+It is important to evaluate the training of the coefficients and the performance of the bias correction. One way to train the coefficients according to @zhu2014 is to run the assimilation cycles for a long period of time, updating the coefficients at each cycle. While is possible to start the training with coefficients equal to zero, using the coefficients the GFS generates can help to speed up the process.
 
 To check if the coefficients are correctly trained we can analysed the evolution of the different coefficients for each sensor and channel with time. As an example, here we show the coefficients for AMSU-A on board NOAA-15. Following @zhu2014, we expected the coefficients to reach a stable range of values after a certain period of time, this is evident for channel 4, 5, 6 and 8 but we see a continuous variation in channels 7 and 9.
 
@@ -55,10 +136,47 @@ Using the resulting coefficients from the training period it is also important t
 
 The training of the coefficients requires a lot of computational resources and can be challenging for observations from polar satellites used in regional applications. The reason for this is that the observations are only available 1 or 2 times a day, making the training a slow process. It is important to check that GSI is not penalizing the coefficients when there are no observations available.
 
+The coefficients are saved in the `satbias` file, a plain text file that looks like this:
+
+``` bash
+    1 amsua_n15                1   0.423099E+00   0.481606E+06   999
+        2.680195    0.000000    0.001042    0.004029    0.228152    0.000000    0.000000   -0.009346    3.972107    2.986645
+       -4.770297   -1.960179
+    2 amsua_n15                2   0.235695E+00   0.519067E+06   999
+        1.704236    0.000000    0.010259   14.889464   -3.720292    0.000000    0.000000   -0.011583    3.896762    9.125687
+       -4.712555   -1.727947
+    3 amsua_n15                3   0.150663E+01   0.593685E+06   999
+        1.771621    0.000000    0.009938    0.507936   -0.328143    0.000000    0.000000   -0.013321   -2.458213   -0.946619
+       -1.233838    0.234034
+    4 amsua_n15                4   0.342465E+01   0.104715E+07   999
+       -0.123787    0.000000    0.013865    0.050019   -0.037143    0.000000    0.000000    0.007463   -0.460992   -0.542148
+       -0.876047   -0.110968
+    5 amsua_n15                5   0.445149E+01   0.112750E+07   999
+        0.332174    0.000000    0.007298    0.010457   -0.071543    0.000000    0.000000   -0.009200    0.827698   -0.965067
+       -1.350357    0.100073
+```
+
+So, for each sensor and satellite and each channel there are 12 coefficients that are updated in each assimilation cycle. I recommend to save these files to analyses the BC process. Radiance bias correction terms are as follows:
+
+1.  global offset
+2.  zenith angle predictor, is not used and set to zero now
+3.  cloud liquid water predictor for clear-sky microwave radiance assimilation
+4.  square of temperature laps rate predictor
+5.  temperature laps rate predictor
+6.  cosinusoidal predictor for SSMI/S ascending/descending bias
+7.  sinusoidal predictor for SSMI/S
+8.  emissivity sensitivity predictor for land/sea differences
+9.  fourth order polynomial of angle bias correction
+10. third order polynomial of angle bias correction
+11. second order polynomial of angle bias correction
+12. first order polynomial of angle bias correction
+
+On the other hand the predictors are saved in the diag files (see the [Undestanding diag files](04-diagfiles.qmd) section).
+
 ### Cloud detection
 
 The cloud pixel detection methodology depends on the wavelength of the observations. For microwave radiances, potentially cloud-contaminated observations are detected using scattering and Liquid Water Path (LWP) indices calculated from differences between different channels of each sensor [@weston2019; @zhu2016]. For infrared channels, cloud contaminated observations are detected using the transmittance profile calculated by the CRTM model. In addition, GSI checks the difference between the observations and the simulated brightness temperature to detect cloudy pixels. A particular case is the ABI observations since the cloud mask (level 2 product) available at the same resolution as the observations is used. This cloud mask is generated by combining information from 8 channels of the ABI sensor from the spatial and temporal point of view.
 
 ### Other quality controls
 
-The GSI quality control filters out those observations from channels close to the visible range over water surfaces with a zenith angle greater than 60$^{{circ}$ to reject those observations that could be contaminated by reflection. For infrared and microwave observations it also performs an emissivity check to detect observations contaminated by surface effects. Finally, a *gross check* is applied, i.e. the difference between the observation and the observation simulated by the model is compared with a predefined threshold depending on the observation error to reject erroneous observations.
+The GSI quality control filters out those observations from channels close to the visible range over water surfaces with a zenith angle greater than 60$^{\circ}$ to reject those observations that could be contaminated by reflection. For infrared and microwave observations it also performs an emissivity check to detect observations contaminated by surface effects. Finally, a *gross check* is applied, i.e. the difference between the observation and the observation simulated by the model is compared with a predefined threshold depending on the observation error to reject erroneous observations.
