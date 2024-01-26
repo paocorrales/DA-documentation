@@ -59,7 +59,7 @@ diag_conv_ges.mem010
 
 GSI includes some fortran routines you can use to decode the binary files. In may case I decided to modify those routines to get the information as a tidy table (1 observation per row, variables in columns) and to include more details present in the diagfiles. 
 
-The code is publish in this repository, that includes a version of GSI with some modidications:
+The code is published [in this repository](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/tree/main/util/read_diag), that includes a version of GSI with some modidications:
 
 ```bash
 read_diag/
