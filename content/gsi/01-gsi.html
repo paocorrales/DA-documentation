@@ -202,11 +202,12 @@ window.Quarto = {
   <ul>
   <li><a href="#available-observations-for-assimilation" id="toc-available-observations-for-assimilation" class="nav-link active" data-scroll-target="#available-observations-for-assimilation">Available observations for assimilation</a>
   <ul class="collapse">
-  <li><a href="#conventional-observations-including-satellite-retrievals" id="toc-conventional-observations-including-satellite-retrievals" class="nav-link" data-scroll-target="#conventional-observations-including-satellite-retrievals">Conventional observations (including satellite retrievals):</a></li>
-  <li><a href="#satellite-radiancebrightness-temperature-observations-instrumentsatellite-id" id="toc-satellite-radiancebrightness-temperature-observations-instrumentsatellite-id" class="nav-link" data-scroll-target="#satellite-radiancebrightness-temperature-observations-instrumentsatellite-id">Satellite radiance/brightness temperature observations (instrument/satellite ID):</a></li>
-  <li><a href="#others" id="toc-others" class="nav-link" data-scroll-target="#others">Others:</a></li>
+  <li><a href="#conventional-observations" id="toc-conventional-observations" class="nav-link" data-scroll-target="#conventional-observations">Conventional observations:</a></li>
+  <li><a href="#satellite-radiancebrightness-temperature-observations" id="toc-satellite-radiancebrightness-temperature-observations" class="nav-link" data-scroll-target="#satellite-radiancebrightness-temperature-observations">Satellite radiance/brightness temperature observations</a></li>
+  <li><a href="#other-observations" id="toc-other-observations" class="nav-link" data-scroll-target="#other-observations">Other observations</a></li>
   </ul></li>
   <li><a href="#running-gsi" id="toc-running-gsi" class="nav-link" data-scroll-target="#running-gsi">Running GSI</a></li>
+  <li><a href="#about-the-gsi-code" id="toc-about-the-gsi-code" class="nav-link" data-scroll-target="#about-the-gsi-code">About the GSI code</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/gsi/01-gsi.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -240,8 +241,8 @@ window.Quarto = {
 <section id="available-observations-for-assimilation" class="level2">
 <h2 class="anchored" data-anchor-id="available-observations-for-assimilation">Available observations for assimilation</h2>
 <p>Here is the list of observations that can be assimilated by GSI. In bold are the observations for with I have experience and/or the ones <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">I’ve adapted the code for it</a>.</p>
-<section id="conventional-observations-including-satellite-retrievals" class="level3">
-<h3 class="anchored" data-anchor-id="conventional-observations-including-satellite-retrievals">Conventional observations (including satellite retrievals):</h3>
+<section id="conventional-observations" class="level3">
+<h3 class="anchored" data-anchor-id="conventional-observations">Conventional observations:</h3>
 <ul>
 <li><strong>Radiosondes</strong></li>
 <li>Pilot ballon (PIBAL) winds</li>
@@ -269,8 +270,8 @@ window.Quarto = {
 <li>Tall tower wind</li>
 </ul>
 </section>
-<section id="satellite-radiancebrightness-temperature-observations-instrumentsatellite-id" class="level3">
-<h3 class="anchored" data-anchor-id="satellite-radiancebrightness-temperature-observations-instrumentsatellite-id">Satellite radiance/brightness temperature observations (instrument/satellite ID):</h3>
+<section id="satellite-radiancebrightness-temperature-observations" class="level3">
+<h3 class="anchored" data-anchor-id="satellite-radiancebrightness-temperature-observations">Satellite radiance/brightness temperature observations</h3>
 <ul>
 <li>SBUV: NOAA-17, NOAA-18, NOAA-19</li>
 <li><strong>High Resolution Infrared Radiation Sounder (HIRS): Meteorological Operational-A(MetOp-A), MetOp-B, NOAA-17, NOAA-19</strong></li>
@@ -296,8 +297,8 @@ window.Quarto = {
 <li><strong>GOES ABI</strong></li>
 </ul>
 </section>
-<section id="others" class="level3">
-<h3 class="anchored" data-anchor-id="others">Others:</h3>
+<section id="other-observations" class="level3">
+<h3 class="anchored" data-anchor-id="other-observations">Other observations</h3>
 <ul>
 <li>GPS Radio occultation (RO) refractivity and bending angle profiles</li>
 <li>Solar Backscatter Ultraviolet (SBUV) ozone profiles, Microwave Limb Sounder (MLS) (including NRT) ozone, * and Ozone Monitoring Instrument (OMI) total ozone</li>
@@ -400,6 +401,32 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
+</section>
+<section id="about-the-gsi-code" class="level2">
+<h2 class="anchored" data-anchor-id="about-the-gsi-code">About the GSI code</h2>
+<p>GSI is writen in fortran and the code is separated in more than 5 hundred files. While GSI has 2 good user guides, not everything is documented and sometimes you will need to read the code.</p>
+<p>To swim around the code I found the <code>grep -r "key word"</code> command very useful. Each file and subroutine inside it has a header with information about what it does, changes and input and output arguments. It’s worth mentioning a few key files:</p>
+<ul>
+<li><code>gsimain.f90</code> and <code>gsimod.f90</code> are the main files that control the system. <code>gsimain.f90</code> has a list off code errors and the possible cause.</li>
+<li><code>*info.f90</code> like <code>convinfo.f90</code> and <code>radinfo.f90</code> are the routines that read the configuration files. Note that the <code>satinfo</code> file is read by the <code>radinfo.f90</code> subroutine.</li>
+<li><code>read_*.f90</code> are a family of routines every bufr file that GSI is prepared to work with. For example there is a <code>read_prepbufr.f90</code> and a <code>read_goesimg.f90</code> that read goes observations including ABI.</li>
+<li>Another important family of files is <code>setup*.f90</code>, these files process each variable to be assimilated. For example, <code>setupt.f90</code> will:
+<ul>
+<li>reads temperature obs assigned to given mpi task (geographic region),</li>
+<li>simulates obs from guess,</li>
+<li>apply some quality control to obs,</li>
+<li>load weight and innovation arrays used in minimization</li>
+<li>collects statistics for runtime diagnostic output</li>
+<li>writes additional diagnostic information to output file</li>
+</ul></li>
+<li><code>qcmod.f90</code> includes important routines for the quality control of radiance observations.</li>
+</ul>
+<p>The mail files associated to the enkf code are:</p>
+<ul>
+<li><code>enkf.f90</code> and <code>enkf_main.f90</code></li>
+<li><code>read*.f90</code> are the family of files that read the diag files generated by the observation operator.</li>
+<li><code>radbias.f90</code> manage the bias correction for radiance observation.</li>
+</ul>
 
 
 

@@ -406,7 +406,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="thinning">Thinning</h3>
 <p>During the thinning process the observations to be assimilated are chosen based on their distance to the model grid points, the quality of the observation (based on available data quality information) and the number of available channels (for the same pixel and sensor). The thinning algorithm determines the quality of each observation based on the available information about the channels and their known errors, the type of surface below each pixel (preferring observations over the sea to those over land or snow) and predictors that give information about the quality of the observations <span class="citation" data-cites="hu2018">(<a href="#ref-hu2018" role="doc-biblioref">M. Hu et al. 2018</a>)</span>. By applying the thinning we avoid incorporating information from smaller scale processes than the model can not represent and to reduce the error correlation of the observations from the same sensor.</p>
 <p>The thinning resolution is configured in the GSI namelist:</p>
-<p>In this case we have 3 possible resolutions in kilometers: <code>dmesh(1)=120.0, dmesh(2)=60.0, dmesh(3)=10.0</code>. We define which resolution to use for each sensor in the <code>dthin</code> column. Here <code>amsua_n15</code> will use a thinning of 60 km and <code>abi_g16</code> a thinning of 10 km.</p>
+<p>In this case we have 3 possible mesh size in kilometers: <code>dmesh(1)=120.0, dmesh(2)=60.0, dmesh(3)=10.0</code>. We define which resolution to use for each sensor in the <code>dthin</code> column. Here <code>amsua_n15</code> will use a thinning of 60 km and <code>abi_g16</code> a thinning of 10 km.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;</span><span class="ex">OBS_INPUT</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>   <span class="ex">dmesh</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span><span class="ex">=120.0,</span> dmesh<span class="er">(</span><span class="ex">2</span><span class="kw">)</span><span class="ex">=60.0,</span> dmesh<span class="er">(</span><span class="ex">3</span><span class="kw">)</span><span class="ex">=10.0,</span> time_window_max=0.5,ext_sonde=.true.,</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> <span class="ex">/</span></span>
@@ -419,6 +419,11 @@ window.Quarto = {
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>   <span class="ex">amsuabufr</span>      amsua       metop-b   amsua_metop-b       10.0     2     0</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>   <span class="ex">airsbufr</span>       amsua       aqua      amsua_aqua           5.0     2     0</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>   <span class="ex">abibufr</span>        abi         g16       abi_g16              1.0     3     0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If the value of <code>dthin</code> is:</p>
+<ul>
+<li>an integer less than or equal to zero, no thinning is needed</li>
+<li>an integer larger than zero, this kind of radiance data will be thinned using the mesh size defined as <code>dmesh</code> (<code>dthin</code>).</li>
+</ul>
 </section>
 <section id="sec-bias-correction" class="level3">
 <h3 class="anchored" data-anchor-id="sec-bias-correction">Bias correction</h3>

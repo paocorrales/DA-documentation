@@ -294,13 +294,13 @@ window.Quarto = {
 <p>The meaning of each column is described in the following table:</p>
 <table class="table">
 <colgroup>
+<col style="width: 16%">
 <col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 17%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 22%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -367,8 +367,13 @@ window.Quarto = {
 </tbody>
 </table>
 <p>You can find more details about the quality control flags in <a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_7.htm">Table 7</a>.</p>
-<p>GSI can also perform a thinning for conventional observations. You can activate that option for each type of observation changing <code>ithin = 1</code> in the <code>convinfo</code> file.</p>
-<p>For each observation GSI will check different things and change the observation error accordingly. The final observation error is recorded in the <code>diag</code> file and then used during the assimilation.</p>
+<p>GSI can also perform a thinning for conventional observations. You can activate that option for each type of observation changing <code>ithin = 1</code> in the <code>convinfo</code> file. There are other important columns, <code>rmesh</code>, <code>pmesh</code>, in the <code>convinfo</code> file to configure conventional data thinning:</p>
+<ul>
+<li><code>ithin</code>: 0 = no thinning; 1 = thinning with grid mesh decided by <code>rmesh</code> and <code>pmesh</code></li>
+<li><code>rmesh</code>: horizontal thinning grid size in km</li>
+<li><code>pmesh</code>: vertical thinning grid size in mb; if 0, then use background vertical grid</li>
+</ul>
+<p><strong>For each observation GSI will check different things and change the observation error accordingly.</strong> The final observation error is recorded in the <code>diag</code> file and then used during the assimilation.</p>
 
 
 </section>
