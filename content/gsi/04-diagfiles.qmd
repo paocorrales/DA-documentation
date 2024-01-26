@@ -1,7 +1,185 @@
 ---
-title: "Undestanding diag files"
+title: "Undestanding diag(nostic) files"
 ---
 
-Scrips para decodificar
+The `diag_<obs>` files save the key information of how the observations where assimilated (with the variational method) or are going to be assimilated (using Kalman Filter), including the innovation (observation minus background), observation values, observation error and adjusted observation error, and quality control information.
 
-rutina que los genera
+It is important to check that the `write_diag` option in the GSI namelist is setup to `.true.`.
+
+By default the diag files are saved in binary format, and while GSI should be able to saved them as netcdfs, I have never made it work. So, this section will concentrate on how to decode the binary files and how to interpret the information.
+
+Here is a list of the files you get if you run GSI as observation operator, in this case we are assimilating AMSU-A observation from the NOAA-18 and METOP-A satellites, ABI observations from GOES-16 and conventional observations. To be able to use this output with the Kalman Filter methods we need the diag files for the ensemble mean and every member.
+
+```bash
+diag_abi_g16_ges.ensmean
+diag_abi_g16_ges.mem001
+diag_abi_g16_ges.mem002
+diag_abi_g16_ges.mem003
+diag_abi_g16_ges.mem004
+diag_abi_g16_ges.mem005
+diag_abi_g16_ges.mem006
+diag_abi_g16_ges.mem007
+diag_abi_g16_ges.mem008
+diag_abi_g16_ges.mem009
+diag_abi_g16_ges.mem010
+diag_amsua_metop-a_ges.ensmean
+diag_amsua_metop-a_ges.mem001
+diag_amsua_metop-a_ges.mem002
+diag_amsua_metop-a_ges.mem003
+diag_amsua_metop-a_ges.mem004
+diag_amsua_metop-a_ges.mem005
+diag_amsua_metop-a_ges.mem006
+diag_amsua_metop-a_ges.mem007
+diag_amsua_metop-a_ges.mem008
+diag_amsua_metop-a_ges.mem009
+diag_amsua_metop-a_ges.mem010
+diag_amsua_n18_ges.ensmean
+diag_amsua_n18_ges.mem001
+diag_amsua_n18_ges.mem002
+diag_amsua_n18_ges.mem003
+diag_amsua_n18_ges.mem004
+diag_amsua_n18_ges.mem005
+diag_amsua_n18_ges.mem006
+diag_amsua_n18_ges.mem007
+diag_amsua_n18_ges.mem008
+diag_amsua_n18_ges.mem009
+diag_amsua_n18_ges.mem010
+diag_conv_ges.ensmean
+diag_conv_ges.mem001
+diag_conv_ges.mem002
+diag_conv_ges.mem003
+diag_conv_ges.mem004
+diag_conv_ges.mem005
+diag_conv_ges.mem006
+diag_conv_ges.mem007
+diag_conv_ges.mem008
+diag_conv_ges.mem009
+diag_conv_ges.mem010
+```
+
+GSI includes some fortran routines you can use to decode the binary files. In may case I decided to modify those routines to get the information as a tidy table (1 observation per row, variables in columns) and to include more details present in the diagfiles. 
+
+The code is publish in this repository, that includes a version of GSI with some modidications:
+
+```bash
+read_diag/
+├── convinfo
+├── namelist.conv
+├── namelist.rad
+├── read_diag_conv_mean.sh
+├── read_diag_conv.sh
+├── read_diag_conv.x
+├── read_diag_rad_mean.sh
+├── read_diag_rad.sh
+├── read_diag_rad.x
+└── src
+    ├── compile_gcc
+    ├── compile_ifort
+    ├── read_diag_conv.f90
+    ├── read_diag_conv.f90_original
+    ├── read_diag_rad.f90
+    └── read_diag_rad.f90_original
+```
+
+There are 2 fortran routines, `read_diag_conv.f90` for conventional diag files and `read_diag_rad.f90` for radiances. To compile the routines it is necessary to link them with the libraries that GSI uses. An example of how to compile the code can be found in `compile_gcc` and `compile_ifort`. 
+
+The resulting executables are `read_diag_conv.x` and `read_diag_rad.x`. Each one is asociated to a namelist that you need to modify each time in order to run the code and decode an especific diagfile. See for example the content of `namelist.conv`:
+
+```bash
+&iosetup
+  infilename='/home/paola.corrales/datosmunin3/EXP/E6_long/ANA/20181112220000/diagfiles/diag_conv_ges.ensmean',
+  outfilename='/home/paola.corrales/datosmunin3/EXP/E6_long/ANA/20181112220000/diagfiles/asim_conv_20181112220000.ensmean',
+ /
+```
+
+The namelist is very simple, it only need the path to the diag file and the path to the output: a plain text file. But if you need to do this for every diag file, it is very time consuming. For that reason I wrote in bash some loops to go through all the diagfiles and decode them automatically. There are 4 bash files, to decode conventional diagfiles (ensemble mean or the members of the ensemble) and 2 for the radiance diagfiles. I've also kept the original fortran routines just in case.
+
+### Conventional obs
+
+This is the information you get when you decode a conventional diagfile using the `read_diag_conv.x`:
+
+* variable
+* stationID
+* type (acording to the prepbufr)
+* dhr (difference between the obserbation time and the analysis time)
+* latitude
+* longitude 
+* pressure
+* usage flag (defined by gsi)
+* usage flag preprepbufr
+* observation
+* observation minus guess
+* observation (only of uv)
+* observation minus guess (only of uv)
+* observation error
+
+Each row is an observation, except for wind that has u and v components in the same row.
+
+```bash
+ ps @ SCVD     : 187     -0.50  -39.61  286.94   0.101E+04    1    0   0.101E+04  -0.142E+01   0.100E+11   0.181E+03   0.161E+01
+ ps @ 85782    : 181     -0.50  -40.60  286.95   0.999E+03    1    0   0.999E+03  -0.176E+01   0.100E+11   0.181E+03   0.227E+01
+ ps @ 85766    : 181     -0.50  -39.65  287.92   0.101E+04    1    0   0.101E+04  -0.139E+00   0.100E+11   0.187E+03   0.295E+01
+  t @ 85782    : 181     -0.50  -40.60  286.95   0.999E+03    1    0   0.291E+03   0.242E+01   0.100E+11   0.181E+03   0.192E+01
+  t @ 85766    : 181     -0.50  -39.65  287.92   0.101E+04    1    0   0.291E+03   0.496E+01   0.100E+11   0.187E+03   0.100E+11
+  t @ SCJO     : 187     -0.50  -40.60  286.95   0.997E+03    1    0   0.291E+03   0.212E+01   0.100E+11   0.000E+00   0.150E+01
+  q @ SCVD     : 187     -0.50  -39.61  286.94   0.100E+04    1    0   0.113E-01   0.102E-02   0.114E-01   0.100E+11   0.228E-02
+  q @ 85782    : 181     -0.50  -40.60  286.95   0.999E+03    1    0   0.105E-01   0.946E-03   0.112E-01   0.100E+11   0.229E-02
+  q @ 85766    : 181     -0.50  -39.65  287.92   0.101E+04    1    0   0.110E-01   0.122E-02   0.995E-02   0.100E+11   0.988E-02
+  q @ SCJO     : 187     -0.50  -40.60  286.95   0.999E+03    1    0   0.107E-01   0.110E-02   0.112E-01   0.100E+11   0.225E-02
+ uv @ IR270    : 245      0.00  -39.36  285.57   0.270E+03   -1  100   0.434E+02  -0.363E+01  -0.193E+02   0.614E+00   0.684E+01
+ uv @ IR270    : 245      0.00  -39.31  286.11   0.269E+03   -1  100   0.434E+02  -0.225E+01  -0.193E+02  -0.108E+01   0.685E+01
+```
+
+The diag file includes more details. It may be useful to read the subroutine that write the diag files. The subroutine is called `contents_binary_diag_` and is present in each `setup*.f90` file. But here is a tip, it is much easier to read the `contents_netcdf_diag_` subroutine because it mention the name of each variable to create the metadata of the netcdf file.   
+
+### Radiance obs
+
+For radiances we'll get a diag file for each sensor and satellite. But the structure of the binary files is always the same. Here is the list of variable I save from the diagfiles:
+
+* sensor
+* channel
+* frequency
+* latitude
+* longitude
+* elevation at observation location according guess (mb)
+* pressure at max of weighting function (mb)
+* dhr (difference between the observation time and the analysis time)
+* observation (BT)
+* observation minus guess with bias correction
+* observation minus guess without bias correction
+* inverse observation error
+* quality control flag
+* emissivity from surface
+* stability index
+* satellite zenith angle (degrees)
+* satellite azimuth angle (degrees)
+* fractional coverage by land
+* fractional coverage by ice
+* fractional coverage by ice
+* cloud fraction (%)
+* cloud top pressure (hPa)
+* predictor 1
+* predictor 2
+* predictor 3
+* predictor 4
+* predictor 5
+* predictor 6
+* predictor 7
+* predictor 8
+* predictor 9
+* predictor 10
+* predictor 11
+* predictor 12
+
+Again, it is worth cheeking the subroutine that write the diagfiles for radiances, in case there are other details you need to include in the decodification. 
+
+`read_diag_rad.x` will write a plain text file with all the variables listed above for each observation (from each satellite/sensor/channel). 
+
+### Important information in the diagfiles
+
+While all variables included in the diagfiles are necessary for the assimilation, there are a few that I found particularly important to monitor the assimilation process:
+
+* **observation minus guess:** this variable should have a normal distribution centered in zero. If a bias correction was perform, it is important to compare the distribution with and without bias correction. 
+* **quality control flag:** if this variable is not zero, the observation will be rejected during the assimilation. To understand why this happened you need to check the GSI code and find the corresponding qc value. It will be different for each type of observation.
+* **error:** this variable is also used to decide if the observation will be assimilated or not. If the value is to big (and remember, GSI changes the value of the error depending on the quality of the observation), it means that the observation is not good. 
+
