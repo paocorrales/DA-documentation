@@ -12,7 +12,7 @@ PREPBUFR files usually contains observations from a 6 to 12 h window and can be 
 
 The assimilation of conventional observations is controlled with the `convinfo` file. Let's check the `global_convinfo.txt` file we get as an example:
 
-```bash
+``` bash
 ! otype   = observation type (a7, t, uv, q, etc.)
 ! type    = prepbufr observation type (if available)
 ! sub     = prepbufr subtype (not yet available)
@@ -41,16 +41,16 @@ The assimilation of conventional observations is controlled with the `convinfo` 
 
 The head of the file explains the content of each column but there are a few more things to add:
 
-* type: this is defined by the bufr tables, particular [Table 2](https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm). It is worth checking this table as includes information about which observations are assimilated in GFS, errors asociated to specific instruments and other details. 
-* twindow: while the assimilation window is defined in the gsi namalist, it is possible to control an assimilation window for specific observations. This is useful if, for example the assimilation window is 3 h and you want to assimilate temperature in a 1h window. 
+-   type: this is defined by the bufr tables, particular [Table 2](https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm). It is worth checking this table as includes information about which observations are assimilated in GFS, errors asociated to specific instruments and other details.
+-   twindow: while the assimilation window is defined in the gsi namalist, it is possible to control an assimilation window for specific observations. This is useful if, for example the assimilation window is 3 h and you want to assimilate temperature in a 1h window.
 
-In general you only change the *isue* column to assimilate or not a type of observation and maybe just maybe the *gross*, *ermax*, and *ermin* parameters if you want to modify the quality control of the observations. 
+In general you only change the *isue* column to assimilate or not a type of observation and maybe just maybe the *gross*, *ermax*, and *ermin* parameters if you want to modify the quality control of the observations.
 
 ### Observation errors and quality control
 
-For **regional assimilation** GSI uses an error table located in the  `errtable` file that you'll find in the `./fix` folder under the name `prepobs_errtable.global` (it is confusing that the table for regional errors in in a file called global). Here is a small example of the content of the file for observations from surface stations. 
+For **regional assimilation** GSI uses an error table located in the `errtable` file that you'll find in the `./fix` folder under the name `prepobs_errtable.global` (it is confusing that the table for regional errors in in a file called global). Here is a small example of the content of the file for observations from surface stations.
 
-```bash
+``` bash
 181 OBSERVATION TYPE
   0.11000E+04 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10
   0.10500E+04 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10
@@ -65,32 +65,35 @@ For **regional assimilation** GSI uses an error table located in the  `errtable`
 
 The meaning of each column is described in the following table:
 
-| Column # | 1 | 2 | 3 | 4 | 5 | 6 |
-|:---------|:---------|:---------|:---------|:---------|:---------|:---------|
-|Content   |Pressure  |T         |RH | UV | Ps |Pw |
-|Unit      |hPa  |degreeC |percent/10 | m/s | mb |kg/m2 (or mm)|
+| Column \# | 1        | 2       | 3          | 4   | 5   | 6             |
+|:----------|:---------|:--------|:-----------|:----|:----|:--------------|
+| Content   | Pressure | T       | RH         | UV  | Ps  | Pw            |
+| Unit      | hPa      | degreeC | percent/10 | m/s | mb  | kg/m2 (or mm) |
 
 So column 1 define the pressure level associated to the errors for each variable in columns 2 to 6. In the `errtable` a `0.10000E+10` is a `NA`.
 
-GSI will perform a quality control for each observation. In general terms this involves a gross check and specific controls depending on the type of observation. 
+GSI will perform a quality control for each observation. In general terms this involves a gross check and specific controls depending on the type of observation.
 
 For the gross check, GSI first calculates a ratio:
 
-$$ ratio = (obs - bk)/max(ermin, min(ermax, obserror)) $$
-The main error parameters are controlled by the `convinfo` file. The `obserror` is the observation error defined in the prepbufr file for each observation as a result to the quality control perform while generating that file. 
+$$ ratio = (obs - bk)/max(ermin, min(ermax, obserror)) $$ The main error parameters are controlled by the `convinfo` file. The `obserror` is the observation error defined in the prepbufr file for each observation as a result to the quality control perform while generating that file.
 
 If $ration > gross$ the observation is rejected.
 
 Other piece of information used during the quality control is the quality control flag that is included in the prepbufr file a part if it quality control process. The possible values for conventional observations are:
 
-|  qc flag | meaning                                                                                  |
+| qc flag | meaning                                                                     |
 |:------------------------------:|:---------------------------------------|
-| 0-2  | --\> Obs is assimilated                                                                      |
-|  3   | Suspicious obs --\> gross check is more strict                                |
-| 4-15 | --\> Obs is rejected (for some cases 9 o 15 means that the obs is monitored |
+|   0-2   | --\> Obs is assimilated                                                     |
+|    3    | Suspicious obs --\> gross check is more strict                              |
+|  4-15   | --\> Obs is rejected (for some cases 9 o 15 means that the obs is monitored |
 
-You can find more details about the quality control flags in [Table 7](https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_7.htm). 
+You can find more details about the quality control flags in [Table 7](https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_7.htm).
 
-GSI can also perform a thinning for conventional observations. You can activate that option for each type of observation changing `ithin = 1` in the `convinfo` file. 
+GSI can also perform a thinning for conventional observations. You can activate that option for each type of observation changing `ithin = 1` in the `convinfo` file. There are other important columns, `rmesh`, `pmesh`, in the `convinfo` file to configure conventional data thinning: 
 
-For each observation GSI will check different things and change the observation error accordingly. The final observation error is recorded in the `diag` file and then used during the assimilation. 
+* `ithin`: 0 = no thinning; 1 = thinning with grid mesh decided by `rmesh` and `pmesh`
+* `rmesh`: horizontal thinning grid size in km
+* `pmesh`: vertical thinning grid size in mb; if 0, then use background vertical grid
+
+**For each observation GSI will check different things and change the observation error accordingly.** The final observation error is recorded in the `diag` file and then used during the assimilation.

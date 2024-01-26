@@ -97,7 +97,7 @@ During the thinning process the observations to be assimilated are chosen based 
 
 The thinning resolution is configured in the GSI namelist:
 
-In this case we have 3 possible resolutions in kilometers: `dmesh(1)=120.0, dmesh(2)=60.0, dmesh(3)=10.0`. We define which resolution to use for each sensor in the `dthin` column. Here `amsua_n15` will use a thinning of 60 km and `abi_g16` a thinning of 10 km.
+In this case we have 3 possible mesh size in kilometers: `dmesh(1)=120.0, dmesh(2)=60.0, dmesh(3)=10.0`. We define which resolution to use for each sensor in the `dthin` column. Here `amsua_n15` will use a thinning of 60 km and `abi_g16` a thinning of 10 km.
 
 ``` bash
  &OBS_INPUT
@@ -113,6 +113,11 @@ OBS_INPUT::
    airsbufr       amsua       aqua      amsua_aqua           5.0     2     0
    abibufr        abi         g16       abi_g16              1.0     3     0
 ```
+
+If the value of `dthin` is:
+
+-   an integer less than or equal to zero, no thinning is needed
+-   an integer larger than zero, this kind of radiance data will be thinned using the mesh size defined as `dmesh` (`dthin`).
 
 ### Bias correction {#sec-bias-correction}
 
