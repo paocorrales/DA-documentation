@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -147,7 +181,17 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#how-to-interpret-the-information-in-a-message" id="toc-how-to-interpret-the-information-in-a-message" class="nav-link active" data-scroll-target="#how-to-interpret-the-information-in-a-message">How to interpret the information in a message</a></li>
+  <li><a href="#an-introduction-on-how-to-read-and-write-bufr-files" id="toc-an-introduction-on-how-to-read-and-write-bufr-files" class="nav-link" data-scroll-target="#an-introduction-on-how-to-read-and-write-bufr-files">An introduction on how to read and write BUFR files</a>
+  <ul class="collapse">
+  <li><a href="#decode-prepbufr-files" id="toc-decode-prepbufr-files" class="nav-link" data-scroll-target="#decode-prepbufr-files">Decode prepBUFR files</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/observations/01-bufr.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -171,10 +215,221 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Intro</p>
-<p>Tablas</p>
+<p>The <strong>Binary Universal Form for the Representation of meteorological data</strong> (<strong>BUFR</strong>) is a <a href="https://en.wikipedia.org/wiki/Binary_data" title="Binary data">binary</a> data format maintained by the <a href="https://en.wikipedia.org/wiki/World_Meteorological_Organization" title="World Meteorological Organization">World Meteorological Organization</a> (WMO). According to <a href="https://en.wikipedia.org/wiki/BUFR">Wikipedia</a> BUFR was created in 1988 with the goal of replacing the WMO’s dozens of character-based, position-driven meteorological codes, such as SYNOP (surface observations), TEMP (upper air soundings) and CLIMAT (monthly climatological data). BUFR was designed to be portable, compact, and universal. BUFR belongs to the category of <em>table-driven code forms,</em> this mean that the information is codified using specific tables previously defined.</p>
+<p>NCEP converts and archives all observational data received into a BUFR tank and provides several kinds of BUFR files for its global and regional numerical weather forecast systems. These BUFR files are used by GSI as the standard data sources and can be download from <a href="https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C00379">Global Data Assimilation System (GDAS)</a> webpage.</p>
+<p>A BUFR file is divided into one or more messages, each message containing one or more subsets and each subset containing one or more data values.</p>
+<p><img src="img/bufr-1.png" class="img-fluid"></p>
+<p>A message is a continuous binary stream that can be divided into 6 sections:</p>
+<table class="table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 53%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Section Number</th>
+<th>Name</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>Indicator section</td>
+<td>“BUFR”, length of message, edition number</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>Identification section</td>
+<td>Originating center and subcenter, data category and subcategory, master table and version number</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>(Optional) Local Use section</td>
+<td>(Optional) free-format additional information of potential interest to users</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>Data Description section</td>
+<td>Number of data subsets, compression indicator, and list of descriptors defining the content of each data subset</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>Data section</td>
+<td>One or more data subsets, each containing values corresponding to the list of descriptors defined within Section 3</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>End section</td>
+<td>“7777”</td>
+</tr>
+</tbody>
+</table>
+<section id="how-to-interpret-the-information-in-a-message" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-interpret-the-information-in-a-message">How to interpret the information in a message</h2>
+<p>Section 1 of each message with include the relevant information associated to the data: data type and observation date and time. However, the information is encoded using <em>mnemonics</em>. To decode the information in a BUFR file we will need the table that was used to create the file. In the case of prepBUFR files the table has different sections (check the complete table <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/blob/main/util/bufr_tools/prepbufr.table">here</a>). In general this tables includes the mnemonics and a short description. The first part of the prepBUFR table includes the mnemonics associated to the data type:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">.------------------------------------------------------------------------------.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">------------</span>   USER DEFINITIONS FOR TABLE-A TABLE-B TABLE D   <span class="at">--------------</span> <span class="kw">|</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">------------------------------------------------------------------------------</span><span class="kw">|</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">MNEMONIC</span> <span class="kw">|</span> <span class="ex">NUMBER</span> <span class="kw">|</span> <span class="ex">DESCRIPTION</span>                                              <span class="kw">|</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">----------</span><span class="kw">|</span><span class="ex">--------</span><span class="kw">|</span><span class="ex">----------------------------------------------------------</span><span class="kw">|</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>          <span class="kw">|</span>        <span class="kw">|</span>                                                          <span class="kw">|</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">ADPUPA</span>   <span class="kw">|</span> <span class="ex">A48102</span> <span class="kw">|</span> <span class="ex">UPPER-AIR</span> <span class="er">(</span><span class="ex">RAOB,</span> PIBAL, RECCO, DROPS<span class="kw">)</span> <span class="ex">REPORTS</span>            <span class="kw">|</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">AIRCAR</span>   <span class="kw">|</span> <span class="ex">A48103</span> <span class="kw">|</span> <span class="ex">MDCRS</span> ACARS AIRCRAFT REPORTS                             <span class="kw">|</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">AIRCFT</span>   <span class="kw">|</span> <span class="ex">A48104</span> <span class="kw">|</span> <span class="ex">AIREP,</span> PIREP, AMDAR, TAMDAR AIRCRAFT REPORTS             <span class="kw">|</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>As an example, let say we get the message type <code>ADPUPA</code>. The first part of the table tell us that this message includes upper-air observations. In a following section of the table we find the structure of this type of messages:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">------------------------------------------------------------------------------</span><span class="kw">|</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">MNEMONIC</span> <span class="kw">|</span> <span class="ex">SEQUENCE</span>                                                          <span class="kw">|</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">----------</span><span class="kw">|</span><span class="ex">-------------------------------------------------------------------</span><span class="kw">|</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>          <span class="kw">|</span>                                                                   <span class="kw">|</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">ADPUPA</span>   <span class="kw">|</span> <span class="ex">HEADR</span>  SIRC  {PRSLEVEL}  <span class="op">&lt;</span>SST_INFO<span class="op">&gt;</span>  <span class="op">&lt;</span>PREWXSEQ<span class="op">&gt;</span>  {CLOUDSEQ}       <span class="kw">|</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">ADPUPA</span>   <span class="kw">|</span> <span class="op">&lt;</span>CLOU2SEQ<span class="op">&gt;</span>  <span class="op">&lt;</span>SWINDSEQ<span class="op">&gt;</span>  <span class="op">&lt;</span>AFIC_SEQ<span class="op">&gt;</span>  <span class="op">&lt;</span>TURB3SEQ<span class="op">&gt;</span>                    <span class="kw">|</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This tell us that the message has a header (<code>HEADR</code> - report header sequence) among other things. When we search for <code>HEADR</code> inside the table, we will find the content and it definition:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">HEADR</span>    <span class="kw">|</span> <span class="ex">SID</span>  207003  XOB  YOB  207000  DHR  ELV  TYP  T29  TSB  ITP  SQN  <span class="kw">|</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">HEADR</span>    <span class="kw">|</span> <span class="ex">PROCN</span>  RPT  TCOR  <span class="op">&lt;</span>RSRD_SEQ<span class="op">&gt;</span>  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Again, we will need to look each mnemonic to understand their meaning:</p>
+<ul>
+<li>SID: STATION IDENTIFICATION</li>
+<li>XOB: LONGITUDE (DEG E)</li>
+<li>YOB: LATITUDE (DEG N)</li>
+<li>DHR: OBSERVATION TIME MINUS CYCLE TIME (HOURS)</li>
+<li>ELV: STATION ELEVATION (METERS)</li>
+<li>TYP: PREPBUFR REPORT TYPE</li>
+<li>T29: DATA DUMP REPORT TYPE</li>
+<li>TSB: REPORT SUBTYPE (HAS VARIOUS MEANINGS DEPENDING ON TYPE)</li>
+<li>ITP: INSTRUMENT TYPE</li>
+<li>SQN: REPORT SEQUENCE NUMBER</li>
+<li>PROCN: PROCESS NUMBER FOR THIS MPI RUN</li>
+<li>RPT: REPORTED OBSERVATION TIME (HOURS)</li>
+<li>TCOR: INDICATOR WHETHER OBS. TIME IN “DHR” WAS CORRECTED</li>
+<li>RSRD_SEQ: RESTRICTIONS ON REDISTRIBUTION SEQUENCE</li>
+</ul>
+<p>Each of this mnemonics are described in an specific section:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">------------------------------------------------------------------------------</span><span class="kw">|</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">MNEMONIC</span> <span class="kw">|</span> <span class="ex">SCAL</span> <span class="kw">|</span> <span class="ex">REFERENCE</span>   <span class="kw">|</span> <span class="ex">BIT</span> <span class="kw">|</span> <span class="ex">UNITS</span>                    <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">----------</span><span class="kw">|</span><span class="ex">------</span><span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span><span class="ex">-----</span><span class="kw">|</span><span class="ex">--------------------------</span><span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>          <span class="kw">|</span>      <span class="kw">|</span>             <span class="kw">|</span>     <span class="kw">|</span>                          <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">ACID</span>     <span class="kw">|</span>    <span class="ex">0</span> <span class="kw">|</span>           <span class="ex">0</span> <span class="kw">|</span>  <span class="ex">64</span> <span class="kw">|</span> <span class="ex">CCITT</span> IA5                <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">SAID</span>     <span class="kw">|</span>    <span class="ex">0</span> <span class="kw">|</span>           <span class="ex">0</span> <span class="kw">|</span>  <span class="ex">10</span> <span class="kw">|</span> <span class="ex">CODE</span> TABLE               <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">SID</span>      <span class="kw">|</span>    <span class="ex">0</span> <span class="kw">|</span>           <span class="ex">0</span> <span class="kw">|</span>  <span class="ex">64</span> <span class="kw">|</span> <span class="ex">CCITT</span> IA5                <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">SIRC</span>     <span class="kw">|</span>    <span class="ex">0</span> <span class="kw">|</span>           <span class="ex">0</span> <span class="kw">|</span>   <span class="ex">4</span> <span class="kw">|</span> <span class="ex">CODE</span> TABLE               <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">MSST</span>     <span class="kw">|</span>    <span class="ex">0</span> <span class="kw">|</span>           <span class="ex">0</span> <span class="kw">|</span>   <span class="ex">3</span> <span class="kw">|</span> <span class="ex">CODE</span> TABLE               <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">ITP</span>      <span class="kw">|</span>    <span class="ex">0</span> <span class="kw">|</span>           <span class="ex">0</span> <span class="kw">|</span>   <span class="ex">8</span> <span class="kw">|</span> <span class="ex">CODE</span> TABLE               <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">RPT</span>      <span class="kw">|</span>    <span class="ex">5</span> <span class="kw">|</span>           <span class="ex">0</span> <span class="kw">|</span>  <span class="ex">22</span> <span class="kw">|</span> <span class="ex">HOURS</span>                    <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">DHR</span>      <span class="kw">|</span>    <span class="ex">5</span> <span class="kw">|</span>    <span class="ex">-2400000</span> <span class="kw">|</span>  <span class="ex">23</span> <span class="kw">|</span> <span class="ex">HOURS</span>                    <span class="kw">|</span><span class="ex">-------------</span><span class="kw">|</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Half of the information included in the header is not useful from the assimilation point of view but it is good to know how it works. For this example we have the <code>{PRSLEVEL}</code> sequence included. This is the “PRESSURE LEVEL SEQUENCE” for upper-air observations and includes humidity, temperature and wind observations at each pressure level.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">PRSLEVEL</span> <span class="kw">|</span> <span class="ex">CAT</span>  <span class="op">&lt;</span>P___INFO<span class="op">&gt;</span>  <span class="op">&lt;</span>Q___INFO<span class="op">&gt;</span>  <span class="op">&lt;</span>T___INFO<span class="op">&gt;</span>  <span class="op">&lt;</span>Z___INFO<span class="op">&gt;</span>  <span class="op">&lt;</span>W___INFO<span class="op">&gt;</span>   <span class="kw">|</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">PRSLEVEL</span> <span class="kw">|</span> <span class="op">&lt;</span>DRFTINFO<span class="op">&gt;</span>  <span class="ex">[W1_EVENT]</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A surface station (<code>ADPSFC</code>) will have a different structure but the idea is the same, everything can be decode from the table.</p>
+</section>
+<section id="an-introduction-on-how-to-read-and-write-bufr-files" class="level2">
+<h2 class="anchored" data-anchor-id="an-introduction-on-how-to-read-and-write-bufr-files">An introduction on how to read and write BUFR files</h2>
+<p>Working with BUFR files requires to work with fortran routines. Fortunately there is a library that contains subroutines, functions and other utilities that can be used to read (decode) and write (encode) data in BUFR: <a href="https://noaa-emc.github.io/NCEPLIBS-bufr/">NCEPLIBS-bufr</a>. This library is compiled during the compilation of GSI but can also be used independently.</p>
+<p>Here is a simplified example of a routine to decode a bufr file:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">open(</span>unit_in,<span class="fu">file</span><span class="kw">=</span><span class="st">'sample.bufr'</span>,<span class="fu">action</span><span class="kw">=</span><span class="st">'read'</span>,<span class="fu">form</span><span class="kw">=</span><span class="st">'unformatted'</span><span class="fu">)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">call openbf(unit_in,'IN',unit_in)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  msg_report: <span class="kw">do</span> <span class="kw">while</span> (ireadmg(unit_in,subset,idate) <span class="op">==</span> <span class="dv">0</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    sb_report: <span class="kw">do</span> <span class="kw">while</span> (ireadsb(unit_in) <span class="op">==</span> <span class="dv">0</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>      <span class="kw">call</span> ufbint(unit_in,hdr,<span class="dv">3</span>,<span class="dv">1</span> ,iret,hdstr)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      <span class="kw">call</span> ufbint(unit_in,obs,<span class="dv">1</span>,<span class="dv">10</span>,iret,obstr)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">enddo</span> sb_report</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">enddo</span> msg_report</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">call closbf(unit_in)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>The first level of code open and close the file. It uses the <code>openbf()</code> and <code>closebf()</code>functions from the BUFR library.</li>
+<li>The second level will read each message. Each loop reads in one message until the last message in the file is reached. It uses the <code>ireadmg()</code> function.</li>
+<li>The third level will read the reports inside each message using the <code>ireadsb()</code>.</li>
+<li>And finally inside each report, we access the data values using the <code>ufbint()</code> function. In this example we save the header in formation in one array and the observation information in a second array.</li>
+</ul>
+<p>GSI includes some example routines as part ad the bufr tools kit. A complete routine to decode a BUFR file can be found <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/blob/main/util/bufr_tools/bufr_decode_sample.f90">here</a>. The routine to <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/blob/main/util/bufr_tools/bufr_encode_sample.f90">encode a BUFR file</a> will have similar characteristics.</p>
+<p>And again, BUFR files will be different for different type of observations and you always need the associated mnemonics table.</p>
+<section id="decode-prepbufr-files" class="level3">
+<h3 class="anchored" data-anchor-id="decode-prepbufr-files">Decode prepBUFR files</h3>
+<p>This is not different that we’ve seen previously and the BUFR tools fonder in the GSI code has very good examples to use. But I like to have the data in tidy tables, so I’ve modified that code to decode a prepBUFR file into a table where each row is an observation. This is the routine:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">program</span> prepbufr_decode_all_df</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">! read all observations out from prepbufr. </span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">! read bufr table from prepbufr file</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">! output in a "data frameish" type </span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a> <span class="kw">implicit</span> <span class="kw">none</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a> <span class="dt">integer</span>, <span class="dt">parameter</span> <span class="dt">::</span> mxmn<span class="kw">=</span><span class="dv">35</span>, mxlv<span class="kw">=</span><span class="dv">250</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a> <span class="dt">character(80)::</span> hdstr<span class="kw">=</span><span class="st">'SID XOB YOB DHR TYP ELV SAID T29'</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a> <span class="dt">character(80)::</span> obstr<span class="kw">=</span><span class="st">'POB QOB TOB ZOB UOB VOB PWO CAT PRSS'</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a> <span class="dt">character(80)::</span> qcstr<span class="kw">=</span><span class="st">'PQM QQM TQM ZQM WQM NUL PWQ     '</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a> <span class="dt">character(80)::</span> oestr<span class="kw">=</span><span class="st">'POE QOE TOE NUL WOE NUL PWE     '</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a> <span class="dt">real(8)</span> <span class="dt">::</span> hdr(mxmn),obs(mxmn,mxlv),qcf(mxmn,mxlv),oer(mxmn,mxlv)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a> <span class="dt">INTEGER</span>        <span class="dt">::</span> ireadmg,ireadsb</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a> <span class="dt">character(8)</span>   <span class="dt">::</span> subset</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a> <span class="dt">integer</span>        <span class="dt">::</span> unit_in<span class="kw">=</span><span class="dv">10</span>,idate,nmsg,ntb</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a> <span class="dt">character(8)</span>   <span class="dt">::</span> c_sid</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a> <span class="dt">real(8)</span>        <span class="dt">::</span> rstation_id</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a> <span class="kw">equivalence</span>(rstation_id,c_sid)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a> <span class="dt">integer</span>        <span class="dt">::</span> i,k,iret</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a> <span class="fu">open(</span><span class="dv">24</span>,<span class="fu">file</span><span class="kw">=</span><span class="st">'prepbufr.table'</span><span class="fu">)</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a> <span class="fu">open(</span>unit_in,<span class="fu">file</span><span class="kw">=</span><span class="st">'prepbufr'</span>,<span class="fu">form</span><span class="kw">=</span><span class="st">'unformatted'</span>,<span class="fu">status</span><span class="kw">=</span><span class="st">'old'</span><span class="fu">)</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a> <span class="kw">call</span> openbf(unit_in,<span class="st">'IN'</span>,unit_in)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a> <span class="kw">call</span> dxdump(unit_in,<span class="dv">24</span>)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a> <span class="kw">call</span> datelen(<span class="dv">10</span>)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>   nmsg<span class="kw">=</span><span class="dv">0</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>   msg_report: <span class="kw">do</span> <span class="kw">while</span> (ireadmg(unit_in,subset,idate) <span class="op">==</span> <span class="dv">0</span>)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a><span class="bu">     n</span>msg<span class="kw">=</span>nmsg<span class="kw">+</span><span class="dv">1</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="bu">     n</span>tb <span class="kw">=</span> <span class="dv">0</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a><span class="bu">     s</span>b_report: <span class="kw">do</span> <span class="kw">while</span> (ireadsb(unit_in) <span class="op">==</span> <span class="dv">0</span>)</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>       ntb <span class="kw">=</span> ntb<span class="kw">+</span><span class="dv">1</span></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>       <span class="co">!write(*,*)'New secction: ',ntb,' in msg ',nmsg</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>       <span class="kw">call</span> ufbint(unit_in,hdr,mxmn,<span class="dv">1</span>   ,iret,hdstr)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>       <span class="kw">call</span> ufbint(unit_in,obs,mxmn,mxlv,iret,obstr)</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>       <span class="kw">call</span> ufbint(unit_in,oer,mxmn,mxlv,iret,oestr)</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>       <span class="kw">call</span> ufbint(unit_in,qcf,mxmn,mxlv,iret,qcstr)</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>       rstation_id<span class="kw">=</span>hdr(<span class="dv">1</span>)</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>       <span class="co">!write(*,*)</span></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>       <span class="co">!write(*,'(a14,8f14.1)') c_sid,(hdr(i),i=2,8)</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>       <span class="kw">DO</span> k<span class="kw">=</span><span class="dv">1</span>,iret</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>         <span class="fu">write(*</span>,<span class="st">'(a6,i12,a14,6f17.3,9f17.3,7f17.3)'</span><span class="fu">)</span> subset,idate,c_sid<span class="co">,(hdr(i),i=2,6),(obs(i,k),i=1,9),(qcf(i,k),i=1,7)</span></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>       <span class="kw">ENDDO</span></span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a><span class="bu">     e</span>nddo sb_report</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>   <span class="kw">enddo</span> msg_report</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a> <span class="kw">call</span> closbf(unit_in)</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a><span class="kw">end program</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are excellent resources for learning how to work with BUFR files from which I have taken many things mentioned here:</p>
+<ul>
+<li><a href="https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf">BUFR/PrepBUFR User’s Guide</a> from the Developmental Testbed Center.</li>
+<li><a href="https://www.ecmwf.int/sites/default/files/elibrary/2008/18792-bufr-reference-manual.pdf">BUFR Reference Manual</a> from the ECMWF.</li>
+</ul>
+</div>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -599,7 +854,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
 </ul>
-    <div class="toc-actions"><ul><li><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/observations/01-bufr.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/paocorrales/DA-documentation/edit/main/content/observations/01-bufr.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/paocorrales/DA-documentation/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
