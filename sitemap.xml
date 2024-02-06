@@ -2,46 +2,54 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://paocorrales.github.io/DA-documentation/about.html</loc>
-    <lastmod>2024-02-01T23:47:22.957Z</lastmod>
+    <lastmod>2024-02-06T00:19:59.503Z</lastmod>
   </url>
   <url>
     <loc>https://paocorrales.github.io/DA-documentation/contributors.html</loc>
-    <lastmod>2024-02-01T23:47:22.965Z</lastmod>
-  </url>
-  <url>
-    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/05-tutorial.html</loc>
-    <lastmod>2024-02-01T23:47:22.961Z</lastmod>
-  </url>
-  <url>
-    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/03-radiances.html</loc>
-    <lastmod>2024-02-01T23:47:22.957Z</lastmod>
-  </url>
-  <url>
-    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/02-convencionals.html</loc>
-    <lastmod>2024-02-01T23:47:22.957Z</lastmod>
-  </url>
-  <url>
-    <loc>https://paocorrales.github.io/DA-documentation/index.html</loc>
-    <lastmod>2024-02-01T23:47:22.965Z</lastmod>
-  </url>
-  <url>
-    <loc>https://paocorrales.github.io/DA-documentation/license.html</loc>
-    <lastmod>2024-02-01T23:47:22.965Z</lastmod>
-  </url>
-  <url>
-    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/04-diagfiles.html</loc>
-    <lastmod>2024-02-01T23:47:22.961Z</lastmod>
-  </url>
-  <url>
-    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/01-gsi.html</loc>
-    <lastmod>2024-02-01T23:47:22.957Z</lastmod>
+    <lastmod>2024-02-06T00:19:59.515Z</lastmod>
   </url>
   <url>
     <loc>https://paocorrales.github.io/DA-documentation/content/observations/01-bufr.html</loc>
-    <lastmod>2024-02-01T23:47:22.961Z</lastmod>
+    <lastmod>2024-02-06T00:19:59.511Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/05-tutorial.html</loc>
+    <lastmod>2024-02-06T00:19:59.507Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/03-radiances.html</loc>
+    <lastmod>2024-02-06T00:19:59.507Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/02-convencionals.html</loc>
+    <lastmod>2024-02-06T00:19:59.507Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/index.html</loc>
+    <lastmod>2024-02-06T00:19:59.515Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/license.html</loc>
+    <lastmod>2024-02-06T00:19:59.515Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/04-diagfiles.html</loc>
+    <lastmod>2024-02-06T00:19:59.507Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/content/gsi/01-gsi.html</loc>
+    <lastmod>2024-02-06T00:19:59.507Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/content/observations/03-rad-bufr.html</loc>
+    <lastmod>2024-02-06T00:19:59.511Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paocorrales.github.io/DA-documentation/content/observations/02-conv-bufr.html</loc>
+    <lastmod>2024-02-06T00:19:59.511Z</lastmod>
   </url>
   <url>
     <loc>https://paocorrales.github.io/DA-documentation/contribute.html</loc>
-    <lastmod>2024-02-01T23:47:22.965Z</lastmod>
+    <lastmod>2024-02-06T00:19:59.515Z</lastmod>
   </url>
 </urlset>
