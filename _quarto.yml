@@ -44,6 +44,10 @@ website:
         menu: 
         - text: "Working with bufr files"
           href: content/observations/01-bufr.qmd
+        - text: "Conventional obs bufr"
+          href: content/observations/02-conv-bufr.qmd
+        - text: "Radiance obs bufr"
+          href: content/observations/03-rad-bufr.qmd
     tools:
       - icon: github
         href: https://github.com/paocorrales/DA-documentation
