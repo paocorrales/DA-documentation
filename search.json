@@ -102,7 +102,7 @@
     "href": "index.html",
     "title": "Welcome!",
     "section": "",
-    "text": "This website compiles a series of examples, tutorials, scripts and in general a comprehensive documentation around the GSI system V3.7 - EnKF V1.3. It focus on the use of GSI as a observation operator along with the EnKF version. It covers everything you need to know from how to deal with observations (in bufr format), how to configure the system to assimilate conventional and radiance observtions to how to read and interpret GSI outputs.\n\n\nWhile the text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License, specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the note associated to each section and cite it appropriately.\n\n\n\nYou can cite this guide using its Zenodo metadata and DOI .\n\n\n\nAny contribution is welcome, please read this guide to learn how to do it."
+    "text": "This website compiles a series of examples, tutorials, scripts and in general a comprehensive documentation around the GSI system V3.7 - EnKF V1.3. It focus on the use of GSI as a observation operator along with the EnKF version. It covers everything you need to know from how to deal with observations (in bufr format), how to configure the system to assimilate conventional and radiance observtions to how to read and interpret GSI outputs.\n\n\nWhile the text in this guide is released under a Creative Commons Attribution-ShareAlike 4.0 International License, specific scripts or programming routines may have different licences and authors. If you use the material in any way, make sure to check the note associated to each section and cite it appropriately.\n\n\n\nYou can cite this guide using its Zenodo metadata and DOI.\n\n\n\n\nAny contribution is welcome, please read this guide to learn how to do it."
   },
   {
     "objectID": "index.html#a-note-about-using-this-material",
@@ -116,7 +116,7 @@
     "href": "index.html#citing-this-guide",
     "title": "Welcome!",
     "section": "",
-    "text": "You can cite this guide using its Zenodo metadata and DOI ."
+    "text": "You can cite this guide using its Zenodo metadata and DOI."
   },
   {
     "objectID": "index.html#do-you-want-to-contribute",

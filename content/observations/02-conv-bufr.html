@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Data Assimilation docs - Conventional obs bufr</title>
+<title>Data Assimilation Docs - Conventional obs bufr</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -133,7 +133,7 @@ div.csl-indent {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">Data Assimilation docs</span>
+    <span class="navbar-title">Data Assimilation Docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -252,7 +252,7 @@ div.csl-indent {
 <p>This requires to incorporate these new observations <span class="citation" data-cites="garcia2019">(available at <a href="#ref-garcia2019" role="doc-biblioref">Garcia et al. 2019</a>)</span> to the prepBUFR (so, be able to write fortran code and understand the bufr format). The 2 programs included here are based on the INPE/CPTEC modules and programs that are part of their operational assimilation system. I was lucky to visit CPTEC in 2019 where I learned how to work with these tools.</p>
 <section id="add-observations-to-a-prepbufr-file" class="level2">
 <h2 class="anchored" data-anchor-id="add-observations-to-a-prepbufr-file">Add observations to a prepBUFR file</h2>
-<p>In the <a href="obs/01-bufr.qmd">previous section</a> I briefly explained how to read and write a bufr file. To <em>add</em> new observations to an existing file (o to a new file!) we use the same functions mentioned <a href="#an-introduction-on-how-to-read-and-write-bufr-files">here</a> and structure of the routine is also similar. But we also need to figure out how to read the new observations into fortran and how to create new reports.</p>
+<p>In the <a href="../../content/observations/01-bufr.html">previous section</a> I briefly explained how to read and write a bufr file. To <em>add</em> new observations to an existing file (o to a new file!) we use the same functions mentioned <a href="#an-introduction-on-how-to-read-and-write-bufr-files">here</a> and structure of the routine is also similar. But we also need to figure out how to read the new observations into fortran and how to create new reports.</p>
 <p>The code I’m sharing here assume that the new observations are in csv format and has the following look (without the header):</p>
 <table class="table">
 <colgroup>
