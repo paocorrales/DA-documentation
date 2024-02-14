@@ -2,8 +2,98 @@
 title: "Radiance obs bufr"
 ---
 
-bufr table for abi
+If you've read the previous sections, you know that working with bufr files is not easy. It is possible by now that the bufr files for ABI observations (from GOES satellites) are available everywhere. But if you try to run assimilation experiments for "old" cases like me you will need to convert the observations in netCDF to the bufr format. So, this section explains how to do that.
 
-cloud mask
+::: callout-important
+The GSI version I used (available [here](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3)) to assimilate ABI observations assumes that the abi bufrs use the table I mention in this section and has the structure that produce the routine. If you get the bufr files from somewhere else, it may not work, sorry.
+:::
 
-routine
+The routine I used is based on a a routine written by Jamie Bresch from NCAR/MMM. I made a few modifications to work with the current GSI version.
+
+It read the netCDF metadata from the files listed in `flist.txt` (usually 1 per channel) and the cloud mask. Then, it calculate geometric/geographic variables like longitude, latitude, the projection, the zenith angle of the sun on that specific time, etc.
+
+After that it will read each variable, calculate the brightness temperature from radiance and the standard deviation of the brightness temperature at each point. It will then write the bufr file using the `bufrtab_NC021046.txt` table.
+
+Like the other bufr routines, it uses a namelist:
+
+``` bash
+&data_nml
+  nc_list_file = './flist.txt'
+  data_dir = '.', ! path of the GRB nc files
+  data_id = 'OR_ABI-L1b-RadF-M3'      ! prefix of the downloaded GRB nc files
+  sat_id = 'G16'
+  bufr_tbl_file = '../bufrtab_NC021046.txt'
+  n_subsample = 4  ! stride for reducing the output volume
+/
+```
+
+### Bufr structure
+
+The header of a bufr message includes:
+
+-   SAID
+
+-   YEAR, MNTH, DAYS, HOUR, MINU, SECO: data and time
+
+-   CLATH: latitude
+
+-   CLONH: longitude
+
+-   SAZA: satellite zenith angle
+
+-   BEARAZ: Bearing or azimuth
+
+-   SOZA: solar zenith angle
+
+-   SOLAZI: solar azimuth
+
+And the type of message will be NC021046.
+
+### Variables in the bufr file
+
+The mnemonics for the important variables in the bufr are: **TMBRST** (brightness temperature in Kelvin), **SDTB** (standard deviation for brightness temperature in Kelvin), **NCLDMNT** (% of no cloud).
+
+-   **Brightness Temperature (TB)** for each infrared channel.
+
+-   **Standard Deviation for Brightness Temperature (SDTB)** is a 2D field. The SDTB a each grid point is calculated from the TB field using a 3 by 3 region around the point. If the TB changes much in that region it may indicate that is a cloud border. GSI uses this variable for channel 10 to reject observations contaminated by clouds.
+
+-   **Cloud Mask** defined as the percentage of no cloud, meaning 1 = no clouds.
+
+## The code
+
+The source code is publicly available in [this repository](https://github.com/paocorrales/goesbufr). The root folder includes a `compile` file as example of how to compile the program. It needs the bufr library to work and you can use the want that get compiled along with GSI.
+
+The `rundir` folder includes all the configuration files, namelists and bufr tables. Once you compile the routine, you can try running an example using the example observations available in the `example_obs` folder. The `flist.txt` and `namelist.goes_nc2bufr` files are ready to work.
+
+Finally, if you ever need to do this for many files `run_goesbufr.sh` script will help you. It modify the namelist and run the programs in a loop.
+
+``` bash
+goesbufr/
+├── compile.sh
+├── example_obs
+│   ├── OR_ABI-L1b-RadF-M3C07_G16_s20183170000345_e20183170011123_c20183170011157.nc
+│   ├── OR_ABI-L1b-RadF-M3C08_G16_s20183170000345_e20183170011111_c20183170011157.nc
+│   ├── OR_ABI-L1b-RadF-M3C09_G16_s20183170000345_e20183170011117_c20183170011172.nc
+│   ├── OR_ABI-L1b-RadF-M3C10_G16_s20183170000345_e20183170011123_c20183170011169.nc
+│   ├── OR_ABI-L1b-RadF-M3C11_G16_s20183170000345_e20183170011111_c20183170011168.nc
+│   ├── OR_ABI-L1b-RadF-M3C12_G16_s20183170000345_e20183170011117_c20183170011173.nc
+│   ├── OR_ABI-L1b-RadF-M3C13_G16_s20183170000345_e20183170011123_c20183170011175.nc
+│   ├── OR_ABI-L1b-RadF-M3C14_G16_s20183170000345_e20183170011111_c20183170011176.nc
+│   ├── OR_ABI-L1b-RadF-M3C15_G16_s20183170000345_e20183170011117_c20183170011176.nc
+│   ├── OR_ABI-L1b-RadF-M3C16_G16_s20183170000345_e20183170011123_c20183170011176.nc
+│   └── OR_ABI-L2-ACMF-M3_G16_s20183170000345_e20183170011111_c20183170011289.nc
+├── GOES16_nc2bufr.exe
+├── GOES_GRB_nc2bufr.f90
+├── GOES_GRB_nc2bufr.ori  # the original code
+└── rundir
+    ├── bufrtab_NC021046.txt
+    ├── flist.txt
+    ├── GOES16_nc2bufr.exe
+    ├── namelist.goes_nc2bufr
+    ├── run_goesbufr.sh
+    └── submit.csh
+```
+
+::: callout-important
+Once again I want to acknowledge that the routine is based on a routine written by Jamie Bresch from NCAR/MMM. If you use it, please mention this guide and Jamie.
+:::
