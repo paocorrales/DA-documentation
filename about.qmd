@@ -2,14 +2,14 @@
 title: "About"
 ---
 
-This guide is a compilation of many tools scripts, pieces of code and routines that I used during my PhD. As the name says, everything goes around assimilating observations using the GSI system. I spent a lot of time working with the conventional and Radiance observations so you will find a comprehensive tutorial and documentation on how to assimilate these types of observations. This includes the processing of the observations, how to configure the system and all the quality control steps GSI performs during the assimilation process.
+## Hi!
 
-Sometimes you will find everything inside the website and sometimes you will need to go to a specific repository to get the code or the data associated with the the specific topic. And while I tried to be mindful during my PhD at commenting and documenting everything along the way I'm sure that there are gaps and missing pieces. If you find anything that can be improved please open an issue in the repository of this website and contribute to making this guide better.
-
-Many of these tools come from different sources. Sometimes someone else wrote the code and I adapted it to my specific needs, sometimes I wrote the code from scratch. So it's important to read the license note in each section so you know who created that code and in which way you can use it.
-
-## About my PhD
-
-The main goal of may research was to applied data assimilation techniques to improve short-term forecasts of severe events in Argentina. In particular, the research focuses on data assimilation of observations from automatic stations and radiances from polar and geostationary satellites. You can read the final dissertation (in Spanish) [here](https://paocorrales.github.io/Tesis_doctorado/).
+I'm Pao Corrales and I have a PhD in Atmospheric Science! The main goal of my research was to applied data assimilation techniques to improve short-term forecasts of severe events in Argentina. In particular, the research focuses on data assimilation of observations from automatic stations and radiances from polar and geostationary satellites. You can read the final dissertation (in Spanish) [here](https://paocorrales.github.io/Tesis_doctorado/).
 
 I worked in the [Centro de Investigaciones del Mar y la Atmósfera](https://www.cima.fcen.uba.ar/index.php) (CIMA), for that reason you may find mentions to Hydra or Yakaira, their HPC and a server I used a lot.
+
+This guide is a compilation of many tools, scripts, pieces of code and routines that I used during my PhD. As the name says, everything goes around assimilating observations using the GSI system. I spent a lot of time working with the conventional and Radiance observations so you will find a comprehensive tutorial and documentation on how to assimilate these types of observations. This includes the processing of the observations, how to configure the system and all the quality control steps GSI performs during the assimilation process.
+
+Sometimes you will find everything inside the website and sometimes you will need to go to a specific repository to get the code or the data associated with the the specific topic. And while I tried to be mindful during my PhD at commenting and documenting everything along the way I'm sure that there are gaps and missing pieces. If you find anything that can be improved please [open an issue in the repository](contribute.qmd) of this website and contribute to make this guide better.
+
+Many of these tools come from different sources. Sometimes someone else wrote the code and I adapted it to my specific needs, sometimes I wrote the code from scratch. So it's important to read the license note in each section so you know who created that code and in which way you can use it.
