@@ -13,7 +13,7 @@ This requires to incorporate these new observations [available at @garcia2019] t
 
 ## Add observations to a prepBUFR file
 
-In the [previous section](obs/01-bufr.qmd) I briefly explained how to read and write a bufr file. To *add* new observations to an existing file (o to a new file!) we use the same functions mentioned [here](#an-introduction-on-how-to-read-and-write-bufr-files) and structure of the routine is also similar. But we also need to figure out how to read the new observations into fortran and how to create new reports.
+In the [previous section](01-bufr.qmd) I briefly explained how to read and write a bufr file. To *add* new observations to an existing file (o to a new file!) we use the same functions mentioned [here](#an-introduction-on-how-to-read-and-write-bufr-files) and structure of the routine is also similar. But we also need to figure out how to read the new observations into fortran and how to create new reports.
 
 The code I'm sharing here assume that the new observations are in csv format and has the following look (without the header):
 
