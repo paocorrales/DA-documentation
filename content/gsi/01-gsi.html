@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - The GSI assimilation system</title>
+<title>Data Assimilation docs - The GSI assimilation system</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -128,7 +128,7 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">DA-documentation</span>
+    <span class="navbar-title">Data Assimilation docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -242,10 +242,10 @@ window.Quarto = {
 
 
 <p>The GSI (Gridpoint Statistical Interpolation) System, is a state-of-the-art data assimilation system initially developed by the Environmental Modeling Center at NCEP. It was designed as a traditional 3DVAR system applied in the gridpoint space of models to facilitate the implementation of inhomogeneous anisotropic covariances <span class="citation" data-cites="wu2002 purser2003a purser2003">(<a href="#ref-wu2002" role="doc-biblioref">Wu, Purser, and Parrish 2002</a>; <a href="#ref-purser2003a" role="doc-biblioref">Purser et al. 2003b</a>, <a href="#ref-purser2003" role="doc-biblioref">2003a</a>)</span>. It is designed to run on various computational platforms, create analyses for different numerical forecast models, and remain flexible enough to handle future scientific developments, such as the use of new observation types, improved data selection, and new state variables <span class="citation" data-cites="kleist2009">(<a href="#ref-kleist2009" role="doc-biblioref">Kleist et al. 2009</a>)</span>.</p>
-<p>The- 3DVAR system replaced the NCEP regional grid-point operational analysis system by the North American Mesoscale Prediction System (NAM) in 2006 and the <em>Spectral Statistical Interpolation</em> (SSI) global analysis system used to generate <em>Global Forecast System</em> (GFS) initial conditions in 2007 <span class="citation" data-cites="kleist2009">(<a href="#ref-kleist2009" role="doc-biblioref">Kleist et al. 2009</a>)</span>. In recent years, GSI has evolved to include various data assimilation techniques for multiple operational applications, including 2DVAR [e.g., the <em>Real-Time Mesoscale Analysis</em> (RTMA) system; <span class="citation" data-cites="pondeca2011">Pondeca et al. (<a href="#ref-pondeca2011" role="doc-biblioref">2011</a>)</span>], the hybrid EnVar technique (e.g., data assimilation systems for the GFS, the <em>Rapid Refresh system</em> (RAP), the NAM, the HWRF, etc. ), and 4DVAR [e.g., the data assimilation system for NASA’s Goddard Earth Observing System, version 5 (GEOS-5); <span class="citation" data-cites="zhu2008">Zhu and Gelaro (<a href="#ref-zhu2008" role="doc-biblioref">2008</a>)</span>]. GSI also includes a hybrid 4D-EnVar approach that is currently used for GFS generation.</p>
+<p>The 3DVAR system replaced the NCEP regional grid-point operational analysis system by the North American Mesoscale Prediction System (NAM) in 2006 and the <em>Spectral Statistical Interpolation</em> (SSI) global analysis system used to generate <em>Global Forecast System</em> (GFS) initial conditions in 2007 <span class="citation" data-cites="kleist2009">(<a href="#ref-kleist2009" role="doc-biblioref">Kleist et al. 2009</a>)</span>. In recent years, GSI has evolved to include various data assimilation techniques for multiple operational applications, including 2DVAR [e.g., the <em>Real-Time Mesoscale Analysis</em> (RTMA) system; <span class="citation" data-cites="pondeca2011">Pondeca et al. (<a href="#ref-pondeca2011" role="doc-biblioref">2011</a>)</span>], the hybrid EnVar technique (e.g., data assimilation systems for the GFS, the <em>Rapid Refresh system</em> (RAP), the NAM, the HWRF, etc. ), and 4DVAR [e.g., the data assimilation system for NASA’s Goddard Earth Observing System, version 5 (GEOS-5); <span class="citation" data-cites="zhu2008">Zhu and Gelaro (<a href="#ref-zhu2008" role="doc-biblioref">2008</a>)</span>]. GSI also includes a hybrid 4D-EnVar approach that is currently used for GFS generation.</p>
 <p>In addition to the development of hybrid techniques, GSI allows the use of ensemble assimilation methods. To achieve this, it uses the same observation operator as the variational methods to compare the preliminary field or background with the observations. In this way the exhaustive quality controls developed for variational methods are also applied in ensemble assimilation methods. The EnKF code was developed by the Earth System Research Lab (ESRL) of the National Oceanic and Atmospheric Administration (NOAA) in collaboration with the scientific community. It contains two different algorithms for calculating the analysis increment, the serial Ensemble Square Root Filter <span class="citation" data-cites="whitaker2002">(EnSRF, <a href="#ref-whitaker2002" role="doc-biblioref">Whitaker and Hamill 2002</a>)</span> and the LETKF <span class="citation" data-cites="hunt2007">(<a href="#ref-hunt2007" role="doc-biblioref">Hunt, Kostelich, and Szunyogh 2007</a>)</span> contributed by Yoichiro Ota of the Japan Meteorological Agency (JMA).</p>
-<p>To reduce the impact of spurious covariances on the increment applied to the analysis, ensemble systems apply a localization to the covariance matrix of the errors of the observations <span class="math inline">\(R\)</span> in both the horizontal and vertical directions. GSI uses a polynomial of order 5 to reduce the impact of each observation gradually until a limiting distance is reached at which the impact is zero. The vertical location scale is defined in terms of the logarithm of the pressure and the horizontal scale is usually defined in kilometers. These parameters are important in obtaining a good analysis and depend on factors such as the size of the ensemble and the resolution of the model.</p>
-<p>GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">(CRTM, <a href="#ref-liu2008" role="doc-biblioref">Liu et al. 2008</a>)</span> as an operator for the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with satellite sensor observations. GSI also implements a bias correction algorithm for the satellite radiance observations. The preliminary field estimate with the CRMT is compared with the radiance observations to obtain the innovation. This innovation is then used to calculate a bias that is applied to an updated innovation. This process can be repeated several times until the innovation and the bias correction coefficients converge.</p>
+<p>To reduce the impact of spurious covariances on the increment applied to the analysis, ensemble systems apply a localization to the covariance matrix of the errors of the observations <span class="math inline">\(R\)</span> in both the horizontal and vertical directions. GSI uses a polynomial of order 5 to reduce the impact of each observation gradually until a limiting distance is reached at which the impact is zero. The vertical localization scale is defined in terms of the logarithm of the pressure and the horizontal scale is usually defined in kilometers. These parameters are important in obtaining a good analysis and depend on factors such as the size of the ensemble and the resolution of the model.</p>
+<p>GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">(CRTM, <a href="#ref-liu2008" role="doc-biblioref">Liu et al. 2008</a>)</span> as an operator for the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with satellite observations. GSI also implements a bias correction algorithm for the satellite radiance observations. The preliminary field estimated with CRMT is compared with the radiance observations to obtain the innovation. This innovation is then used to calculate a bias that is then applied to an updated innovation. This process can be repeated several times until the innovation and the bias correction coefficients converge.</p>
 <section id="available-observations-for-assimilation" class="level2">
 <h2 class="anchored" data-anchor-id="available-observations-for-assimilation">Available observations for assimilation</h2>
 <p>Here is the list of observations that can be assimilated by GSI. In bold are the observations for with I have experience and/or the ones <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">I’ve adapted the code for it</a>.</p>
@@ -321,7 +321,7 @@ window.Quarto = {
 </section>
 <section id="running-gsi" class="level2">
 <h2 class="anchored" data-anchor-id="running-gsi">Running GSI</h2>
-<p>Every assimilation cycle starts with the background, a forecast generated using a numerical model (WRF-ARW for this guide), that was initialized from previous analysis and observations (in bufr format) that enters the GSI system. GSI will also need “fixed” files with information about the observations. This files define which observations are going to be assimilated, they errors and quality control options.</p>
+<p>Every assimilation cycle starts with the background, a forecast generated using a numerical model (WRF-ARW for this guide), that was initialized from previous analysis and observations (in bufr format) that enters the GSI system. GSI will also need “fixed” files with information about the observations. This “fix” files define which observations are going to be assimilated, they errors and quality control options.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="img/cycle_diagram.png" class="img-fluid figure-img" alt="Diagram that shows a cycle. First the background (forecasts generated using a numerical model, WRF-ARW, initialized from previous analysis) and Observations (from bufr files) enters the GSI system. Inside the system, the Observation Operator takes care of the quality control and bias correction and then calculates the innovation and generates the diag files. Then the ENKF part calculates the update appling the innovation to the background to generate the analysis. The analysis is used to create a new background to star the cycle again"></p>
@@ -340,8 +340,8 @@ window.Quarto = {
 <li>WRF-Chem GOCART input fields with NetCDF format</li>
 <li>CMAQ binary file</li>
 </ul>
-<p>And the official tutorials are a good starting point to grasp the use of this options.</p>
-<p>GSI can also be run <em>without observations</em> to test the code, this is with a single synthetic observation defined in the SINGLEOB_TEST section in the namelist.</p>
+<p>And the <a href="https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi/gsi-tutorial-online">official tutorials in the DTCenter webpage</a> are a good starting point to grasp the use of this options.</p>
+<p>GSI can also be run <em>without observations</em> to test the code, this is with a single synthetic observation defined in the SINGLEOB_TEST section in the gsi namelist. Another thing to try at the beginning.</p>
 <p>The fixed files are located in the <code>fix/</code> folder and includes statistic files, configuration files, bias correction files, and CRTM coefficient files<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. The information of the configuration files is saved in the output files after running GSI.</p>
 <table class="table">
 <colgroup>
@@ -379,32 +379,32 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td>satinfo</td>
-<td>satellite channel information file</td>
+<td>Satellite channel information file</td>
 <td>global_satinfo.txt</td>
 </tr>
 <tr class="even">
 <td>pcpinfo</td>
-<td>precipitation rate observation information file</td>
+<td>Precipitation rate observation information file</td>
 <td>global_pcpinfo.txt</td>
 </tr>
 <tr class="odd">
 <td>ozinfo</td>
-<td>ozone observation information file</td>
+<td>Ozone observation information file</td>
 <td>global_ozinfo.txt</td>
 </tr>
 <tr class="even">
 <td>satbias_angle</td>
-<td>satellite scan angle dependent bias correction file</td>
+<td>Satellite scan angle dependent bias correction file</td>
 <td>global_satangbias.txt</td>
 </tr>
 <tr class="odd">
 <td>satbias_in</td>
-<td>satellite mass bias correction coefficient file</td>
+<td>Satellite mass bias correction coefficient file</td>
 <td>sample.satbias</td>
 </tr>
 <tr class="even">
 <td>satbias_in</td>
-<td>combined satellite angle dependent and mass bias correction coefficient file</td>
+<td>Combined satellite angle dependent and mass bias correction coefficient file</td>
 <td>gdas1.t00z.abias.new</td>
 </tr>
 </tbody>
@@ -412,7 +412,7 @@ window.Quarto = {
 </section>
 <section id="about-the-gsi-code" class="level2">
 <h2 class="anchored" data-anchor-id="about-the-gsi-code">About the GSI code</h2>
-<p>GSI is writen in fortran and the code is separated in more than 5 hundred files. While GSI has 2 good user guides, not everything is documented and sometimes you will need to read the code.</p>
+<p>GSI is written in fortran and the code is separated in more than 5 hundred files. While GSI has <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/tree/main/docs">2 good user guides</a>, not everything is documented and sometimes you will need to read the code.</p>
 <p>To swim around the code I found the <code>grep -r "key word"</code> command very useful. Each file and subroutine inside it has a header with information about what it does, changes and input and output arguments. It’s worth mentioning a few key files:</p>
 <ul>
 <li><code>gsimain.f90</code> and <code>gsimod.f90</code> are the main files that control the system. <code>gsimain.f90</code> has a list off code errors and the possible cause.</li>

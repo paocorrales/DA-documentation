@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - Assimilating Conventional Observations</title>
+<title>Data Assimilation docs - Assimilating Conventional Observations</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,7 +142,7 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">DA-documentation</span>
+    <span class="navbar-title">Data Assimilation docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -251,10 +251,10 @@ window.Quarto = {
 
 <p>Conventional observations are assimilated from PREPBUFR files. NCEP ADP Global Upper Air and Surface Weather Observations (PREPBUFR format) are composed of a global set of surface and upper air reports operationally collected by the National Centers for Environmental Prediction (NCEP). These include land surface, marine surface, radiosonde, pibal and aircraft reports from the Global Telecommunications System (GTS), profiler and US radar derived winds, SSM/I oceanic winds and TCW retrievals, and satellite wind data from the National Environmental Satellite Data and Information Service (NESDIS). The reports can include pressure, geopotential height, temperature, dew point temperature, wind direction and speed <span class="citation" data-cites="cisl_rda_ds337.0">[@cisl_rda_ds337.0]</span>.</p>
 <p>While the PREPBUFR includes wind derived from satellite observations, GSI ignores this observations and uses the ones provided by the specific bufr file <code>gdas.t00z.satwnd.tm00.bufr_d</code>.</p>
-<p>PREPBUFR files usually contains observations from a 6 to 12 h window and can be modify using FORTRAN routines provided with the GSI code (see <code>util/bufr_tools</code> in the GSI source code folder). You can also create your own bufr file or add new observation to an existing bufr file (see <a href="../../content/observations/01-bufr.html">Working with bufr files</a>).</p>
+<p>PREPBUFR files usually contains observations from a 6 to 12 h window and can be modify using FORTRAN routines provided with the GSI code (see <code>util/bufr_tools</code> in the <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">GSI source code folder</a>). You can also create your own bufr file or add new observation to an existing bufr file (see <a href="../../content/observations/01-bufr.html">Working with bufr files</a>).</p>
 <section id="controlling-which-observations-are-assimilated" class="level3">
 <h3 class="anchored" data-anchor-id="controlling-which-observations-are-assimilated">Controlling which observations are assimilated</h3>
-<p>The assimilation of conventional observations is controlled with the <code>convinfo</code> file. Let’s check the <code>global_convinfo.txt</code> file we get as an example:</p>
+<p>The assimilation of conventional observations is controlled with the <code>convinfo</code> file. Let’s check the <code>global_convinfo.txt</code> file we get as an example in the <code>fix</code> folder:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">! </span><span class="ex">otype</span>   = observation type <span class="er">(</span><span class="ex">a7,</span> t, uv, q, etc.<span class="kw">)</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">! </span><span class="bu">type</span>    = prepbufr observation type <span class="er">(</span><span class="cf">if</span> <span class="ex">available</span><span class="kw">)</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ot">! </span><span class="ex">sub</span>     = prepbufr subtype <span class="er">(</span><span class="ex">not</span> yet available<span class="kw">)</span></span>
@@ -281,14 +281,14 @@ window.Quarto = {
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a> <span class="fu">ps</span>       180    01   1     3.0      0      0      0   4.0   3.0   1.0   4.0  0.000300     0    0.     0.      0    0.     0.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The head of the file explains the content of each column but there are a few more things to add:</p>
 <ul>
-<li>type: this is defined by the bufr tables, particular <a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm">Table 2</a>. It is worth checking this table as includes information about which observations are assimilated in GFS, errors asociated to specific instruments and other details.</li>
+<li>type: this is defined by the bufr tables, particular <a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm">Table 2</a>. It is worth checking this table as includes information about which observations are assimilated in GFS, errors associated to specific instruments and other details.</li>
 <li>twindow: while the assimilation window is defined in the gsi namalist, it is possible to control an assimilation window for specific observations. This is useful if, for example the assimilation window is 3 h and you want to assimilate temperature in a 1h window.</li>
 </ul>
-<p>In general you only change the <em>isue</em> column to assimilate or not a type of observation and maybe just maybe the <em>gross</em>, <em>ermax</em>, and <em>ermin</em> parameters if you want to modify the quality control of the observations.</p>
+<p>In general you only change the <em>iuse</em> column to assimilate or not a type of observation and maybe just maybe the <em>gross</em>, <em>ermax</em>, and <em>ermin</em> parameters if you want to modify the quality control of the observations.</p>
 </section>
 <section id="observation-errors-and-quality-control" class="level3">
 <h3 class="anchored" data-anchor-id="observation-errors-and-quality-control">Observation errors and quality control</h3>
-<p>For <strong>regional assimilation</strong> GSI uses an error table located in the <code>errtable</code> file that you’ll find in the <code>./fix</code> folder under the name <code>prepobs_errtable.global</code> (it is confusing that the table for regional errors in in a file called global). Here is a small example of the content of the file for observations from surface stations.</p>
+<p>For <strong>regional assimilation</strong> GSI uses an error table located in the <code>errtable</code> file that you’ll find in the <code>./fix</code> folder under the name <code>prepobs_errtable.global</code> (yes, it is confusing that the table for regional errors in in a file called global). Here is a small example of the content of the file for observations from surface stations.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">181</span> OBSERVATION TYPE</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">0.11000E+04</span> 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">0.10500E+04</span> 0.15000E+01 0.20000E+01 0.10000E+10 0.16000E+01 0.10000E+10</span>
@@ -345,9 +345,9 @@ window.Quarto = {
 <p>So column 1 define the pressure level associated to the errors for each variable in columns 2 to 6. In the <code>errtable</code> a <code>0.10000E+10</code> is a <code>NA</code>.</p>
 <p>GSI will perform a quality control for each observation. In general terms this involves a gross check and specific controls depending on the type of observation.</p>
 <p>For the gross check, GSI first calculates a ratio:</p>
-<p><span class="math display">\[ ratio = (obs - bk)/max(ermin, min(ermax, obserror)) \]</span> The main error parameters are controlled by the <code>convinfo</code> file. The <code>obserror</code> is the observation error defined in the prepbufr file for each observation as a result to the quality control perform while generating that file.</p>
+<p><span class="math display">\[ ratio = (obs - bk)/max(ermin, min(ermax, obserror)) \]</span> The main error parameters are controlled by the <code>convinfo</code> file. The <code>obserror</code> is the observation error defined in the prepbufr file for each observation plus information in the <code>prepobs_errtable</code>.</p>
 <p>If <span class="math inline">\(ration &gt; gross\)</span> the observation is rejected.</p>
-<p>Other piece of information used during the quality control is the quality control flag that is included in the prepbufr file a part if it quality control process. The possible values for conventional observations are:</p>
+<p>Other piece of information used during the quality control is the quality control flag that is included in the prepbufr file a part if it quality control process performed by NCEP. The possible values for conventional observations are:</p>
 <table class="table">
 <colgroup>
 <col style="width: 44%">

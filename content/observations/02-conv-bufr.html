@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - Conventional obs bufr</title>
+<title>Data Assimilation docs - Conventional obs bufr</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -133,7 +133,7 @@ div.csl-indent {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">DA-documentation</span>
+    <span class="navbar-title">Data Assimilation docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -242,7 +242,7 @@ div.csl-indent {
 
 
 <p>This section covers how to add new surface observations to prepBUFR and how to divide a file into smaller subsets.</p>
-<p>One of the first challenges (besides to learning how to use GSI and deal with bufr files) was to incorporate surface observations from automatic stations to the assimilation. In Argentina there are very few official stations to cover the entire country but there are private automatic station network that could potentially help to improve weather forecasts thank to their higher frequency (10 minutes) and spacial resolution.</p>
+<p>One of the first challenges (besides learning how to use GSI and deal with bufr files) was to incorporate surface observations from automatic stations to the assimilation. In Argentina there are very few official stations to cover the entire country but there are private automatic station network that could potentially help to improve weather forecasts thank to their higher frequency (10 minutes) and spacial resolution.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="img/ema.png" class="img-fluid figure-img" width="500"></p>
@@ -252,8 +252,8 @@ div.csl-indent {
 <p>This requires to incorporate these new observations <span class="citation" data-cites="garcia2019">(available at <a href="#ref-garcia2019" role="doc-biblioref">Garcia et al. 2019</a>)</span> to the prepBUFR (so, be able to write fortran code and understand the bufr format). The 2 programs included here are based on the INPE/CPTEC modules and programs that are part of their operational assimilation system. I was lucky to visit CPTEC in 2019 where I learned how to work with these tools.</p>
 <section id="add-observations-to-a-prepbufr-file" class="level2">
 <h2 class="anchored" data-anchor-id="add-observations-to-a-prepbufr-file">Add observations to a prepBUFR file</h2>
-<p>In the previous section I briefly explained how to read and write a bufr file. To <em>add</em> new observations to an existing file (o to a new file!) we use the same functions mentioned <a href="#an-introduction-on-how-to-read-and-write-bufr-files">here</a> and structure of the routine is also similar. But we also need to figure out how to read the new observations and how to create new reports.</p>
-<p>The code I’m sharing here assume that the new observations are in csv format and has the following look:</p>
+<p>In the <a href="obs/01-bufr.qmd">previous section</a> I briefly explained how to read and write a bufr file. To <em>add</em> new observations to an existing file (o to a new file!) we use the same functions mentioned <a href="#an-introduction-on-how-to-read-and-write-bufr-files">here</a> and structure of the routine is also similar. But we also need to figure out how to read the new observations into fortran and how to create new reports.</p>
+<p>The code I’m sharing here assume that the new observations are in csv format and has the following look (without the header):</p>
 <table class="table">
 <colgroup>
 <col style="width: 10%">
@@ -354,15 +354,15 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>If you want to convert the files available here into csv tables, <a href="https://gist.github.com/paocorrales/e68daf085cf16b5d2e48f11513392084">here is an R script to do that</a>.</p>
+<p>If you want to convert the files available <a href="https://data.eol.ucar.edu/dataset/553.008">here</a> into csv tables, <a href="https://gist.github.com/paocorrales/e68daf085cf16b5d2e48f11513392084">I wrote an R script to do that</a>.</p>
 </div>
 </div>
-<p>The program read the configuration file that define where is the namelist and the prepbufr table and call a function that start the process. The namelist will list the name of the prepbufr to modify and the csv files with the new observations. The most important subroutine is <code>adpsfc_rw_prepbufr()</code>:</p>
+<p>The program read the configuration file (<code>add_obs.conf</code>) that define where is the namelist and the prepbufr table and call a function that start the process. The namelist will list the name of the prepbufr file to modify and the csv files with the new observations. The most important subroutine is <code>adpsfc_rw_prepbufr()</code> that:</p>
 <ol type="1">
 <li>Reads the bufr file</li>
 <li>Reads the csv with new observations</li>
 <li>Decides if the observations fall into the time window</li>
-<li>Creates a new report type 187</li>
+<li>Creates a new report type 187 (check obs types <a href="https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm">here</a>)</li>
 <li>Write the bufr file</li>
 </ol>
 <div class="quarto-figure quarto-figure-center">
@@ -385,9 +385,9 @@ Important
 </section>
 <section id="the-code" class="level2">
 <h2 class="anchored" data-anchor-id="the-code">The code</h2>
-<p>The source code is publicly available in <a href="https://github.com/paocorrales/prepbufr_tools">this repository</a>. Each source folder includes a <code>compile</code> file as example of how to compile the program. It needs the bufr and <a href="https://www.nco.ncep.noaa.gov/pmb/docs/libs/w3lib/ncep_w3lib.shtml">w3lib</a> to work with times.</p>
-<p>The <code>run</code> folder includes all the configuration files, namelists and bufr tables. The can be uses to run the programs using the example observations available in the <code>example_obs</code> folder.</p>
-<p>Finally, if you ever need to do this for many files, the <code>run_bash</code> folder has 2 bash scripts that modify the namelist and run the programs in a loop.</p>
+<p>The source code is publicly available in <a href="https://github.com/paocorrales/prepbufr_tools">this repository</a>. Each source folder includes a <code>compile</code> file as example of how to compile the program. It needs the bufr library to work with bufr files and <a href="https://www.nco.ncep.noaa.gov/pmb/docs/libs/w3lib/ncep_w3lib.shtml">w3lib</a> library to work with times.</p>
+<p>The <code>run</code> folder includes all the configuration files, namelists and bufr tables. They can be uses as it is to run the programs using the example observations available in the <code>example_obs</code> folder.</p>
+<p>Finally, if you ever need to do this many files, the <code>run_bash</code> folder has 2 bash scripts that modify the namelist and run the programs in a loop.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">prepbufr_tools</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> example_obs</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">│&nbsp;&nbsp;</span> ├── 2018111719.csv</span>
@@ -426,7 +426,7 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Once again, this routines are based on the INPE/CPTEC modules and programs that are part of their operational assimilation system.</p>
+<p>Once again, this routines are based on the INPE/CPTEC modules and programs that are part of their operational assimilation system. I wouldn’t have been able to work with bufr files without the help and guidance of Luiz Sapucci and his team</p>
 </div>
 </div>
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - Radiance obs bufr</title>
+<title>Data Assimilation docs - Radiance obs bufr</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">DA-documentation</span>
+    <span class="navbar-title">Data Assimilation docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -221,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>If you’ve read the previous sections, you know that working with bufr files is not easy. It is possible by now that the bufr files for ABI observations (from GOES satellites) are available everywhere. But if you try to run assimilation experiments for “old” cases like me you will need to convert the observations in netCDF to the bufr format. So, this section explains how to do that.</p>
+<p>If you’ve read the previous sections, you know that working with bufr files is not easy. It is possible by now that the bufr files for ABI observations (from GOES satellites) are available everywhere. But if you try to run assimilation experiments for “old” cases like me you will need to convert the observations in netCDF to bufr format. So, this section explains how to do that.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -235,16 +235,16 @@ Important
 <p>The GSI version I used (available <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">here</a>) to assimilate ABI observations assumes that the abi bufrs use the table I mention in this section and has the structure that produce the routine. If you get the bufr files from somewhere else, it may not work, sorry.</p>
 </div>
 </div>
-<p>The routine I used is based on a a routine written by Jamie Bresch from NCAR/MMM. I made a few modifications to work with the current GSI version.</p>
-<p>It read the netCDF metadata from the files listed in <code>flist.txt</code> (usually 1 per channel) and the cloud mask. Then, it calculate geometric/geographic variables like longitude, latitude, the projection, the zenith angle of the sun on that specific time, etc.</p>
-<p>After that it will read each variable, calculate the brightness temperature from radiance and the standard deviation of the brightness temperature at each point. It will then write the bufr file using the <code>bufrtab_NC021046.txt</code> table.</p>
+<p>The routine I used is based on a a routine written by Jamie Bresch from NCAR/MMM. I made a few modifications to work with the current GSI version but it is essentially the same.</p>
+<p>It read the netCDF metadata from the files listed in <code>flist.txt</code> (usually 1 file per channel and the cloud mask). Then, it calculate geometric/geographic variables like longitude, latitude, the projection, the zenith angle of the sun on that specific time, etc.</p>
+<p>After that it will read from the files each variable, calculate the brightness temperature from radiance and the standard deviation of the brightness temperature at each point. It will then write the bufr file using the <code>bufrtab_NC021046.txt</code> table.</p>
 <p>Like the other bufr routines, it uses a namelist:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&amp;</span><span class="ex">data_nml</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">nc_list_file</span> = <span class="st">'./flist.txt'</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">data_dir</span> = <span class="st">'.'</span>, ! path of the GRB nc files</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">data_id</span> = <span class="st">'OR_ABI-L1b-RadF-M3'</span>      ! prefix of the downloaded GRB nc files</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">sat_id</span> = <span class="st">'G16'</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">bufr_tbl_file</span> = <span class="st">'../bufrtab_NC021046.txt'</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">bufr_tbl_file</span> = <span class="st">'./bufrtab_NC021046.txt'</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">n_subsample</span> = 4  ! stride for reducing the output volume</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">/</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="bufr-structure" class="level3">
@@ -260,20 +260,20 @@ Important
 <li><p>SOZA: solar zenith angle</p></li>
 <li><p>SOLAZI: solar azimuth</p></li>
 </ul>
-<p>And the type of message will be NC021046.</p>
+<p>And the type of message will be NC021046 (ABI observations in clear sky).</p>
 </section>
 <section id="variables-in-the-bufr-file" class="level3">
 <h3 class="anchored" data-anchor-id="variables-in-the-bufr-file">Variables in the bufr file</h3>
-<p>The mnemonics for the important variables in the bufr are: <strong>TMBRST</strong> (brightness temperature in Kelvin), <strong>SDTB</strong> (standard deviation for brightness temperature in Kelvin), <strong>NCLDMNT</strong> (% of no cloud).</p>
+<p>The mnemonics for the important variables in the bufr are: <strong>TMBRST</strong> (brightness temperature in Kelvin), <strong>SDTB</strong> (standard deviation for brightness temperature in Kelvin), <strong>NCLDMNT</strong> (% of no cloud). It will include:</p>
 <ul>
 <li><p><strong>Brightness Temperature (TB)</strong> for each infrared channel.</p></li>
-<li><p><strong>Standard Deviation for Brightness Temperature (SDTB)</strong> is a 2D field. The SDTB a each grid point is calculated from the TB field using a 3 by 3 region around the point. If the TB changes much in that region it may indicate that is a cloud border. GSI uses this variable for channel 10 to reject observations contaminated by clouds.</p></li>
+<li><p><strong>Standard Deviation for Brightness Temperature (SDTB)</strong> is a 2D field. The SDTB a each grid point is calculated inside the routine from the TB field using a 3 by 3 region around the point. If the TB changes much in that region, i.e.&nbsp;has a big SDTB, it may indicate that is a cloud border. GSI uses this variable for channel 10 to reject observations contaminated by clouds.</p></li>
 <li><p><strong>Cloud Mask</strong> defined as the percentage of no cloud, meaning 1 = no clouds.</p></li>
 </ul>
 </section>
 <section id="the-code" class="level2">
 <h2 class="anchored" data-anchor-id="the-code">The code</h2>
-<p>The source code is publicly available in <a href="https://github.com/paocorrales/goesbufr">this repository</a>. The root folder includes a <code>compile</code> file as example of how to compile the program. It needs the bufr library to work and you can use the want that get compiled along with GSI.</p>
+<p>The source code is publicly available in <a href="https://github.com/paocorrales/goesbufr">this repository</a>. The root folder includes a <code>compile</code> file as example of how to compile the program. It needs the bufr library to work and you can use the one that get compiled along with GSI.</p>
 <p>The <code>rundir</code> folder includes all the configuration files, namelists and bufr tables. Once you compile the routine, you can try running an example using the example observations available in the <code>example_obs</code> folder. The <code>flist.txt</code> and <code>namelist.goes_nc2bufr</code> files are ready to work.</p>
 <p>Finally, if you ever need to do this for many files <code>run_goesbufr.sh</code> script will help you. It modify the namelist and run the programs in a loop.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">goesbufr/</span></span>

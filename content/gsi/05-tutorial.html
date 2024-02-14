@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - GSI tutorial</title>
+<title>Data Assimilation docs - GSI tutorial</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">DA-documentation</span>
+    <span class="navbar-title">Data Assimilation docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -195,6 +195,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#moving-parts" id="toc-moving-parts" class="nav-link active" data-scroll-target="#moving-parts">Moving parts</a>
   <ul class="collapse">
+  <li><a href="#gsi-code" id="toc-gsi-code" class="nav-link" data-scroll-target="#gsi-code">GSI code</a></li>
   <li><a href="#observations" id="toc-observations" class="nav-link" data-scroll-target="#observations">Observations</a></li>
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
   </ul></li>
@@ -235,12 +236,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This tutorial is intended to showcase some of the capabilities of the GSI system. For a more complete set of examples, please visit the official website for GSI: <a href="https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi">variational methods</a> and [Kalman Filter](<a href="https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf" class="uri">https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf</a>) methods.</p>
+<p>This tutorial is intended to showcase some of the capabilities of the GSI system. For a more complete set of examples, please visit the official website for GSI: <a href="https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi">variational methods</a> and <a href="https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf">Kalman Filter</a> methods.</p>
 <p>The tutorial uses the serial Ensemble Square Root Filter (EnSRF) algorithm but could also be used to run the Local Ensemble Kalman Filter (LETKF) algorithm if the GSI system code is compiled using a intel compiler<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. It also uses a version of the code that have the capability of assimilating GOES-16 observations.</p>
 <section id="moving-parts" class="level2">
 <h2 class="anchored" data-anchor-id="moving-parts">Moving parts</h2>
-<p>The first component to run the tutorial is the GSI system code that can be found in this repository: <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">github.com/paocorrales/comGSIv3.7_EnKFv1.3</a>. Alternatively, the original code without modifications is available <a href="https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi">here</a>. The repository includes an example script <code>compile_gsi_yakaira</code> to compile the code. In any case it is important to include the option <code>-DBUILD_WRF=ON</code> to use the ENKF algorithm with WRF.</p>
+<section id="gsi-code" class="level3">
+<h3 class="anchored" data-anchor-id="gsi-code">GSI code</h3>
+<p>The first component to run the tutorial is the GSI system code that can be found in this repository: <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3">github.com/paocorrales/comGSIv3.7_EnKFv1.3</a>. Alternatively, the original code without modifications is available <a href="https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi">here</a>. The repository includes an example script <code>compile_gsi_yakaira</code> to compile the code. In any case it is important to include the option <code>-DBUILD_WRF=ON</code> to use the ENKF algorithm with WRF as model.</p>
 <p>Then, clone or download the repository with the scripts, namelists and specific config files from: <a href="https://github.com/paocorrales/tutorial_gsi" class="uri">https://github.com/paocorrales/tutorial_gsi</a>. This repository also includes a bash scripts to download the necessary data to run the tutorial. This data is also available as a <a href="https://zenodo.org/records/10439645">Zenodo record</a>.</p>
+</section>
 <section id="observations" class="level3">
 <h3 class="anchored" data-anchor-id="observations">Observations</h3>
 <p>The observations included in this tutorial are:</p>
@@ -248,7 +252,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>File: <code>cimap.20181122.t12z.01h.prepbufr.nqc</code></li>
 </ul>
-<p><strong>Radiance observations:</strong> radiances from polar and geostationary satellites. Observations from polar satellites comes from the Global Data Assimilation System (GDAS) Model: <a href="https://www.nco.ncep.noaa.gov/pmb/products/gfs" class="uri">https://www.nco.ncep.noaa.gov/pmb/products/gfs</a>. The GOES-16 observations (ABI sensor) are derived from the public netcdf files published by NOAA.</p>
+<p><strong>Radiance observations:</strong> radiances from polar and geostationary satellites. Observations from polar satellites comes from the Global Data Assimilation System (GDAS) Model: <a href="https://www.nco.ncep.noaa.gov/pmb/products/gfs" class="uri">https://www.nco.ncep.noaa.gov/pmb/products/gfs</a>. The GOES-16 observations (ABI sensor) are derived from the public netCDF files published by NOAA.</p>
 <p>Files:</p>
 <ul>
 <li><code>abig16.20181122.t12z.bufr_d</code></li>
@@ -273,7 +277,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="structure" class="level2">
 <h2 class="anchored" data-anchor-id="structure">Structure</h2>
-<p>By cloning the tutorial repo and downloading the associated data with the provied script you will end up with the following folder structure.</p>
+<p>By cloning the tutorial repo and downloading the associated data with the provided script (<a href="https://github.com/paocorrales/tutorial_gsi/blob/main/download_data.sh" title="download_data.sh">download_data.sh</a>) you will end up with the following folder structure.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tutorial_gsi/</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> download_data.sh</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> fix</span>
@@ -396,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="fgat" class="level2">
 <h2 class="anchored" data-anchor-id="fgat">Running GSI</h2>
-<p>As we focus on running GSI with the Kalman Filter method, the first stem is to run GSI as Observation operator. So, the system will compare the observations with the background state and and save that information in diagnostic files.</p>
+<p>As we focus on running GSI with the Kalman Filter method, the first step is to run GSI as Observation operator. So, the system will compare the observations with the background state and and save that information in diagnostic files.</p>
 <p>The example used in this tutorial is relatively small, so while you may need a HPC system for real cases, this one can be run in a small server or even a computer with at least 10 processors.</p>
 <p>Here are the ~20 first lines of the script <code>run_gsi.sh</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#PBS -N </span><span class="al">TEST</span><span class="co">-1-GSI </span></span>
@@ -420,7 +424,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="va">GSIPROC</span><span class="op">=</span>10</span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ex">set-x</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>In principle, you only need to change <code>BASEDIR</code> and <code>GSIDIR</code> variables that are the path to the tutorial folder and the path to where GSI is compiled (the code expects to find a <code>build</code> folder with the executable files.</p>
+<p>In principle, you only need to change <code>BASEDIR</code> and <code>GSIDIR</code> variables that are the path to the tutorial folder and the path to where GSI is compiled (the code expects to find a <code>build</code> folder with the executable files inside <code>GSIDIR</code>).</p>
 <p>So, with that, you can run the script or send it to a queue.</p>
 <section id="issues-gsi" class="level3">
 <h3 class="anchored" data-anchor-id="issues-gsi">Possible issues</h3>
@@ -441,7 +445,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>If you get a <code>exit 0</code> at the end, it probably means that everything went well. However, I recommend you check a few things to make sure everything went <em>really</em> well.</p>
 <ul>
 <li>Check that all the <code>diag*</code> files are there. You will get 1 file per member and ensemble mean for each type of observation. If you don’t see any of these files, check the <a href="@issues-gsi">Issues</a> section. If you are missing the files for 1 type of observation, that probably means that the bufr file with the observations was not read properly or that is missing in the folder. Check if the script is linking the correct file to the <code>GSI</code> folder.</li>
-<li>Check the statistics for each type of observations. You will find this information in the <code>fit_&lt;obs&gt;.&lt;date&gt;</code> files. Each one may have different information or structure depending on the type of observation, but make sure to check the number of observations read and keep by the system. This information is also included in the <code>stdout</code> file, you can sear <code>READ_*</code> to find the section in the file.</li>
+<li>Check the statistics for each type of observations. You will find this information in the <code>fit_&lt;obs&gt;.&lt;date&gt;</code> files. Each one may have different information or structure depending on the type of observation, but make sure to check the number of observations read and keep by the system. This information is also included in the <code>stdout</code> file, you can search for <code>READ_*</code> to find the section in the file.</li>
 </ul>
 <p>If you got an error number instead and, if you are lucky, the error code may be described in <code>gsimain.f90</code>.</p>
 </section>
@@ -487,14 +491,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="running-gsi-using-the-fgat-method" class="level2">
 <h2 class="anchored" data-anchor-id="running-gsi-using-the-fgat-method">Running GSI using the FGAT method</h2>
-<p>The tutorial is configured to use the FGAT (First Guess at Appropriate Time) methods, this means that will GSI attempt to read multiple time level backgrounds a show in the following diagram.</p>
+<p>The tutorial is configured to use the FGAT (First Guess at Appropriate Time) methods, this means that will GSI attempt to read multiple time level backgrounds as show in the following diagram.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="img/fgat_diagram.png" class="img-fluid figure-img" alt="A diagram that shows the assimilation window of 1 h centered at 12 UTC. The observations are used every 10 minutes"></p>
 <figcaption>FGAT method</figcaption>
 </figure>
 </div>
-<p>There is no option in the namelist or configuration files to use the FGAT method. To “activate” this option GSI needs to find the appropiate files in appropriate folder. In this example we have 7 files in total for each member, 1 background file at the assimilation time plus 3 files every 10 minutes before and after the assimilation time.</p>
+<p>There is no option in the namelist or configuration files to use the FGAT method. To “activate” this option GSI needs to find the appropriate files in appropriate folder. In this example we have 7 files in total for each member, 1 background file at the assimilation time plus 3 files every 10 minutes before and after the assimilation time.</p>
 <p>So, GSI will expect to find files called <code>wrf_inou1</code> to <code>wrf_inou7</code>. The fonder structure looks like this:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">GUESS/</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">└──</span> 20181122120000</span>
@@ -613,7 +617,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a> <span class="ex">start_index</span> =            1           1           1           0</span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a> <span class="ex">end_index</span> =          199         239           4           0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You’ll know that GSI is using the FGAT method. The example here shows that GSI found the <code>wrf_inout1</code> file that is renaming to <code>sig01</code> and then, information related to the time and domain characteristics. This will be repeated for each background file. In this case the first file corresponds to th 11:30 UTC of November 2018 and after that there is 1 file every 10 minutes.</p>
-<p>This period between background files (10 minutes) is defined by the user when saving the background files. Again there is no configuration option to do this. GSI relies on finding the files in the especified folder.</p>
+<p>This period between background files (10 minutes) is defined by the user when saving the background files. Again there is no configuration option to do this. GSI relies on finding the files in the specified folder.</p>
 <hr>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">

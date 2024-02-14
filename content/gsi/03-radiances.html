@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - Assimilating Radiance Observations</title>
+<title>Data Assimilation docs - Assimilating Radiance Observations</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -162,7 +162,7 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">DA-documentation</span>
+    <span class="navbar-title">Data Assimilation docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -276,11 +276,11 @@ window.Quarto = {
 </header>
 
 
-<p>Assimilating radiance observations is more complicated than assimilating conventional observations as radiances are not state variables. We need a observation operator to transform the model variables to radiances. GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">(CRTM, <a href="#ref-liu2008" role="doc-biblioref">Liu et al. 2008</a>)</span> as an operator of the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with the observations from satellite sensors.</p>
+<p>Assimilating radiance observations is more complicated than assimilating conventional observations as radiances are not state variables. We need a observation operator to transform the model variables to brightness temperature. GSI uses the Community Radiative Transfer Model <span class="citation" data-cites="liu2008">(CRTM, <a href="#ref-liu2008" role="doc-biblioref">Liu et al. 2008</a>)</span> as an operator of the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with the observations from satellite sensors.</p>
 <section id="the-crtm-radiative-transfer-model" class="level2">
 <h2 class="anchored" data-anchor-id="the-crtm-radiative-transfer-model">The CRTM radiative transfer model</h2>
-<p>The CRTM is a fast radiative transfer model that was jointly developed by the <em>NOAA Center for Satellite Applications and Research</em> and the <em>Joint Center for Satellite Data Assimilation</em> (JCSDA). It is a model widely used by the remote sensing community as it is open source and publicly available. In addition, it is used for satellite instrument calibration <span class="citation" data-cites="weng2013 iacovazzi2020 crews2021">(<a href="#ref-weng2013" role="doc-biblioref">Weng et al. 2013</a>; <a href="#ref-iacovazzi2020" role="doc-biblioref">Iacovazzi et al. 2020</a>; <a href="#ref-crews2021" role="doc-biblioref">Crews et al. 2021</a>)</span>, and in turn to generate retrievals from satellite observations <span class="citation" data-cites="boukabara2011 hu2019 hu2021">(<a href="#ref-boukabara2011" role="doc-biblioref">Boukabara et al. 2011</a>; <a href="#ref-hu2019" role="doc-biblioref">H. Hu et al. 2019</a>; <a href="#ref-hu2021" role="doc-biblioref">H. Hu and Han 2021</a>)</span>. It is also used as an operator of observations as part of the assimilation of satellite radiances <span class="citation" data-cites="tong2020 barton2021">(<a href="#ref-tong2020" role="doc-biblioref">Tong et al. 2020</a>; <a href="#ref-barton2021" role="doc-biblioref">Barton et al. 2021</a>)</span>.</p>
-<p>The CRTM is capable of simulating microwave, infrared and visible radiances, under clear and cloudy sky conditions, using atmospheric profiles of pressure, temperature, humidity and other species such as ozone. Recently <span class="citation" data-cites="cutraro2021">Cutraro, Galligani, and Skabar (<a href="#ref-cutraro2021" role="doc-biblioref">2021</a>)</span> evaluated their takeoff in the region with good results in simulating GOES-16 observations.</p>
+<p>The CRTM is a fast radiative transfer model that was jointly developed by the <em>NOAA Center for Satellite Applications and Research</em> and the <em>Joint Center for Satellite Data Assimilation</em> (JCSDA). It is a model widely used by the remote sensing community as it is open source and publicly available. In addition, it is used for satellite instrument calibration <span class="citation" data-cites="weng2013 iacovazzi2020 crews2021">(<a href="#ref-weng2013" role="doc-biblioref">Weng et al. 2013</a>; <a href="#ref-iacovazzi2020" role="doc-biblioref">Iacovazzi et al. 2020</a>; <a href="#ref-crews2021" role="doc-biblioref">Crews et al. 2021</a>)</span>, and to generate retrievals from satellite observations <span class="citation" data-cites="boukabara2011 hu2019 hu2021">(<a href="#ref-boukabara2011" role="doc-biblioref">Boukabara et al. 2011</a>; <a href="#ref-hu2019" role="doc-biblioref">H. Hu et al. 2019</a>; <a href="#ref-hu2021" role="doc-biblioref">H. Hu and Han 2021</a>)</span>. It is also used as an operator of observations as part of the assimilation of satellite radiances <span class="citation" data-cites="tong2020 barton2021">(<a href="#ref-tong2020" role="doc-biblioref">Tong et al. 2020</a>; <a href="#ref-barton2021" role="doc-biblioref">Barton et al. 2021</a>)</span>.</p>
+<p>The CRTM is capable of simulating microwave, infrared and visible radiances, under clear and cloudy sky conditions, using atmospheric profiles of pressure, temperature, humidity and other species such as ozone. Recently <span class="citation" data-cites="cutraro2021">Cutraro, Galligani, and Skabar (<a href="#ref-cutraro2021" role="doc-biblioref">2021</a>)</span> evaluated their use in Argentina with good results in simulating GOES-16 observations.</p>
 <p>CRTM is a sensor-oriented radiative transfer model, i.e.&nbsp;it contains pre-calculated parameterizations and coefficient tables specifically for operational sensors. It includes modules that calculate thermal radiation from gaseous absorption, absorption and scattering by aerosols and clouds, and emission and reflection of radiation by the Earth’s surface. The inputs of CRTM include atmospheric state variables, e.g., temperature, water vapor, pressure, and ozone concentration in user-defined layers, and surface state variables and parameters, including emissivity, surface temperature, and wind.</p>
 <p>CRTM is capable to simulate satellite observations from the state of the atmosphere. This is necessary during the assimilation process but is also used to verify the accuracy and errors of radiance observations.</p>
 <p>The necessary calculations to simulate observations has a very high computational cost as it requires transposing a high dimensional matrix and the minimization of a cost function. This <span class="math inline">\(K^{*}\)</span> matrix is constructed from the partial derivatives of the radiances with respect to geophysical parameters. CRTM performs these calculations very quickly so it can be used in operational contexts.</p>
@@ -307,7 +307,7 @@ window.Quarto = {
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>              14  <span class="at">-1</span>    2.000    2.000    4.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a> <span class="ex">amsua_n15</span>              15   1    3.500   18.000    4.500   10.000    0.000     <span class="at">-2</span>      1     <span class="at">-1</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a> <span class="ex">hirs3_n17</span>               1  <span class="at">-1</span>    2.000    0.000    4.500   10.000    0.000     <span class="at">-1</span>     <span class="at">-1</span>     <span class="at">-1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The file includes a line for each sensor/satellite and each channel (chan). Usually you will change the <code>iuse</code> and <code>error</code> columns to configure the assimilation of each channel. The options for <code>iuse</code> are:</p>
+<p>The file includes a line for each sensor/satellite and each channel (<code>chan</code>). Usually you will change the <code>iuse</code> and <code>error</code> columns to configure the assimilation of each channel. The options for <code>iuse</code> are:</p>
 <ul>
 <li>-2 do not use</li>
 <li>-1 monitor if diagnostics produced</li>
@@ -323,9 +323,9 @@ window.Quarto = {
 <p><strong>GSI namelist</strong></p>
 <table class="table">
 <colgroup>
-<col style="width: 19%">
-<col style="width: 61%">
-<col style="width: 19%">
+<col style="width: 11%">
+<col style="width: 80%">
+<col style="width: 8%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -365,11 +365,10 @@ window.Quarto = {
 <p>This namelist will also includes a list with the type of observations and the name of the bufr file for each one (<code>dfile</code>).</p>
 <p><strong>ENKF namelist</strong></p>
 <table class="table">
-<caption>This namelist will also includes a list with the type of observations and the name of each one inside GSI. For example <code>amsua_n15</code> represent the observations of the AMSU-A sensor on board NOAA-15.</caption>
 <colgroup>
-<col style="width: 16%">
-<col style="width: 66%">
-<col style="width: 16%">
+<col style="width: 10%">
+<col style="width: 77%">
+<col style="width: 11%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -406,6 +405,7 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
+<p>This namelist will also includes a list with the type of observations and the name of each one inside GSI. For example <code>amsua_n15</code> represent the observations of the AMSU-A sensor on board NOAA-15.</p>
 </section>
 <section id="observation-errors-and-quality-control" class="level2">
 <h2 class="anchored" data-anchor-id="observation-errors-and-quality-control">Observation errors and quality control</h2>
@@ -490,7 +490,8 @@ window.Quarto = {
 </section>
 <section id="cloud-detection" class="level3">
 <h3 class="anchored" data-anchor-id="cloud-detection">Cloud detection</h3>
-<p>The cloud pixel detection methodology depends on the wavelength of the observations. For microwave radiances, potentially cloud-contaminated observations are detected using scattering and Liquid Water Path (LWP) indices calculated from differences between different channels of each sensor <span class="citation" data-cites="weston2019 zhu2016">(<a href="#ref-weston2019" role="doc-biblioref">Weston et al. 2019</a>; <a href="#ref-zhu2016" role="doc-biblioref">Zhu et al. 2016</a>)</span>. For infrared channels, cloud contaminated observations are detected using the transmittance profile calculated by the CRTM model. In addition, GSI checks the difference between the observations and the simulated brightness temperature to detect cloudy pixels. A particular case is the ABI observations since the cloud mask (level 2 product) available at the same resolution as the observations is used. This cloud mask is generated by combining information from 8 channels of the ABI sensor from the spatial and temporal point of view.</p>
+<p>The cloud pixel detection methodology depends on the wavelength of the observations. For microwave radiances, potentially cloud-contaminated observations are detected using scattering and Liquid Water Path (LWP) indices calculated from differences between different channels of each sensor <span class="citation" data-cites="weston2019 zhu2016">(<a href="#ref-weston2019" role="doc-biblioref">Weston et al. 2019</a>; <a href="#ref-zhu2016" role="doc-biblioref">Zhu et al. 2016</a>)</span>. For infrared channels, cloud contaminated observations are detected using the transmittance profile calculated by the CRTM model. In addition, GSI checks the difference between the observations and the simulated brightness temperature to detect cloudy pixels.</p>
+<p>A particular case is the ABI observations since the cloud mask (level 2 product) available at the same resolution as the observations is used. This cloud mask is generated by combining information from 8 channels of the ABI sensor from the spatial and temporal point of view.</p>
 </section>
 <section id="other-quality-controls" class="level3">
 <h3 class="anchored" data-anchor-id="other-quality-controls">Other quality controls</h3>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DA-documentation - Working with bufr files</title>
+<title>Data Assimilation docs - Working with bufr files</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">DA-documentation</span>
+    <span class="navbar-title">Data Assimilation docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -230,9 +230,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>A message is a continuous binary stream that can be divided into 6 sections:</p>
 <table class="table">
 <colgroup>
-<col style="width: 15%">
-<col style="width: 31%">
-<col style="width: 53%">
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 49%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -360,7 +360,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>And again, BUFR files will be different for different type of observations and you always need the associated mnemonics table.</p>
 <section id="decode-prepbufr-files" class="level3">
 <h3 class="anchored" data-anchor-id="decode-prepbufr-files">Decode prepBUFR files</h3>
-<p>This is not different that we’ve seen previously and the BUFR tools fonder in the GSI code has very good examples to use. But I like to have the data in tidy tables, so I’ve modified that code to decode a prepBUFR file into a table where each row is an observation. This is the routine:</p>
+<p>This is not different that we’ve seen previously and the <a href="https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/tree/main/util/bufr_tools">BUFR tools folder</a> in the GSI repository has very good examples to use. But I like to have the data in tidy tables, so I’ve modified that code to decode a prepBUFR file into a table where each row is an observation. This is the routine:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">program</span> prepbufr_decode_all_df</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">! read all observations out from prepbufr. </span></span>
