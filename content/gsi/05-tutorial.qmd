@@ -2,7 +2,7 @@
 title: "GSI tutorial"
 ---
 
-This tutorial is intended to showcase some of the capabilities of the GSI system. For a more complete set of examples, please visit the official website for GSI: [variational methods](https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi) and \[Kalman Filter\](<https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf>) methods.
+This tutorial is intended to showcase some of the capabilities of the GSI system. For a more complete set of examples, please visit the official website for GSI: [variational methods](https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi) and [Kalman Filter](https://dtcenter.org/community-code/ensemble-kalman-filter-system-enkf) methods.
 
 The tutorial uses the serial Ensemble Square Root Filter (EnSRF) algorithm but could also be used to run the Local Ensemble Kalman Filter (LETKF) algorithm if the GSI system code is compiled using a intel compiler[^1]. It also uses a version of the code that have the capability of assimilating GOES-16 observations.
 
@@ -10,7 +10,9 @@ The tutorial uses the serial Ensemble Square Root Filter (EnSRF) algorithm but c
 
 ## Moving parts
 
-The first component to run the tutorial is the GSI system code that can be found in this repository: [github.com/paocorrales/comGSIv3.7_EnKFv1.3](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3). Alternatively, the original code without modifications is available [here](https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi). The repository includes an example script `compile_gsi_yakaira` to compile the code. In any case it is important to include the option `-DBUILD_WRF=ON` to use the ENKF algorithm with WRF.
+### GSI code
+
+The first component to run the tutorial is the GSI system code that can be found in this repository: [github.com/paocorrales/comGSIv3.7_EnKFv1.3](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3). Alternatively, the original code without modifications is available [here](https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi). The repository includes an example script `compile_gsi_yakaira` to compile the code. In any case it is important to include the option `-DBUILD_WRF=ON` to use the ENKF algorithm with WRF as model.
 
 Then, clone or download the repository with the scripts, namelists and specific config files from: <https://github.com/paocorrales/tutorial_gsi>. This repository also includes a bash scripts to download the necessary data to run the tutorial. This data is also available as a [Zenodo record](https://zenodo.org/records/10439645).
 
@@ -22,7 +24,7 @@ The observations included in this tutorial are:
 
 -   File: `cimap.20181122.t12z.01h.prepbufr.nqc`
 
-**Radiance observations:** radiances from polar and geostationary satellites. Observations from polar satellites comes from the Global Data Assimilation System (GDAS) Model: <https://www.nco.ncep.noaa.gov/pmb/products/gfs>. The GOES-16 observations (ABI sensor) are derived from the public netcdf files published by NOAA.
+**Radiance observations:** radiances from polar and geostationary satellites. Observations from polar satellites comes from the Global Data Assimilation System (GDAS) Model: <https://www.nco.ncep.noaa.gov/pmb/products/gfs>. The GOES-16 observations (ABI sensor) are derived from the public netCDF files published by NOAA.
 
 Files:
 
@@ -46,7 +48,7 @@ The background files includes the 10-member ensemble generated using the WRF-ARW
 
 ## Structure
 
-By cloning the tutorial repo and downloading the associated data with the provied script you will end up with the following folder structure.
+By cloning the tutorial repo and downloading the associated data with the provided script ([download_data.sh](https://github.com/paocorrales/tutorial_gsi/blob/main/download_data.sh "download_data.sh")) you will end up with the following folder structure.
 
 ``` bash
 tutorial_gsi/
@@ -173,7 +175,7 @@ A `GSI` folder will be created when running the `run_gsi.sh` script and a `ENKF`
 
 ## Running GSI {#fgat}
 
-As we focus on running GSI with the Kalman Filter method, the first stem is to run GSI as Observation operator. So, the system will compare the observations with the background state and and save that information in diagnostic files.
+As we focus on running GSI with the Kalman Filter method, the first step is to run GSI as Observation operator. So, the system will compare the observations with the background state and and save that information in diagnostic files.
 
 The example used in this tutorial is relatively small, so while you may need a HPC system for real cases, this one can be run in a small server or even a computer with at least 10 processors.
 
@@ -203,7 +205,7 @@ GSIPROC=10
 set-x
 ```
 
-In principle, you only need to change `BASEDIR` and `GSIDIR` variables that are the path to the tutorial folder and the path to where GSI is compiled (the code expects to find a `build` folder with the executable files.
+In principle, you only need to change `BASEDIR` and `GSIDIR` variables that are the path to the tutorial folder and the path to where GSI is compiled (the code expects to find a `build` folder with the executable files inside `GSIDIR`).
 
 So, with that, you can run the script or send it to a queue.
 
@@ -231,7 +233,7 @@ I had to slightly change that first line every time I changed machines. So, if y
 If you get a `exit 0` at the end, it probably means that everything went well. However, I recommend you check a few things to make sure everything went *really* well.
 
 -   Check that all the `diag*` files are there. You will get 1 file per member and ensemble mean for each type of observation. If you don't see any of these files, check the [Issues](@issues-gsi) section. If you are missing the files for 1 type of observation, that probably means that the bufr file with the observations was not read properly or that is missing in the folder. Check if the script is linking the correct file to the `GSI` folder.
--   Check the statistics for each type of observations. You will find this information in the `fit_<obs>.<date>` files. Each one may have different information or structure depending on the type of observation, but make sure to check the number of observations read and keep by the system. This information is also included in the `stdout` file, you can sear `READ_*` to find the section in the file.
+-   Check the statistics for each type of observations. You will find this information in the `fit_<obs>.<date>` files. Each one may have different information or structure depending on the type of observation, but make sure to check the number of observations read and keep by the system. This information is also included in the `stdout` file, you can search for `READ_*` to find the section in the file.
 
 If you got an error number instead and, if you are lucky, the error code may be described in `gsimain.f90`.
 
@@ -282,11 +284,11 @@ If you get a `exit 0` at the end, it probably means that everything went well. O
 
 ## Running GSI using the FGAT method
 
-The tutorial is configured to use the FGAT (First Guess at Appropriate Time) methods, this means that will GSI attempt to read multiple time level backgrounds a show in the following diagram.
+The tutorial is configured to use the FGAT (First Guess at Appropriate Time) methods, this means that will GSI attempt to read multiple time level backgrounds as show in the following diagram.
 
 ![FGAT method](img/fgat_diagram.png){fig-alt="A diagram that shows the assimilation window of 1 h centered at 12 UTC. The observations are used every 10 minutes"}
 
-There is no option in the namelist or configuration files to use the FGAT method. To "activate" this option GSI needs to find the appropiate files in appropriate folder. In this example we have 7 files in total for each member, 1 background file at the assimilation time plus 3 files every 10 minutes before and after the assimilation time.
+There is no option in the namelist or configuration files to use the FGAT method. To "activate" this option GSI needs to find the appropriate files in appropriate folder. In this example we have 7 files in total for each member, 1 background file at the assimilation time plus 3 files every 10 minutes before and after the assimilation time.
 
 So, GSI will expect to find files called `wrf_inou1` to `wrf_inou7`. The fonder structure looks like this:
 
@@ -433,7 +435,7 @@ convert wrf_inou1 to sigf01
 
 You'll know that GSI is using the FGAT method. The example here shows that GSI found the `wrf_inout1` file that is renaming to `sig01` and then, information related to the time and domain characteristics. This will be repeated for each background file. In this case the first file corresponds to th 11:30 UTC of November 2018 and after that there is 1 file every 10 minutes.
 
-This period between background files (10 minutes) is defined by the user when saving the background files. Again there is no configuration option to do this. GSI relies on finding the files in the especified folder.
+This period between background files (10 minutes) is defined by the user when saving the background files. Again there is no configuration option to do this. GSI relies on finding the files in the specified folder.
 
 ------------------------------------------------------------------------
 

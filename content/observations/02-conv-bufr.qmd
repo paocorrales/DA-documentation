@@ -5,7 +5,7 @@ bibliography: references.bib
 
 This section covers how to add new surface observations to prepBUFR and how to divide a file into smaller subsets.
 
-One of the first challenges (besides to learning how to use GSI and deal with bufr files) was to incorporate surface observations from automatic stations to the assimilation. In Argentina there are very few official stations to cover the entire country but there are private automatic station network that could potentially help to improve weather forecasts thank to their higher frequency (10 minutes) and spacial resolution.
+One of the first challenges (besides learning how to use GSI and deal with bufr files) was to incorporate surface observations from automatic stations to the assimilation. In Argentina there are very few official stations to cover the entire country but there are private automatic station network that could potentially help to improve weather forecasts thank to their higher frequency (10 minutes) and spacial resolution.
 
 ![Location of automatic stations (green squares) and conventional stations (orange triangles)](img/ema.png){width="500"}
 
@@ -13,52 +13,49 @@ This requires to incorporate these new observations [available at @garcia2019] t
 
 ## Add observations to a prepBUFR file
 
-In the previous section I briefly explained how to read and write a bufr file. To *add* new observations to an existing file (o to a new file!) we use the same functions mentioned [here](#an-introduction-on-how-to-read-and-write-bufr-files) and structure of the routine is also similar. But we also need to figure out how to read the new observations and how to create new reports.
+In the [previous section](obs/01-bufr.qmd) I briefly explained how to read and write a bufr file. To *add* new observations to an existing file (o to a new file!) we use the same functions mentioned [here](#an-introduction-on-how-to-read-and-write-bufr-files) and structure of the routine is also similar. But we also need to figure out how to read the new observations into fortran and how to create new reports.
 
-The code I'm sharing here assume that the new observations are in csv format and has the following look:
+The code I'm sharing here assume that the new observations are in csv format and has the following look (without the header):
 
-|LAT    |LON     |ELV     |STATION|  yyyymmddhhmmss  |TOB        |QOB        |UOB    |VOB     |PRSS    |
-|------|------|------|------|------|------|------|------|------|------|
-|-19.0124|-65.2921|2907|"BLV102"|20181111200000|28.9|0.00624936719941647|0|-2.88088888888889|71950
-|-17.4111|-66.1744|2548|"BLV124"|20181111200000|29|0.00636021217641851|-3.27390439689371|-3.27390439689372|74280
-|-16.8378|-64.7925|195|"BLV141"|20181111200000|32.9|0.0439748860789023|-1.34593847427853|-1.34593847427853|50240
-|-17.9747|-67.08|4057|"BLV154"|20181111201500|19.2|0.00317768840091676|-6.08364406830543|-2.51992788174274|62030
-|-17.6364|-67.2003|3798|"BLV157"|120181111200000|19|0.00626217287136847|-5.34737718159307|-5.34737718159307|64460
-
-
+| LAT      | LON      | ELV  | STATION  | yyyymmddhhmmss  | TOB  | QOB                 | UOB               | VOB               | PRSS  |
+|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|
+| -19.0124 | -65.2921 | 2907 | "BLV102" | 20181111200000  | 28.9 | 0.00624936719941647 | 0                 | -2.88088888888889 | 71950 |
+| -17.4111 | -66.1744 | 2548 | "BLV124" | 20181111200000  | 29   | 0.00636021217641851 | -3.27390439689371 | -3.27390439689372 | 74280 |
+| -16.8378 | -64.7925 | 195  | "BLV141" | 20181111200000  | 32.9 | 0.0439748860789023  | -1.34593847427853 | -1.34593847427853 | 50240 |
+| -17.9747 | -67.08   | 4057 | "BLV154" | 20181111201500  | 19.2 | 0.00317768840091676 | -6.08364406830543 | -2.51992788174274 | 62030 |
+| -17.6364 | -67.2003 | 3798 | "BLV157" | 120181111200000 | 19   | 0.00626217287136847 | -5.34737718159307 | -5.34737718159307 | 64460 |
 
 ::: callout-important
-If you want to convert the files available here into csv tables, [here is an R script to do that](https://gist.github.com/paocorrales/e68daf085cf16b5d2e48f11513392084). 
+If you want to convert the files available [here](https://data.eol.ucar.edu/dataset/553.008) into csv tables, [I wrote an R script to do that](https://gist.github.com/paocorrales/e68daf085cf16b5d2e48f11513392084).
 :::
 
-The program read the configuration file that define where is the namelist and the prepbufr table and call a function that start the process. The namelist will list the name of the prepbufr to modify and the csv files with the new observations. The most important subroutine is `adpsfc_rw_prepbufr()`:
+The program read the configuration file (`add_obs.conf`) that define where is the namelist and the prepbufr table and call a function that start the process. The namelist will list the name of the prepbufr file to modify and the csv files with the new observations. The most important subroutine is `adpsfc_rw_prepbufr()` that:
 
-1. Reads the bufr file
-2. Reads the csv with new observations
-3. Decides if the observations fall into the time window
-4. Creates a new report type 187
-5. Write the bufr file
+1.  Reads the bufr file
+2.  Reads the csv with new observations
+3.  Decides if the observations fall into the time window
+4.  Creates a new report type 187 (check obs types [here](https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm))
+5.  Write the bufr file
 
 ![add_obs rutine flowchart](img/add_obs.png)
 
 ## Filter observations in a prepBUFR
 
-When I started using GSI I thought that the bufr files needed to have the observations for the assimilation window only, in other words, that GSI was not capable of filtering and ignoring the observations outside the assimilation window. I know, it does not make sense. Before I realized I was wrong I created a program to read a prepbufr and write a new one only with the observations in a specific time window. 
+When I started using GSI I thought that the bufr files needed to have the observations for the assimilation window only, in other words, that GSI was not capable of filtering and ignoring the observations outside the assimilation window. I know, it does not make sense. Before I realized I was wrong I created a program to read a prepbufr and write a new one only with the observations in a specific time window.
 
-The general structure is similar to the previous routine. In this case the `read_namelist` module will read the namelist and list all the available prepbufrs. The magic then happens inside `filter_obs_prepbufr()` that loops over each observation and check the difference between the observation time and the analysis time. If that difference is less that half the window, the observation is written in the new prepBUFR file. 
-
+The general structure is similar to the previous routine. In this case the `read_namelist` module will read the namelist and list all the available prepbufrs. The magic then happens inside `filter_obs_prepbufr()` that loops over each observation and check the difference between the observation time and the analysis time. If that difference is less that half the window, the observation is written in the new prepBUFR file.
 
 ![prepBURF generation / filter obs rutine flowchart](img/filter_obs.png)
 
 ## The code
 
-The source code is publicly available in [this repository](https://github.com/paocorrales/prepbufr_tools). Each source folder includes a `compile` file as example of how to compile the program. It needs the bufr and [w3lib](https://www.nco.ncep.noaa.gov/pmb/docs/libs/w3lib/ncep_w3lib.shtml) to work with times. 
+The source code is publicly available in [this repository](https://github.com/paocorrales/prepbufr_tools). Each source folder includes a `compile` file as example of how to compile the program. It needs the bufr library to work with bufr files and [w3lib](https://www.nco.ncep.noaa.gov/pmb/docs/libs/w3lib/ncep_w3lib.shtml) library to work with times.
 
-The `run` folder includes all the configuration files, namelists and bufr tables. The can be uses to run the programs using the example observations available in the `example_obs` folder. 
+The `run` folder includes all the configuration files, namelists and bufr tables. They can be uses as it is to run the programs using the example observations available in the `example_obs` folder.
 
-Finally, if you ever need to do this for many files, the `run_bash` folder has 2 bash scripts that modify the namelist and run the programs in a loop.
+Finally, if you ever need to do this many files, the `run_bash` folder has 2 bash scripts that modify the namelist and run the programs in a loop.
 
-```bash
+``` bash
 prepbufr_tools
 ├── example_obs
 │   ├── 2018111719.csv
@@ -90,5 +87,5 @@ prepbufr_tools
 ```
 
 ::: callout-important
-Once again, this routines are based on the INPE/CPTEC modules and programs that are part of their operational assimilation system. 
+Once again, this routines are based on the INPE/CPTEC modules and programs that are part of their operational assimilation system. I wouldn't have been able to work with bufr files without the help and guidance of Luiz Sapucci and his team
 :::

@@ -13,7 +13,7 @@ A BUFR file is divided into one or more messages, each message containing one or
 A message is a continuous binary stream that can be divided into 6 sections:
 
 | Section Number | Name                         | Contents                                                                                                           |
-|-----------|-----------------------|---------------------------------------|
+|----------------|---------------------|------------------------------------|
 | 0              | Indicator section            | "BUFR", length of message, edition number                                                                          |
 | 1              | Identification section       | Originating center and subcenter, data category and subcategory, master table and version number                   |
 | 2              | (Optional) Local Use section | (Optional) free-format additional information of potential interest to users                                       |
@@ -25,7 +25,7 @@ A message is a continuous binary stream that can be divided into 6 sections:
 
 Section 1 of each message with include the relevant information associated to the data: data type and observation date and time. However, the information is encoded using *mnemonics*. To decode the information in a BUFR file we will need the table that was used to create the file. In the case of prepBUFR files the table has different sections (check the complete table [here](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/blob/main/util/bufr_tools/prepbufr.table)). In general this tables includes the mnemonics and a short description. The first part of the prepBUFR table includes the mnemonics associated to the data type:
 
-```bash
+``` bash
 .------------------------------------------------------------------------------.
 | ------------   USER DEFINITIONS FOR TABLE-A TABLE-B TABLE D   -------------- |
 |------------------------------------------------------------------------------|
@@ -39,7 +39,7 @@ Section 1 of each message with include the relevant information associated to th
 
 As an example, let say we get the message type `ADPUPA`. The first part of the table tell us that this message includes upper-air observations. In a following section of the table we find the structure of this type of messages:
 
-```bash
+``` bash
 |------------------------------------------------------------------------------|
 | MNEMONIC | SEQUENCE                                                          |
 |----------|-------------------------------------------------------------------|
@@ -50,31 +50,31 @@ As an example, let say we get the message type `ADPUPA`. The first part of the t
 
 This tell us that the message has a header (`HEADR` - report header sequence) among other things. When we search for `HEADR` inside the table, we will find the content and it definition:
 
-```bash
+``` bash
 | HEADR    | SID  207003  XOB  YOB  207000  DHR  ELV  TYP  T29  TSB  ITP  SQN  |
 | HEADR    | PROCN  RPT  TCOR  <RSRD_SEQ>  
 ```
 
 Again, we will need to look each mnemonic to understand their meaning:
 
-* SID: STATION IDENTIFICATION
-* XOB: LONGITUDE (DEG E)
-* YOB: LATITUDE (DEG N)
-* DHR: OBSERVATION TIME MINUS CYCLE TIME (HOURS)
-* ELV: STATION ELEVATION (METERS)
-* TYP: PREPBUFR REPORT TYPE
-* T29: DATA DUMP REPORT TYPE
-* TSB: REPORT SUBTYPE (HAS VARIOUS MEANINGS DEPENDING ON TYPE)
-* ITP: INSTRUMENT TYPE
-* SQN: REPORT SEQUENCE NUMBER
-* PROCN: PROCESS NUMBER FOR THIS MPI RUN
-* RPT: REPORTED OBSERVATION TIME (HOURS)
-* TCOR: INDICATOR WHETHER OBS. TIME IN "DHR" WAS CORRECTED
-* RSRD_SEQ: RESTRICTIONS ON REDISTRIBUTION SEQUENCE
+-   SID: STATION IDENTIFICATION
+-   XOB: LONGITUDE (DEG E)
+-   YOB: LATITUDE (DEG N)
+-   DHR: OBSERVATION TIME MINUS CYCLE TIME (HOURS)
+-   ELV: STATION ELEVATION (METERS)
+-   TYP: PREPBUFR REPORT TYPE
+-   T29: DATA DUMP REPORT TYPE
+-   TSB: REPORT SUBTYPE (HAS VARIOUS MEANINGS DEPENDING ON TYPE)
+-   ITP: INSTRUMENT TYPE
+-   SQN: REPORT SEQUENCE NUMBER
+-   PROCN: PROCESS NUMBER FOR THIS MPI RUN
+-   RPT: REPORTED OBSERVATION TIME (HOURS)
+-   TCOR: INDICATOR WHETHER OBS. TIME IN "DHR" WAS CORRECTED
+-   RSRD_SEQ: RESTRICTIONS ON REDISTRIBUTION SEQUENCE
 
 Each of this mnemonics are described in an specific section:
 
-```bash
+``` bash
 |------------------------------------------------------------------------------|
 | MNEMONIC | SCAL | REFERENCE   | BIT | UNITS                    |-------------|
 |----------|------|-------------|-----|--------------------------|-------------|
@@ -89,23 +89,22 @@ Each of this mnemonics are described in an specific section:
 | DHR      |    5 |    -2400000 |  23 | HOURS                    |-------------|
 ```
 
-Half of the information included in the header is not useful from the assimilation point of view but it is good to know how it works. For this example we have the `{PRSLEVEL}` sequence included. This is the "PRESSURE LEVEL SEQUENCE" for upper-air observations and includes humidity, temperature and wind observations at each pressure level.   
+Half of the information included in the header is not useful from the assimilation point of view but it is good to know how it works. For this example we have the `{PRSLEVEL}` sequence included. This is the "PRESSURE LEVEL SEQUENCE" for upper-air observations and includes humidity, temperature and wind observations at each pressure level.
 
-```bash
+``` bash
 | PRSLEVEL | CAT  <P___INFO>  <Q___INFO>  <T___INFO>  <Z___INFO>  <W___INFO>   |
 | PRSLEVEL | <DRFTINFO>  [W1_EVENT] 
 ```
 
-A surface station (`ADPSFC`) will have a different structure  but the idea is the same, everything can be decode from the table. 
+A surface station (`ADPSFC`) will have a different structure but the idea is the same, everything can be decode from the table.
 
 ## An introduction on how to read and write BUFR files
 
-Working with BUFR files requires to work with fortran routines. Fortunately there is a library that contains subroutines, functions and other utilities that can be used to read (decode) and write (encode) data in BUFR: [
-NCEPLIBS-bufr](https://noaa-emc.github.io/NCEPLIBS-bufr/). This library is compiled during the compilation of GSI but can also be used independently. 
+Working with BUFR files requires to work with fortran routines. Fortunately there is a library that contains subroutines, functions and other utilities that can be used to read (decode) and write (encode) data in BUFR: [NCEPLIBS-bufr](https://noaa-emc.github.io/NCEPLIBS-bufr/). This library is compiled during the compilation of GSI but can also be used independently.
 
 Here is a simplified example of a routine to decode a bufr file:
 
-```fortran
+``` fortran
 open(unit_in,file='sample.bufr',action='read',form='unformatted')
 call openbf(unit_in,'IN',unit_in)
   
@@ -123,21 +122,20 @@ call openbf(unit_in,'IN',unit_in)
 call closbf(unit_in)
 ```
 
-* The first level of code open and close the file. It uses the `openbf()` and `closebf()`functions from the BUFR library.
-* The second level will read each message. Each loop reads in one message until the last message in the file is reached. It uses the `ireadmg()` function.
-* The third level will read the reports inside each message using the `ireadsb()`. 
-* And finally inside each report, we access the data values using the `ufbint()` function. In this example we save the header in formation in one array and the observation information in a second array.
+-   The first level of code open and close the file. It uses the `openbf()` and `closebf()`functions from the BUFR library.
+-   The second level will read each message. Each loop reads in one message until the last message in the file is reached. It uses the `ireadmg()` function.
+-   The third level will read the reports inside each message using the `ireadsb()`.
+-   And finally inside each report, we access the data values using the `ufbint()` function. In this example we save the header in formation in one array and the observation information in a second array.
 
-GSI includes some example routines as part ad the bufr tools kit. A complete routine to decode a BUFR file can be found [here](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/blob/main/util/bufr_tools/bufr_decode_sample.f90). The routine to [encode a BUFR file](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/blob/main/util/bufr_tools/bufr_encode_sample.f90) will have similar characteristics. 
+GSI includes some example routines as part ad the bufr tools kit. A complete routine to decode a BUFR file can be found [here](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/blob/main/util/bufr_tools/bufr_decode_sample.f90). The routine to [encode a BUFR file](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/blob/main/util/bufr_tools/bufr_encode_sample.f90) will have similar characteristics.
 
-And again, BUFR files will be different for different type of observations and you always need the associated mnemonics table. 
-
+And again, BUFR files will be different for different type of observations and you always need the associated mnemonics table.
 
 ### Decode prepBUFR files
 
-This is not different that we've seen previously and the BUFR tools fonder in the GSI code has very good examples to use. But I like to have the data in tidy tables, so I've modified that code to decode a prepBUFR file into a table where each row is an observation. This is the routine:
+This is not different that we've seen previously and the [BUFR tools folder](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3/tree/main/util/bufr_tools) in the GSI repository has very good examples to use. But I like to have the data in tidy tables, so I've modified that code to decode a prepBUFR file into a table where each row is an observation. This is the routine:
 
-```fortran
+``` fortran
 program prepbufr_decode_all_df
 !
 ! read all observations out from prepbufr. 
@@ -196,15 +194,9 @@ program prepbufr_decode_all_df
 end program
 ```
 
-
-
-
-
-
-
 ::: callout-important
 There are excellent resources for learning how to work with BUFR files from which I have taken many things mentioned here:
 
-* [BUFR/PrepBUFR User’s Guide](https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf) from the Developmental Testbed Center.
-* [BUFR Reference Manual](https://www.ecmwf.int/sites/default/files/elibrary/2008/18792-bufr-reference-manual.pdf) from the ECMWF.
+-   [BUFR/PrepBUFR User's Guide](https://dtcenter.org/sites/default/files/community-code/gsi/downloads/BUFR/BUFR_PrepBUFR_User_Guide_v1.pdf) from the Developmental Testbed Center.
+-   [BUFR Reference Manual](https://www.ecmwf.int/sites/default/files/elibrary/2008/18792-bufr-reference-manual.pdf) from the ECMWF.
 :::

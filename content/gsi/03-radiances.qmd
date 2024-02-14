@@ -3,13 +3,13 @@ title: "Assimilating Radiance Observations"
 bibliography: references.bib
 ---
 
-Assimilating radiance observations is more complicated than assimilating conventional observations as radiances are not state variables. We need a observation operator to transform the model variables to radiances. GSI uses the Community Radiative Transfer Model [CRTM, @liu2008] as an operator of the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with the observations from satellite sensors.
+Assimilating radiance observations is more complicated than assimilating conventional observations as radiances are not state variables. We need a observation operator to transform the model variables to brightness temperature. GSI uses the Community Radiative Transfer Model [CRTM, @liu2008] as an operator of the radiance observations that calculates the brightness temperature simulated by the model in order to compare it with the observations from satellite sensors.
 
 ## The CRTM radiative transfer model
 
-The CRTM is a fast radiative transfer model that was jointly developed by the *NOAA Center for Satellite Applications and Research* and the *Joint Center for Satellite Data Assimilation* (JCSDA). It is a model widely used by the remote sensing community as it is open source and publicly available. In addition, it is used for satellite instrument calibration [@weng2013; @iacovazzi2020; @crews2021], and in turn to generate retrievals from satellite observations [@boukabara2011; @hu2019; @hu2021]. It is also used as an operator of observations as part of the assimilation of satellite radiances [@tong2020; @barton2021].
+The CRTM is a fast radiative transfer model that was jointly developed by the *NOAA Center for Satellite Applications and Research* and the *Joint Center for Satellite Data Assimilation* (JCSDA). It is a model widely used by the remote sensing community as it is open source and publicly available. In addition, it is used for satellite instrument calibration [@weng2013; @iacovazzi2020; @crews2021], and to generate retrievals from satellite observations [@boukabara2011; @hu2019; @hu2021]. It is also used as an operator of observations as part of the assimilation of satellite radiances [@tong2020; @barton2021].
 
-The CRTM is capable of simulating microwave, infrared and visible radiances, under clear and cloudy sky conditions, using atmospheric profiles of pressure, temperature, humidity and other species such as ozone. Recently @cutraro2021 evaluated their takeoff in the region with good results in simulating GOES-16 observations.
+The CRTM is capable of simulating microwave, infrared and visible radiances, under clear and cloudy sky conditions, using atmospheric profiles of pressure, temperature, humidity and other species such as ozone. Recently @cutraro2021 evaluated their use in Argentina with good results in simulating GOES-16 observations.
 
 CRTM is a sensor-oriented radiative transfer model, i.e. it contains pre-calculated parameterizations and coefficient tables specifically for operational sensors. It includes modules that calculate thermal radiation from gaseous absorption, absorption and scattering by aerosols and clouds, and emission and reflection of radiation by the Earth's surface. The inputs of CRTM include atmospheric state variables, e.g., temperature, water vapor, pressure, and ozone concentration in user-defined layers, and surface state variables and parameters, including emissivity, surface temperature, and wind.
 
@@ -45,7 +45,7 @@ The assimilation of radiance observations is controlled with the `satinfo` file 
  hirs3_n17               1  -1    2.000    0.000    4.500   10.000    0.000     -1     -1     -1
 ```
 
-The file includes a line for each sensor/satellite and each channel (chan). Usually you will change the `iuse` and `error` columns to configure the assimilation of each channel. The options for `iuse` are:
+The file includes a line for each sensor/satellite and each channel (`chan`). Usually you will change the `iuse` and `error` columns to configure the assimilation of each channel. The options for `iuse` are:
 
 -   -2 do not use
 -   -1 monitor if diagnostics produced
@@ -66,7 +66,7 @@ Here is an incomplete list of parameters in the GSI and ENKF namelists.
 **GSI namelist**
 
 | Parameter        | Description                                                                                                                      | Needed value |
-|--------------|--------------------------------------------|--------------|
+|------------------|----------------------------------------------------------------------------------------------------------------------------------|--------------|
 | passive_bc       | option to turn on bias correction for passive (monitored) channels                                                               | .true.       |
 | use_edges        | option to exclude radiance data on scan edges                                                                                    | .false.      |
 | lwrite_predterms | option to write out actual predictor terms instead of predicted bias to the radiance diagnostic files                            | .true.       |
@@ -78,14 +78,14 @@ This namelist will also includes a list with the type of observations and the na
 **ENKF namelist**
 
 | Parameter   | Description                                                                                 | Needed value |
-|------------|------------------------------------------------|------------|
+|-------------|---------------------------------------------------------------------------------------------|--------------|
 | adp_anglebc | turn off or on the variational radiance angle bias correction                               | .true.       |
 | angord      | order of polynomial for angle bias correction                                               | 4            |
 | use_edges   | logical to use data on scan edges (.true.=to use)                                           | .false.      |
 | emiss_bc    | If true, turn on emissivity bias correction                                                 | .true.       |
 | upd_pred    | bias update indicator for radiance bias correction; 1.0=bias correction coefficients evolve | 1            |
 
-: This namelist will also includes a list with the type of observations and the name of each one inside GSI. For example `amsua_n15` represent the observations of the AMSU-A sensor on board NOAA-15.
+This namelist will also includes a list with the type of observations and the name of each one inside GSI. For example `amsua_n15` represent the observations of the AMSU-A sensor on board NOAA-15.
 
 ## Observation errors and quality control
 
@@ -180,7 +180,9 @@ On the other hand the predictors are saved in the diag files (see the [Undestand
 
 ### Cloud detection
 
-The cloud pixel detection methodology depends on the wavelength of the observations. For microwave radiances, potentially cloud-contaminated observations are detected using scattering and Liquid Water Path (LWP) indices calculated from differences between different channels of each sensor [@weston2019; @zhu2016]. For infrared channels, cloud contaminated observations are detected using the transmittance profile calculated by the CRTM model. In addition, GSI checks the difference between the observations and the simulated brightness temperature to detect cloudy pixels. A particular case is the ABI observations since the cloud mask (level 2 product) available at the same resolution as the observations is used. This cloud mask is generated by combining information from 8 channels of the ABI sensor from the spatial and temporal point of view.
+The cloud pixel detection methodology depends on the wavelength of the observations. For microwave radiances, potentially cloud-contaminated observations are detected using scattering and Liquid Water Path (LWP) indices calculated from differences between different channels of each sensor [@weston2019; @zhu2016]. For infrared channels, cloud contaminated observations are detected using the transmittance profile calculated by the CRTM model. In addition, GSI checks the difference between the observations and the simulated brightness temperature to detect cloudy pixels.
+
+A particular case is the ABI observations since the cloud mask (level 2 product) available at the same resolution as the observations is used. This cloud mask is generated by combining information from 8 channels of the ABI sensor from the spatial and temporal point of view.
 
 ### Other quality controls
 

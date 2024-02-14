@@ -6,11 +6,11 @@ Conventional observations are assimilated from PREPBUFR files. NCEP ADP Global U
 
 While the PREPBUFR includes wind derived from satellite observations, GSI ignores this observations and uses the ones provided by the specific bufr file `gdas.t00z.satwnd.tm00.bufr_d`.
 
-PREPBUFR files usually contains observations from a 6 to 12 h window and can be modify using FORTRAN routines provided with the GSI code (see `util/bufr_tools` in the GSI source code folder). You can also create your own bufr file or add new observation to an existing bufr file (see [Working with bufr files](../observations/01-bufr.qmd)).
+PREPBUFR files usually contains observations from a 6 to 12 h window and can be modify using FORTRAN routines provided with the GSI code (see `util/bufr_tools` in the [GSI source code folder](https://github.com/paocorrales/comGSIv3.7_EnKFv1.3)). You can also create your own bufr file or add new observation to an existing bufr file (see [Working with bufr files](../observations/01-bufr.qmd)).
 
 ### Controlling which observations are assimilated
 
-The assimilation of conventional observations is controlled with the `convinfo` file. Let's check the `global_convinfo.txt` file we get as an example:
+The assimilation of conventional observations is controlled with the `convinfo` file. Let's check the `global_convinfo.txt` file we get as an example in the `fix` folder:
 
 ``` bash
 ! otype   = observation type (a7, t, uv, q, etc.)
@@ -41,14 +41,14 @@ The assimilation of conventional observations is controlled with the `convinfo` 
 
 The head of the file explains the content of each column but there are a few more things to add:
 
--   type: this is defined by the bufr tables, particular [Table 2](https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm). It is worth checking this table as includes information about which observations are assimilated in GFS, errors asociated to specific instruments and other details.
+-   type: this is defined by the bufr tables, particular [Table 2](https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_2.htm). It is worth checking this table as includes information about which observations are assimilated in GFS, errors associated to specific instruments and other details.
 -   twindow: while the assimilation window is defined in the gsi namalist, it is possible to control an assimilation window for specific observations. This is useful if, for example the assimilation window is 3 h and you want to assimilate temperature in a 1h window.
 
-In general you only change the *isue* column to assimilate or not a type of observation and maybe just maybe the *gross*, *ermax*, and *ermin* parameters if you want to modify the quality control of the observations.
+In general you only change the *iuse* column to assimilate or not a type of observation and maybe just maybe the *gross*, *ermax*, and *ermin* parameters if you want to modify the quality control of the observations.
 
 ### Observation errors and quality control
 
-For **regional assimilation** GSI uses an error table located in the `errtable` file that you'll find in the `./fix` folder under the name `prepobs_errtable.global` (it is confusing that the table for regional errors in in a file called global). Here is a small example of the content of the file for observations from surface stations.
+For **regional assimilation** GSI uses an error table located in the `errtable` file that you'll find in the `./fix` folder under the name `prepobs_errtable.global` (yes, it is confusing that the table for regional errors in in a file called global). Here is a small example of the content of the file for observations from surface stations.
 
 ``` bash
 181 OBSERVATION TYPE
@@ -76,11 +76,11 @@ GSI will perform a quality control for each observation. In general terms this i
 
 For the gross check, GSI first calculates a ratio:
 
-$$ ratio = (obs - bk)/max(ermin, min(ermax, obserror)) $$ The main error parameters are controlled by the `convinfo` file. The `obserror` is the observation error defined in the prepbufr file for each observation as a result to the quality control perform while generating that file.
+$$ ratio = (obs - bk)/max(ermin, min(ermax, obserror)) $$ The main error parameters are controlled by the `convinfo` file. The `obserror` is the observation error defined in the prepbufr file for each observation plus information in the `prepobs_errtable`.
 
 If $ration > gross$ the observation is rejected.
 
-Other piece of information used during the quality control is the quality control flag that is included in the prepbufr file a part if it quality control process. The possible values for conventional observations are:
+Other piece of information used during the quality control is the quality control flag that is included in the prepbufr file a part if it quality control process performed by NCEP. The possible values for conventional observations are:
 
 | qc flag | meaning                                                                     |
 |:------------------------------:|:---------------------------------------|
@@ -90,10 +90,10 @@ Other piece of information used during the quality control is the quality contro
 
 You can find more details about the quality control flags in [Table 7](https://www.emc.ncep.noaa.gov/mmb/data_processing/prepbufr.doc/table_7.htm).
 
-GSI can also perform a thinning for conventional observations. You can activate that option for each type of observation changing `ithin = 1` in the `convinfo` file. There are other important columns, `rmesh`, `pmesh`, in the `convinfo` file to configure conventional data thinning: 
+GSI can also perform a thinning for conventional observations. You can activate that option for each type of observation changing `ithin = 1` in the `convinfo` file. There are other important columns, `rmesh`, `pmesh`, in the `convinfo` file to configure conventional data thinning:
 
-* `ithin`: 0 = no thinning; 1 = thinning with grid mesh decided by `rmesh` and `pmesh`
-* `rmesh`: horizontal thinning grid size in km
-* `pmesh`: vertical thinning grid size in mb; if 0, then use background vertical grid
+-   `ithin`: 0 = no thinning; 1 = thinning with grid mesh decided by `rmesh` and `pmesh`
+-   `rmesh`: horizontal thinning grid size in km
+-   `pmesh`: vertical thinning grid size in mb; if 0, then use background vertical grid
 
 **For each observation GSI will check different things and change the observation error accordingly.** The final observation error is recorded in the `diag` file and then used during the assimilation.
