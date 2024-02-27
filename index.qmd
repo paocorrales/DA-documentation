@@ -10,7 +10,7 @@ While the text in this guide is released under a [Creative Commons Attribution-S
 
 You can cite this guide using its [Zenodo metadata and DOI.](https://doi.org/10.5281/zenodo.10658632)
 
-<a href="https://doi.org/10.5281/zenodo.2553043"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10658632.svg?branch=master" alt="DOI"></a>
+<a href="https://doi.org/10.5281/zenodo.10658632"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10658632.svg?branch=master" alt="DOI"></a>
 
 ## Do you want to contribute?
 
